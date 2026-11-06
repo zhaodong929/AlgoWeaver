@@ -33,6 +33,19 @@
 - Reproduction module commit: `37def95`; evidence changes are pending the next combined commit.
 - Focused/full validation after these changes: `pytest -q` -> 33 passed, 2 skipped; Ruff and Mypy passed.
 
+## 2026-11-07 — capability persistence baseline
+
+- Added `CapabilityRegistry` backed by stdlib SQLite, with immutable integer versions, latest/search queries and verified-only promotion guarded by a passing `ValidationReport`.
+- Added `CapabilityVersion` schema and registry tests for versioning, promotion rejection and invalid queries.
+- Focused registry validation: 3 passed; full-suite validation remains required before commit.
+
+## 2026-11-07 — Docker sandbox boundary
+
+- Added `ExecutionPolicy`, `ExecutionResult` and `DockerSandboxRunner`.
+- The runner lazy-loads the Docker SDK, disables network by default, mounts the workspace read-only by default, applies timeout/memory/CPU/PID/output limits, clears environment variables and returns `blocked` when Docker is unavailable.
+- There is no host subprocess fallback. Tests use a fake Docker client to inspect policy translation; real Docker daemon execution remains unverified.
+- Full validation: `pytest -q` -> 39 passed, 2 skipped; Ruff passed; Mypy passed for 29 source files.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

@@ -17,7 +17,7 @@ Updated: 2026-11-06 (Asia/Shanghai)
 | M4 | Local retrieval baseline | Chunking, deterministic lexical ranking, metadata filters, provenance hits and tests | DONE |
 | M5 | Reproduction plan and generated artifacts | Structured plan, evidence IDs, deterministic moving-average code/test artifacts | DONE |
 | M6 | Safe validation and bounded repair | Static checks, isolated runner, report schema, retry limit | IN_PROGRESS |
-| M7 | Capability registry and reuse | Versioned persistence, verified-only promotion, reuse query | NOT_STARTED |
+| M7 | Capability registry and reuse | SQLite versions, verified-only promotion and name search | IN_PROGRESS |
 | M8 | API/demo integration | One end-to-end CLI/API demo and reproducible report | NOT_STARTED |
 | M9 | Final acceptance | Requirement matrix audit, security/performance checks, final demo | NOT_STARTED |
 

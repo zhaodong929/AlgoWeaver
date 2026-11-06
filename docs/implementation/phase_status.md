@@ -10,8 +10,8 @@
 | Phase 3 真实 LLM 抽取与证据校验 | IN_PROGRESS | `EvidenceRef` 已支持应用控制的行号和 SHA-256；真实 provider 未调用 | 用真实 provider 做一次可复现抽取并评估证据覆盖率 |
 | Phase 4 RAG、混合检索、检索评估 | IN_PROGRESS | `SourceChunker`/`LocalLexicalRetriever` 已完成，27 passed/2 skipped；Qdrant/embedding/reranker 尚未接入 | 评估 hybrid/vector adapter 和 Recall@k/MRR |
 | Phase 5 LangGraph 算法复刻 Agent | IN_PROGRESS | `ReproductionPlanner`、`TemplateArtifactWriter` 已生成 evidence-linked、unverified artifacts；尚无 LangGraph 复刻图 | 接入检索上下文、计划节点和 artifact state |
-| Phase 6 Docker 沙箱、自动测试、错误修复 | IN_PROGRESS | `ValidationService` 已提供静态/契约报告；尚无沙箱和运行时测试 | 接入隔离 runner、超时和资源限制 |
-| Phase 7 持久化、版本管理、复用 | NOT_STARTED | 当前只写 JSON 文件 | 设计 verified-only promotion 和版本 schema |
+| Phase 6 Docker 沙箱、自动测试、错误修复 | IN_PROGRESS | `ValidationService` + Docker-only `DockerSandboxRunner` policy boundary 已测试；真实 daemon、pytest runtime 和 repair loop 未验证 | 接入隔离运行报告、故障反馈和有限修复 |
+| Phase 7 持久化、版本管理、复用 | IN_PROGRESS | `CapabilityRegistry` 已提供 SQLite 版本追加、name search 和 passing-report promotion；尚未接入完整复用流程 | 连接检索结果、版本比较和 CLI/API |
 | Phase 8 API、展示界面、端到端集成 | NOT_STARTED | 只有 CLI 抽取 | 选择 CLI-first，再补 API/UI |
 | Phase 9 最终验收、性能、文档、Demo | NOT_STARTED | 无完整闭环证据 | 汇总需求矩阵并运行完整验收 |
 
