@@ -75,6 +75,7 @@
 - Added AST-only `PythonDependencyAnalyzer`; the CLI now emits `dependency_report.json` for generated Python artifacts.
 - Focused validation: graph, dependency and CLI tests passed; Ruff/Mypy passed for 34 source files.
 - Full validation after workflow/dependency changes: `pytest -q` -> 46 passed, 2 skipped; Ruff and Mypy passed.
+- Committed and pushed workflow/dependency analysis as `3356695`; feature branch remains synchronized with origin.
 
 ## Evidence policy
 

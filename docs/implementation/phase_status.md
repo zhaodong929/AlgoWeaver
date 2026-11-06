@@ -20,4 +20,4 @@
 - Branch: `feat/initial-audit-and-ingestion`
 - Remote tracking: `origin/feat/initial-audit-and-ingestion`
 - Baseline commit: `04d74ac`; latest code milestone: `f0c794e`
-- Latest feature commits: `f0c794e` (AST parser), `474dcb0` (document adapter boundaries, validation, execution controls)
+- Latest feature commits: `f0c794e` (AST parser), `474dcb0` (document adapter boundaries/validation), `594e587` (retrieval), `0063c4c` (evidence/reproduction), `7a28841` (registry/sandbox), `aefb424` (repair), `19de267` (CLI demo), `3356695` (workflow/dependency analysis)
