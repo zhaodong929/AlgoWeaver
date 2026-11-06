@@ -46,6 +46,12 @@
 - There is no host subprocess fallback. Tests use a fake Docker client to inspect policy translation; real Docker daemon execution remains unverified.
 - Full validation: `pytest -q` -> 39 passed, 2 skipped; Ruff passed; Mypy passed for 29 source files.
 
+## 2026-11-07 — bounded repair orchestration
+
+- Added `BoundedRepairLoop` and repair result schemas. The loop consumes sandbox observations, calls an injected repair action, reruns through an injected executor, and stops on pass, blocked, callback failure or the configured attempt limit.
+- It never executes commands or edits files directly; generated code remains behind the Docker runner boundary.
+- Focused repair validation: 3 passed; full-suite validation and commit are pending.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

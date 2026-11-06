@@ -15,7 +15,7 @@
 | REQ-009 | 规划实现方案 | 输出步骤、依赖和验收策略 | `ReproductionPlanner` 生成结构化计划 | `schemas/reproduction.py`, `services/reproduction.py` | 计划含步骤、验收项和 evidence IDs；LangGraph 编排待实现 | `tests/test_reproduction.py` | P0 | 部分：模板规划已实现 |
 | REQ-010 | 代码生成 | 生成可运行算法及测试 | `TemplateArtifactWriter` 生成 moving-average Python/pytest artifacts；后续接 LLM | `schemas/reproduction.py`, `services/reproduction.py` | 产物有 hash 且明确 unverified；通用 LLM 生成和 workspace 待实现 | `tests/test_reproduction.py` | P0 | 部分：确定性模板已实现 |
 | REQ-011 | 执行测试与指标评估 | 运行生成代码并收集日志 | Docker-only runner + `ExecutionPolicy`；pytest/metrics later | `schemas/execution.py`, `services/sandbox.py` | 未安装/不可用 Docker 时明确 blocked；真实容器运行待验证 | `tests/test_sandbox.py` | P0 | 部分：隔离边界已实现，真实 daemon 未验证 |
-| REQ-012 | 错误修复/优化 | 根据外部测试反馈迭代 | 后续基于 `ExecutionResult` 的有界 Reflection loop | `repair/`（待建） | 失败原因可追踪，重试有上限 | 故障注入测试 | P1 | 未实现 |
+| REQ-012 | 错误修复/优化 | 根据外部测试反馈迭代 | `BoundedRepairLoop` consumes `ExecutionResult` and enforces max attempts | `schemas/repair.py`, `services/repair.py` | 失败 observation 可追踪，达到上限或 blocked 时停止；LLM edit callback 待接入 | `tests/test_repair.py` | P1 | 部分：有界编排已实现 |
 | REQ-013 | 验证结果回写 | 形成可复用能力资产 | SQLite capability versions + passing-report promotion | `schemas/registry.py`, `services/registry.py` | 版本可追加、搜索；只有 passing report 可标记 verified | `tests/test_registry.py` | P0 | 部分：持久化与 promotion 已实现 |
 | REQ-014 | Git 与完整文档 | 支持复现和审阅 | Git、README、CHANGELOG、ADR | 项目根目录和 `docs/` | 文档与代码一致 | 文档检查 | P0 | 部分：文档已补齐，feature branch 已推送，尚未合并 main |
 | REQ-015 | 示例材料、抽取结果、工作流、报告、依赖和测试 | 形成可展示交付包 | examples/data/docs/tests | 项目各目录 | README 命令可复现 | 全量回归 | P0 | 部分 |
