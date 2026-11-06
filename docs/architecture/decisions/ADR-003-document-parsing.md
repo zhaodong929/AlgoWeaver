@@ -3,4 +3,4 @@
 - 状态：Accepted
 - 日期：2026-11-06
 
-第一阶段使用零依赖接入器覆盖文本、Markdown、Python、CSV、JSON、YAML，并记录不支持格式。PDF、DOCX、PPTX、XLSX 在确认 Docling 版本和 Windows 兼容性后再加入适配器，不把未验证的解析器标记为完成。
+第一阶段使用零依赖接入器覆盖文本、Markdown、Python、CSV、JSON、YAML，并记录不支持格式。PDF、DOCX、PPTX、XLSX 通过懒加载的 Docling 适配器接入；未安装 `documents` extra 时明确返回 `unsupported`，解析异常返回 `failed`，不把未验证的解析结果标记为完成。

@@ -14,6 +14,10 @@ SourceFormat = Literal[
     "csv",
     "json",
     "yaml",
+    "pdf",
+    "docx",
+    "pptx",
+    "xlsx",
     "unknown",
 ]
 

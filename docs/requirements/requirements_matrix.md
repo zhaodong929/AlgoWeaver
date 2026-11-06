@@ -8,7 +8,7 @@
 | REQ-002 | 选择具体行业场景 | 需要一个可演示任务 | 移动平均示例作为当前工程烟囱；后续选定预测或分类场景 | `examples/` | README 有场景数据和任务 | 示例 CLI 测试 | P0 | 部分：当前为算法示例 |
 | REQ-003 | 小型能力知识库/知识图谱 | 表达能力、输入输出、条件、指标、依赖、验证历史 | Pydantic 能力卡片，后续 SQLite/图适配 | `schemas/capability.py` | JSON 能保存并重新校验 | schema 测试 | P0 | 部分：能力卡片已实现 |
 | REQ-004 | 自然语言到可运行代码复刻 | 需要计划、检索、生成和文件工作区 | LangGraph 状态流 + 代码生成节点 | `agents/` | 端到端生成并执行示例 | 集成测试 | P0 | 未实现 |
-| REQ-005 | 统一验证机制 | 检查功能、指标、稳定性、接口 | pytest/Hypothesis + 报告 schema | `validation/`（待建） | 生成报告含通过/失败证据 | 单元/集成测试 | P0 | 未实现 |
+| REQ-005 | 统一验证机制 | 检查功能、指标、稳定性、接口 | Pydantic validation report + AST/static checks；后续 pytest/Hypothesis/sandbox | `schemas/validation.py`, `services/validation.py` | 静态检查能生成通过/失败/跳过报告；运行时指标和隔离执行仍待实现 | `tests/test_validation.py` | P0 | 部分：静态/契约层已实现 |
 | REQ-006 | CLI/API/UI | 用户提交能力描述并获取结果 | 现有 Typer CLI，后续 FastAPI/Streamlit | `cli.py` | CLI 可完成抽取并输出 JSON | CLI 测试 | P0 | 部分：抽取 CLI 已运行 |
 | REQ-007 | 理解用户描述 | 抽取结构化字段和缺失信息 | Pydantic + Mock/LLM | `CapabilityExtractor` | 不支持的内容不能伪造 | 抽取边界测试 | P0 | 已实现（抽取阶段） |
 | REQ-008 | 检索文档、代码或图谱 | 返回带来源证据的相关知识 | 分块、混合检索、重排 | `retrieval/`（待建） | 结果含来源和元数据 | 检索评测 | P0 | 未实现 |
@@ -17,7 +17,7 @@
 | REQ-011 | 执行测试与指标评估 | 运行生成代码并收集日志 | Docker 沙箱 + pytest | `execution/`（待建） | 限制超时、资源和网络 | 沙箱测试 | P0 | 未实现 |
 | REQ-012 | 错误修复/优化 | 根据外部测试反馈迭代 | 有界 Reflection loop | `repair/`（待建） | 失败原因可追踪，重试有上限 | 故障注入测试 | P1 | 未实现 |
 | REQ-013 | 验证结果回写 | 形成可复用能力资产 | Capability version + evidence | `registry/`（待建） | 仅独立验证后标记 verified | 状态迁移测试 | P0 | 未实现 |
-| REQ-014 | Git 与完整文档 | 支持复现和审阅 | Git、README、CHANGELOG、ADR | 项目根目录和 `docs/` | 文档与代码一致 | 文档检查 | P0 | 部分：文档已补齐，Git 待初始化 |
+| REQ-014 | Git 与完整文档 | 支持复现和审阅 | Git、README、CHANGELOG、ADR | 项目根目录和 `docs/` | 文档与代码一致 | 文档检查 | P0 | 部分：文档已补齐，feature branch 已推送，尚未合并 main |
 | REQ-015 | 示例材料、抽取结果、工作流、报告、依赖和测试 | 形成可展示交付包 | examples/data/docs/tests | 项目各目录 | README 命令可复现 | 全量回归 | P0 | 部分 |
 | REQ-016 | 进阶：多轮修复、候选比较、可视化、配置和插件 | 提升展示完整性 | 后续按时间选择 | 后续模块 | 有独立验收证据 | 专项测试 | P1 | 未实现 |
 | REQ-017 | 加分：图搜索、多 Agent、代码仓库抽取、沙箱等 | 形成创新与安全边界 | 采用研究笔记中的边界设计 | 后续模块 | 不影响主闭环 | 专项评测 | P2 | 未实现 |

@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+import algo_weaver.services.ingestion as ingestion
 from algo_weaver.services.ingestion import SourceIngestor
 
 
@@ -43,3 +44,29 @@ def test_ingestor_reports_unsupported_formats_without_reading_as_text(tmp_path: 
 def test_ingestor_rejects_missing_paths(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError):
         SourceIngestor().ingest_path(tmp_path / "missing.md")
+
+
+def test_office_formats_use_optional_docling_adapter(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "report.pdf"
+    source.write_bytes(b"%PDF-placeholder")
+    monkeypatch.setattr(ingestion, "_decode_with_docling", lambda _: "# Parsed report")
+
+    result = SourceIngestor().ingest_path(source, source_type="document")
+
+    assert result.status == "ingested"
+    assert result.content == "# Parsed report"
+    assert result.metadata["parser"] == "docling"
+
+
+def test_office_formats_report_missing_optional_dependency(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "report.docx"
+    source.write_bytes(b"docx-placeholder")
+
+    def missing_docling(_):
+        raise ModuleNotFoundError("docling")
+
+    monkeypatch.setattr(ingestion, "_decode_with_docling", missing_docling)
+    result = SourceIngestor().ingest_path(source)
+
+    assert result.status == "unsupported"
+    assert result.error and "optional 'documents' extra" in result.error

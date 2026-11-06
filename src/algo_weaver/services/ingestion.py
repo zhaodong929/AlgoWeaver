@@ -7,7 +7,7 @@ import hashlib
 import io
 import json
 from pathlib import Path
-from typing import Final
+from typing import Final, cast
 
 from algo_weaver.schemas.ingestion import IngestedSource, SourceFormat
 
@@ -20,7 +20,22 @@ _EXTENSION_MAP: Final[dict[str, tuple[SourceFormat, str]]] = {
     ".json": ("json", "application/json"),
     ".yaml": ("yaml", "application/yaml"),
     ".yml": ("yaml", "application/yaml"),
+    ".pdf": ("pdf", "application/pdf"),
+    ".docx": (
+        "docx",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ),
+    ".pptx": (
+        "pptx",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ),
+    ".xlsx": (
+        "xlsx",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ),
 }
+
+_DOCLING_FORMATS: Final[frozenset[SourceFormat]] = frozenset({"pdf", "docx", "pptx", "xlsx"})
 
 
 class SourceIngestor:
@@ -61,6 +76,51 @@ class SourceIngestor:
                 ),
             )
 
+        if source_format in _DOCLING_FORMATS:
+            try:
+                content = _decode_with_docling(source_path)
+            except ModuleNotFoundError:
+                return IngestedSource(
+                    source_id=identifier,
+                    path=str(source_path),
+                    source_type=source_type,
+                    source_format=source_format,
+                    media_type=media_type,
+                    content_sha256=digest,
+                    status="unsupported",
+                    error=(
+                        f"{source_format} parsing requires the optional 'documents' extra "
+                        "(Docling)"
+                    ),
+                )
+            except Exception as exc:
+                return IngestedSource(
+                    source_id=identifier,
+                    path=str(source_path),
+                    source_type=source_type,
+                    source_format=source_format,
+                    media_type=media_type,
+                    content_sha256=digest,
+                    status="failed",
+                    error=f"Docling failed to parse {source_path.name}: {exc}",
+                )
+            document_metadata: dict[str, str | int | bool] = {
+                "file_name": source_path.name,
+                "size_bytes": len(raw),
+                "line_count": content.count("\n") + (1 if content else 0),
+                "parser": "docling",
+            }
+            return IngestedSource(
+                source_id=identifier,
+                path=str(source_path),
+                source_type=source_type,
+                source_format=source_format,
+                media_type=media_type,
+                content=content,
+                content_sha256=digest,
+                metadata=document_metadata,
+            )
+
         raw_text = raw.decode("utf-8-sig")
         content = _decode_content(raw, source_format)
         metadata: dict[str, str | int | bool] = {
@@ -93,6 +153,14 @@ def _decode_content(raw: bytes, source_format: SourceFormat) -> str:
         except json.JSONDecodeError:
             return text
     return text
+
+
+def _decode_with_docling(path: Path) -> str:
+    """Convert an office/PDF source through Docling without importing it at startup."""
+    from docling.document_converter import DocumentConverter
+
+    result = DocumentConverter().convert(str(path))
+    return cast(str, result.document.export_to_markdown())
 
 
 def _csv_as_markdown(text: str) -> str:
