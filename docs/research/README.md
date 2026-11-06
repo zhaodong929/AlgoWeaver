@@ -9,7 +9,7 @@
 | 03 | smolagents | `96f33faaf028479119ec8d34507b47694cf14e34` | CodeAgent 与 ToolCallingAgent、Python 执行器、工具描述、多步循环 |
 | 04 | SWE-agent | `3ea751c087f32b16e039a2233dd6eefecef325d5` | ACI、仓库探索、受限编辑、语法门禁、测试反馈修复 |
 | 05 | LlamaIndex | `444fdf0684707de62ebb447d658dba137dd9cb99` | 摄取流水线、转换缓存、去重、向量存储、检索与 Workflows |
-| 06 | OpenHands Software Agent SDK | `fc9f801f0ef8fe4486efcbce6d24310571e73daa` | 事件流、Workspace、沙箱、安全策略、会话暂停/恢复 |
+| 06 | OpenHands Software Agent SDK | `295b3baf71dfac1be028c5b187134ec3eb495346` | 事件流、Workspace、沙箱、安全策略、会话暂停/恢复 |
 
 ## 研究边界
 
