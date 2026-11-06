@@ -52,6 +52,13 @@
 - It never executes commands or edits files directly; generated code remains behind the Docker runner boundary.
 - Focused repair validation: 3 passed; full-suite validation and commit are pending.
 
+## 2026-11-07 — CLI reproduction demo
+
+- Added `algo-weaver reproduce`, which ingests a source, extracts a capability, retrieves provenance chunks, builds a reproduction plan, writes deterministic artifacts and emits static validation reports.
+- The command was run against `examples/moving_average/algorithm.md` in Mock mode. It wrote `algorithm.py`, `test_algorithm.py`, `reproduction_bundle.json` and `validation_reports.json` and printed `unverified`.
+- No generated code was executed by this CLI path; Docker sandbox execution remains the promotion gate.
+- Full validation after CLI integration: `pytest -q` -> 43 passed, 2 skipped; Ruff and Mypy passed.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

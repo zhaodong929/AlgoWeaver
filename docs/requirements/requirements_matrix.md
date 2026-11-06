@@ -9,7 +9,7 @@
 | REQ-003 | 小型能力知识库/知识图谱 | 表达能力、输入输出、条件、指标、依赖、验证历史 | Pydantic 能力卡片，后续 SQLite/图适配 | `schemas/capability.py` | JSON 能保存并重新校验 | schema 测试 | P0 | 部分：能力卡片已实现 |
 | REQ-004 | 自然语言到可运行代码复刻 | 需要计划、检索、生成和文件工作区 | LangGraph 状态流 + 代码生成节点 | `agents/` | 端到端生成并执行示例 | 集成测试 | P0 | 未实现 |
 | REQ-005 | 统一验证机制 | 检查功能、指标、稳定性、接口 | Pydantic validation report + AST/static checks；后续 pytest/Hypothesis/sandbox | `schemas/validation.py`, `services/validation.py` | 静态检查能生成通过/失败/跳过报告；运行时指标和隔离执行仍待实现 | `tests/test_validation.py` | P0 | 部分：静态/契约层已实现 |
-| REQ-006 | CLI/API/UI | 用户提交能力描述并获取结果 | 现有 Typer CLI，后续 FastAPI/Streamlit | `cli.py` | CLI 可完成抽取并输出 JSON | CLI 测试 | P0 | 部分：抽取 CLI 已运行 |
+| REQ-006 | CLI/API/UI | 用户提交能力描述并获取结果 | Typer CLI；后续 FastAPI/Streamlit | `cli.py` | `extract` 和 `reproduce` 可输出能力卡片、产物和报告 | `tests/test_cli.py` | P0 | 部分：CLI demo 已串联，API/UI 待实现 |
 | REQ-007 | 理解用户描述 | 抽取结构化字段和缺失信息 | Pydantic + Mock/LLM | `CapabilityExtractor` | 不支持的内容不能伪造 | 抽取边界测试 | P0 | 已实现（抽取阶段） |
 | REQ-008 | 检索文档、代码或图谱 | 返回带来源证据的相关知识 | `SourceChunker` + deterministic lexical retrieval；后续 hybrid/vector/rerank | `schemas/retrieval.py`, `services/retrieval.py` | 命中结果含来源、行号、metadata、score；语义检索和评估待实现 | `tests/test_retrieval.py` | P0 | 部分：本地 lexical baseline 已实现 |
 | REQ-009 | 规划实现方案 | 输出步骤、依赖和验收策略 | `ReproductionPlanner` 生成结构化计划 | `schemas/reproduction.py`, `services/reproduction.py` | 计划含步骤、验收项和 evidence IDs；LangGraph 编排待实现 | `tests/test_reproduction.py` | P0 | 部分：模板规划已实现 |

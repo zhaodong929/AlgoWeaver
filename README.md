@@ -71,6 +71,12 @@ uv run algo-weaver extract \
   --input examples/moving_average/algorithm.md \
   --output data/processed/moving_average_capability.json \
   --mode mock
+
+# Build a reproduction bundle and static validation reports (still unverified)
+uv run algo-weaver reproduce \
+  --input examples/moving_average/algorithm.md \
+  --output-dir data/processed/reproduction \
+  --mode mock
 ```
 
 ## 5. Enable a real model (LiteLLM)
@@ -163,7 +169,7 @@ docs/              # Architecture and design documents
 
 The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports a deterministic moving-average reproduction template, but does not yet claim general code reproduction, sandbox execution, automatic repair or semantic retrieval completion.
 
-The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata; Qdrant, embeddings and reranking remain later adapters.
+The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata; Qdrant, embeddings and reranking remain later adapters. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
 
 ## 9. Engineering principles
 

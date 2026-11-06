@@ -18,7 +18,7 @@ Updated: 2026-11-06 (Asia/Shanghai)
 | M5 | Reproduction plan and generated artifacts | Structured plan, evidence IDs, deterministic moving-average code/test artifacts | DONE |
 | M6 | Safe validation and bounded repair | Static checks, Docker-only policy boundary, bounded repair orchestration and retry limit | IN_PROGRESS |
 | M7 | Capability registry and reuse | SQLite versions, verified-only promotion and name search | IN_PROGRESS |
-| M8 | API/demo integration | One end-to-end CLI/API demo and reproducible report | NOT_STARTED |
+| M8 | API/demo integration | CLI `reproduce` writes plan, artifacts and static validation reports | IN_PROGRESS |
 | M9 | Final acceptance | Requirement matrix audit, security/performance checks, final demo | NOT_STARTED |
 
 ## Working rules
