@@ -4,7 +4,7 @@ Updated: 2026-11-06 (Asia/Shanghai)
 
 ## Current milestone
 
-**Phase 4: local retrieval baseline.** Python AST indexing is complete in `f0c794e`; document adapter boundaries and static validation are in `474dcb0`. The next executable work is provenance-preserving lexical retrieval before adding vector infrastructure.
+**Phase 4: retrieval expansion.** The local provenance-preserving lexical baseline is complete; the next executable work is to evaluate a hybrid/vector adapter without changing the chunk/hit contract.
 
 ## Milestones
 
@@ -14,7 +14,7 @@ Updated: 2026-11-06 (Asia/Shanghai)
 | M1 | Multi-source ingestion and provenance | Supported text formats plus lazy Docling adapter, hash, metadata, unsupported/failed boundary tests | IN_PROGRESS |
 | M2 | Python AST code parsing | Function/class/import schema, syntax-error behavior, tests | DONE |
 | M3 | Evidence-aware extraction | Real/Mock extraction maps claims to source locations | NOT_STARTED |
-| M4 | Local retrieval baseline | Chunking, lexical/hybrid retrieval, metadata filters, retrieval tests | NOT_STARTED |
+| M4 | Local retrieval baseline | Chunking, deterministic lexical ranking, metadata filters, provenance hits and tests | DONE |
 | M5 | Reproduction plan and generated artifacts | Structured plan, code/test files, dependency manifest | NOT_STARTED |
 | M6 | Safe validation and bounded repair | Static checks, isolated runner, report schema, retry limit | IN_PROGRESS |
 | M7 | Capability registry and reuse | Versioned persistence, verified-only promotion, reuse query | NOT_STARTED |

@@ -19,6 +19,13 @@
 - Committed and pushed the combined document adapter, validation and execution-control documentation change as `474dcb0`.
 - Opened M4 local retrieval baseline: deterministic lexical ranking first, with a later Qdrant/embedding adapter behind the same interface.
 
+## 2026-11-06 — local retrieval baseline
+
+- Added `EvidenceChunk` and `RetrievalHit` schemas with source ID, path, line range, format and copied metadata.
+- Added `SourceChunker` and `LocalLexicalRetriever` with deterministic token overlap ranking, source-type/metadata filters and provenance-preserving hits.
+- Full validation: `pytest -q` -> 27 passed, 2 skipped; Ruff passed; Mypy passed for 23 source files.
+- Qdrant, dense embeddings, reranking and retrieval metrics remain open work; no semantic retrieval claim is made.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
