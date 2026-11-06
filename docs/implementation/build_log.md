@@ -26,6 +26,13 @@
 - Full validation: `pytest -q` -> 27 passed, 2 skipped; Ruff passed; Mypy passed for 23 source files.
 - Qdrant, dense embeddings, reranking and retrieval metrics remain open work; no semantic retrieval claim is made.
 
+## 2026-11-06 — evidence and reproduction baseline
+
+- Extended `EvidenceRef` and `CapabilityExtractor` with application-controlled line ranges and content hashes; model-supplied evidence remains rejected by the draft schema.
+- Added deterministic `ReproductionPlanner` and `TemplateArtifactWriter` for evidence-linked plans and moving-average Python/pytest artifacts. Artifacts are explicitly `unverified` and are never executed during generation.
+- Reproduction module commit: `37def95`; evidence changes are pending the next combined commit.
+- Focused/full validation after these changes: `pytest -q` -> 33 passed, 2 skipped; Ruff and Mypy passed.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

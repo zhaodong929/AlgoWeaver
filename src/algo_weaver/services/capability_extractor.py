@@ -37,6 +37,9 @@ class CapabilityExtractor:
         source_id: str,
         source_type: SourceType = "unknown",
         source_location: str | None = None,
+        source_line_start: int | None = None,
+        source_line_end: int | None = None,
+        source_content_sha256: str | None = None,
     ) -> AlgorithmCapability:
         text = source_text.strip()
         if not text:
@@ -49,6 +52,14 @@ class CapabilityExtractor:
         source_id = source_id.strip()
         if not source_id:
             raise ValueError("source_id cannot be empty")
+        if (source_line_start is None) != (source_line_end is None):
+            raise ValueError("source_line_start and source_line_end must be provided together")
+        if (
+            source_line_start is not None
+            and source_line_end is not None
+            and source_line_end < source_line_start
+        ):
+            raise ValueError("source_line_end must be greater than or equal to source_line_start")
 
         user_prompt = self._build_user_prompt(text)
         raw_json = self.model.complete_json(
@@ -79,6 +90,9 @@ class CapabilityExtractor:
                 source_id=source_id,
                 source_type=source_type,
                 location=source_location,
+                line_start=source_line_start,
+                line_end=source_line_end,
+                content_sha256=source_content_sha256,
                 excerpt=text[:800],
             )
         ]

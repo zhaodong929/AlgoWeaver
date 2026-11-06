@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Literal
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 SourceType = Literal["document", "code", "experiment", "expert_note", "test_report", "unknown"]
 CapabilityStatus = Literal["draft", "needs_review", "verified"]
@@ -31,7 +31,19 @@ class EvidenceRef(BaseModel):
     source_id: str = Field(min_length=1)
     source_type: SourceType = "unknown"
     location: str | None = None
+    line_start: int | None = Field(default=None, ge=1)
+    line_end: int | None = Field(default=None, ge=1)
+    content_sha256: str | None = Field(default=None, min_length=64, max_length=64)
     excerpt: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_line_range(self) -> EvidenceRef:
+        if (self.line_start is None) != (self.line_end is None):
+            raise ValueError("line_start and line_end must be provided together")
+        if self.line_start is not None and self.line_end is not None:
+            if self.line_end < self.line_start:
+                raise ValueError("line_end must be greater than or equal to line_start")
+        return self
 
 
 class AlgorithmDraft(BaseModel):

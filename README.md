@@ -14,6 +14,10 @@ An agentic system for algorithm knowledge extraction, code reproduction, automat
 - A minimal LangGraph extraction workflow.
 - An offline fallback runner for the extraction workflow when optional LangGraph is not installed.
 - Dependency-free ingestion for Markdown, text, Python, CSV, JSON and YAML with SHA-256 provenance.
+- Lazy Docling boundaries for PDF, DOCX, PPTX and XLSX; missing optional dependencies are reported explicitly.
+- Python AST indexing for imports, classes, methods, functions and source locations without executing code.
+- Provenance-preserving local lexical retrieval with source and metadata filters.
+- Deterministic static validation reports for capability contracts and generated Python source.
 - CLI command that reads Markdown/text and writes a JSON capability card.
 - Pytest coverage for schema validation, extraction, and graph execution.
 
@@ -155,7 +159,9 @@ docs/              # Architecture and design documents
 - [x] Real provider configuration is loaded from environment variables, not source code.
 - [x] Supported text-like sources are normalized and hashed by `SourceIngestor`.
 
-The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation does not yet claim code reproduction, sandbox execution, automatic repair or retrieval completion.
+The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports a deterministic moving-average reproduction template, but does not yet claim general code reproduction, sandbox execution, automatic repair or semantic retrieval completion.
+
+The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata; Qdrant, embeddings and reranking remain later adapters.
 
 ## 9. Engineering principles
 
