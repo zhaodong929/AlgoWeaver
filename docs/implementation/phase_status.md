@@ -11,7 +11,7 @@
 | Phase 4 RAG、混合检索、检索评估 | IN_PROGRESS | `SourceChunker`/`LocalLexicalRetriever` 已完成，27 passed/2 skipped；Qdrant/embedding/reranker 尚未接入 | 评估 hybrid/vector adapter 和 Recall@k/MRR |
 | Phase 5 LangGraph 算法复刻 Agent | IN_PROGRESS | `ReproductionPlanner`、`TemplateArtifactWriter` 已生成 evidence-linked、unverified artifacts；尚无 LangGraph 复刻图 | 接入检索上下文、计划节点和 artifact state |
 | Phase 6 Docker 沙箱、自动测试、错误修复 | IN_PROGRESS | `ValidationService` + Docker-only `DockerSandboxRunner` + `BoundedRepairLoop` 已测试；真实 daemon、pytest runtime 和 LLM repair 未验证 | 接入隔离运行报告、故障反馈和有限修复 |
-| Phase 7 持久化、版本管理、复用 | IN_PROGRESS | `CapabilityRegistry` 已提供 SQLite 版本追加、name search 和 passing-report promotion；尚未接入完整复用流程 | 连接检索结果、版本比较和 CLI/API |
+| Phase 7 持久化、版本管理、复用 | IN_PROGRESS | `CapabilityRegistry` 已提供 SQLite 版本追加、name search、passing-report promotion，并可由 `reproduce --registry` 写入 draft | 连接检索结果、版本比较和 verified reuse |
 | Phase 8 API、展示界面、端到端集成 | IN_PROGRESS | CLI `reproduce` 已串联接入、抽取、检索、规划、模板产物和静态报告；API/UI 未实现 | 接入 sandbox result、registry write-back 和可视化输出 |
 | Phase 9 最终验收、性能、文档、Demo | NOT_STARTED | 无完整闭环证据 | 汇总需求矩阵并运行完整验收 |
 

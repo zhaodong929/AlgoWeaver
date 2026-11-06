@@ -77,6 +77,15 @@ uv run algo-weaver reproduce \
   --input examples/moving_average/algorithm.md \
   --output-dir data/processed/reproduction \
   --mode mock
+
+# Optionally persist the draft and request Docker execution.
+# If Docker is unavailable, the command records `blocked` and keeps the result unverified.
+uv run algo-weaver reproduce \
+  --input examples/moving_average/algorithm.md \
+  --output-dir data/processed/reproduction \
+  --registry data/processed/capabilities.sqlite3 \
+  --execute \
+  --mode mock
 ```
 
 ## 5. Enable a real model (LiteLLM)

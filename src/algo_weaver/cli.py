@@ -9,10 +9,13 @@ from rich import print as rprint
 
 from algo_weaver.config import get_settings
 from algo_weaver.llm.factory import create_chat_model
+from algo_weaver.schemas.execution import ExecutionPolicy
 from algo_weaver.services.capability_extractor import CapabilityExtractor
 from algo_weaver.services.ingestion import SourceIngestor
+from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
 from algo_weaver.services.retrieval import LocalLexicalRetriever, SourceChunker
+from algo_weaver.services.sandbox import DockerSandboxRunner
 from algo_weaver.services.validation import ValidationService
 
 app = typer.Typer(
@@ -98,6 +101,8 @@ def reproduce(
     ),
     source_id: Annotated[str, typer.Option("--source-id")] = "local-input-001",
     mode: Annotated[str, typer.Option("--mode", help="mock or litellm")] = "mock",
+    execute: Annotated[bool, typer.Option("--execute", help="run pytest inside Docker")] = False,
+    registry_path: Annotated[Path | None, typer.Option("--registry")] = None,
 ) -> None:
     """Build an evidence-linked reproduction bundle and run safe static checks."""
     if mode not in {"mock", "litellm"}:
@@ -162,6 +167,27 @@ def reproduce(
         json.dumps([report.model_dump(mode="json") for report in reports], ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+    if registry_path is not None:
+        saved = CapabilityRegistry(registry_path).save(capability)
+        (output_dir / "registry_record.json").write_text(
+            json.dumps(saved.model_dump(mode="json"), ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        rprint(f"Registry version saved: {saved.version} ({saved.status})")
+
+    if execute:
+        execution_result = DockerSandboxRunner().run(
+            output_dir,
+            ["pytest", "-q"],
+            policy=ExecutionPolicy(),
+        )
+        (output_dir / "execution_result.json").write_text(
+            json.dumps(execution_result.model_dump(mode="json"), ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        rprint(f"Sandbox execution: {execution_result.status}")
+        if execution_result.status != "passed":
+            rprint(f"[yellow]Verification remains unverified:[/yellow] {execution_result.error}")
     rprint(f"[green]Reproduction bundle saved:[/green] {output_dir}")
     rprint(f"Artifacts: {', '.join(path.name for path in artifact_paths)}")
     rprint("Verification status: unverified (static checks only; sandbox execution pending)")
