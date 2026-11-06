@@ -11,6 +11,7 @@ from algo_weaver.config import get_settings
 from algo_weaver.llm.factory import create_chat_model
 from algo_weaver.schemas.execution import ExecutionPolicy
 from algo_weaver.services.capability_extractor import CapabilityExtractor
+from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.ingestion import SourceIngestor
 from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
@@ -150,8 +151,12 @@ def reproduce(
     artifact_paths = TemplateArtifactWriter().write(bundle, output_dir)
     validator = ValidationService()
     reports = [validator.validate_capability(capability)]
+    dependency_reports = []
     for artifact in bundle.artifacts:
         if artifact.kind == "python_source":
+            dependency_reports.append(
+                PythonDependencyAnalyzer().analyze(artifact.content, source_id=artifact.path)
+            )
             reports.append(
                 validator.validate_python_source(
                     artifact.content,
@@ -165,6 +170,14 @@ def reproduce(
     )
     (output_dir / "validation_reports.json").write_text(
         json.dumps([report.model_dump(mode="json") for report in reports], ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    (output_dir / "dependency_report.json").write_text(
+        json.dumps(
+            [report.model_dump(mode="json") for report in dependency_reports],
+            ensure_ascii=False,
+            indent=2,
+        ),
         encoding="utf-8",
     )
     if registry_path is not None:

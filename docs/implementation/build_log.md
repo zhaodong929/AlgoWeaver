@@ -64,6 +64,18 @@
 - `reproduce` now accepts `--execute` and `--registry`. It writes the draft capability to SQLite and records `execution_result.json` when Docker execution is requested.
 - A real run in the current environment returned `status=blocked` with `Docker unavailable: No module named 'docker'`; the persisted capability remained `needs_review` and no `verified` promotion occurred.
 
+## 2026-11-07 — static dependency analysis
+
+- Added `PythonDependencyAnalyzer` and `DependencyReport` for AST-only import inventory; generated code is never imported or executed.
+- `reproduce` now writes `dependency_report.json` beside the generated artifacts and validation reports.
+
+## 2026-11-07 — reproduction workflow state
+
+- Added `build_reproduction_graph()` with `retrieve -> plan -> generate -> validate` nodes and an optional LangGraph backend plus offline fallback.
+- Added AST-only `PythonDependencyAnalyzer`; the CLI now emits `dependency_report.json` for generated Python artifacts.
+- Focused validation: graph, dependency and CLI tests passed; Ruff/Mypy passed for 34 source files.
+- Full validation after workflow/dependency changes: `pytest -q` -> 46 passed, 2 skipped; Ruff and Mypy passed.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
