@@ -16,6 +16,8 @@
 - Added `PythonCodeParser` using stdlib `ast`; it extracts imports, classes, methods, functions, decorators, arguments, return annotations, docstrings, line ranges and SHA-256 without executing source. Commit: `f0c794e`.
 - Added `ValidationService` and `ValidationReport` for deterministic capability contracts and Python AST/entrypoint checks. Runtime metrics, dependency checks and sandbox execution remain pending.
 - Focused and full validation after the code parser: `pytest -q` -> 19 passed, 2 skipped; Ruff passed; Mypy passed for 19 source files.
+- Committed and pushed the combined document adapter, validation and execution-control documentation change as `474dcb0`.
+- Opened M4 local retrieval baseline: deterministic lexical ranking first, with a later Qdrant/embedding adapter behind the same interface.
 
 ## Evidence policy
 

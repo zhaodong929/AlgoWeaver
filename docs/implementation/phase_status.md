@@ -5,10 +5,10 @@
 | Phase | 状态 | 当前证据 | 下一步 |
 |---|---|---|---|
 | Phase 0 基线、环境、依赖、Git | DONE | `docs/architecture/v0.1.0_audit.md`；14 passed/2 skipped；Ruff/Mypy 通过；feature branch 已推送 | 仅在环境变化时复核 |
-| Phase 1 多格式文档解析与来源追踪 | IN_PROGRESS | `SourceIngestor` 支持 text/Markdown/Python/CSV/JSON/YAML，含 SHA-256 和 unsupported 边界 | 完善可选格式适配边界与统一 metadata |
+| Phase 1 多格式文档解析与来源追踪 | IN_PROGRESS | `SourceIngestor` 支持 text/Markdown/Python/CSV/JSON/YAML，PDF/DOCX/PPTX/XLSX 有懒加载 Docling 边界；实际 Docling 解析未在本环境验证 | 安装/验证 documents extra 后完成真实样例 |
 | Phase 2 历史代码结构化解析 | DONE | `PythonCodeParser`、`PythonSourceFile`、19 passed/2 skipped，提交 `f0c794e` | 接入检索和证据定位 |
 | Phase 3 真实 LLM 抽取与证据校验 | IN_PROGRESS | Mock/LiteLLM 抽取切片已存在；真实 provider 未调用 | 将 source location 细化到 chunk/行号 |
-| Phase 4 RAG、混合检索、检索评估 | NOT_STARTED | 只有研究笔记和 ADR | 先实现本地 lexical retrieval 接口 |
+| Phase 4 RAG、混合检索、检索评估 | IN_PROGRESS | 正在实现项目内 lexical retrieval baseline；Qdrant/embedding 尚未接入 | 完成 chunk、metadata filter、ranking 和 provenance 测试 |
 | Phase 5 LangGraph 算法复刻 Agent | NOT_STARTED | 只有 extraction graph | 定义 reproduction plan 与 artifact 状态 |
 | Phase 6 Docker 沙箱、自动测试、错误修复 | IN_PROGRESS | `ValidationService` 已提供静态/契约报告；尚无沙箱和运行时测试 | 接入隔离 runner、超时和资源限制 |
 | Phase 7 持久化、版本管理、复用 | NOT_STARTED | 当前只写 JSON 文件 | 设计 verified-only promotion 和版本 schema |
@@ -20,4 +20,4 @@
 - Branch: `feat/initial-audit-and-ingestion`
 - Remote tracking: `origin/feat/initial-audit-and-ingestion`
 - Baseline commit: `04d74ac`; latest code milestone: `f0c794e`
-- `ALGO_WEAVER_GOAL.md`、执行计划和本状态文件属于当前继续开发的未提交工作，待本轮文档与代码变更一起形成新的 feature commit。
+- Latest feature commits: `f0c794e` (AST parser), `474dcb0` (document adapter boundaries, validation, execution controls)

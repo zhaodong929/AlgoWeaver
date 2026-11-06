@@ -4,7 +4,7 @@ Updated: 2026-11-06 (Asia/Shanghai)
 
 ## Current milestone
 
-**Phase 1/3: document adapter boundaries and evidence-aware extraction.** Python AST indexing is complete in `f0c794e`; the next executable work is to connect parsed source locations to extraction evidence, while keeping Docling optional and explicit.
+**Phase 4: local retrieval baseline.** Python AST indexing is complete in `f0c794e`; document adapter boundaries and static validation are in `474dcb0`. The next executable work is provenance-preserving lexical retrieval before adding vector infrastructure.
 
 ## Milestones
 
