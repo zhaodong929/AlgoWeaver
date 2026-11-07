@@ -4,7 +4,7 @@ Updated: 2026-11-07 (Asia/Shanghai)
 
 ## Current milestone
 
-**Phase 8: API execution integration.** FastAPI `/reproduce` now exposes explicit sandbox execution and bounded repair through the executable graph. The next executable work is to connect registry write-back, request-level metrics and a minimal demonstration surface.
+**Phase 7/8: API registry and execution integration.** FastAPI `/reproduce` now exposes explicit sandbox execution, bounded repair and configured SQLite persistence with the existing verified promotion gate. The next executable work is request-level metrics and a minimal demonstration surface.
 
 ## Milestones
 

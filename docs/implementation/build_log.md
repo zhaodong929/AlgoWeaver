@@ -236,6 +236,14 @@
 - Unresolved: API registry write-back, metrics request handling and UI remain future work; real-provider and LLM repair paths are still unverified.
 - Git commit: `cbc503b` (`feat: expose sandbox execution through API`).
 
+## 2026-11-07 — API registry write-back
+
+- Added `ALGOWEAVER_REGISTRY_PATH` configuration and `persist=true` on `/reproduce`. API persistence appends an immutable capability version and reuses `CapabilityRegistry.promote_verified()` only when an independently passing runtime report is present.
+- Mock/needs_review capabilities remain pending even when an injected execution runner passes; the API test verifies no false promotion.
+- Validation: API-focused tests -> 6 passed; full `uv run pytest` -> 79 passed; `uv run ruff check .` passed; `uv run mypy src` passed for 39 source files.
+- Unresolved: API metrics request handling and UI remain future work; real-provider and LLM repair paths are still unverified.
+- Git commit: `ac79669` (`feat: persist API capabilities through registry gate`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
