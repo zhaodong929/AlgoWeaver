@@ -1,0 +1,41 @@
+{
+  "capability_id": "cap_inventory_forecast_reviewed",
+  "schema_version": "1.0",
+  "name": "库存需求移动平均预测",
+  "problem_definition": "根据历史日销量平滑短期波动，为库存补货提供下一周期的基准需求估计。",
+  "algorithm_family": "time_series",
+  "inputs": ["sales", "window"],
+  "outputs": ["forecast_series"],
+  "preprocessing": ["按日期升序排列历史销量"],
+  "algorithm_steps": [
+    "读取按日期排序的历史销量。",
+    "使用固定长度窗口遍历历史序列。",
+    "计算每个窗口的平均销量。",
+    "将最近窗口平均值作为下一周期的基准需求。"
+  ],
+  "parameters": [
+    {
+      "name": "window",
+      "description": "滑动平均窗口长度",
+      "data_type": "positive integer",
+      "default": 3,
+      "constraints": ["大于 0", "不能超过输入序列长度"]
+    }
+  ],
+  "constraints": ["输入序列不能为空", "window 必须为正整数"],
+  "metrics": ["逐元素参考实现比较", "预测误差", "运行时间"],
+  "failure_cases": ["空序列", "非法窗口", "窗口超过历史长度"],
+  "implementation_notes": ["该能力卡片由人工根据库存预测示例审核后提供，不代表真实 LLM 抽取。"],
+  "missing_information": [],
+  "evidence": [
+    {
+      "source_id": "inventory-forecast-doc",
+      "source_type": "document",
+      "location": "examples/inventory_forecast/algorithm.md",
+      "excerpt": "根据商品历史日销量，为库存补货提供短期需求预测。",
+      "line_start": 1,
+      "line_end": 6
+    }
+  ],
+  "status": "draft"
+}

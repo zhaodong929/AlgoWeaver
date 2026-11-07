@@ -105,6 +105,10 @@ def reproduce(
     execute: Annotated[bool, typer.Option("--execute", help="run pytest inside Docker")] = False,
     registry_path: Annotated[Path | None, typer.Option("--registry")] = None,
     backend: Annotated[str, typer.Option("--backend", help="docker or wsl")] = "docker",
+    capability_file: Annotated[
+        Path | None,
+        typer.Option("--capability-file", exists=True, readable=True),
+    ] = None,
 ) -> None:
     """Build an evidence-linked reproduction bundle and run safe static checks."""
     if mode not in {"mock", "litellm"}:
@@ -122,26 +126,31 @@ def reproduce(
         rprint(f"[bold red]Ingestion failed:[/bold red] {ingested.error}")
         raise typer.Exit(code=1)
 
-    model = create_chat_model(settings)
-    from algo_weaver.agents.extraction_graph import build_extraction_graph
-
-    extractor = CapabilityExtractor(model, max_input_chars=settings.max_input_chars)
-    graph = build_extraction_graph(extractor)
-    result = graph.invoke(
-        {
-            "source_text": ingested.content,
-            "source_id": source_id,
-            "source_type": "document",
-            "source_location": str(input_file),
-        }
-    )
-    if "error" in result:
-        rprint(f"[bold red]Extraction failed:[/bold red] {result['error']}")
-        raise typer.Exit(code=1)
-
     from algo_weaver.schemas.capability import AlgorithmCapability
 
-    capability = AlgorithmCapability.model_validate(result["capability"])
+    if capability_file is not None:
+        capability = AlgorithmCapability.model_validate_json(
+            capability_file.read_text(encoding="utf-8")
+        )
+        rprint(f"Using reviewed capability card: {capability_file}")
+    else:
+        model = create_chat_model(settings)
+        from algo_weaver.agents.extraction_graph import build_extraction_graph
+
+        extractor = CapabilityExtractor(model, max_input_chars=settings.max_input_chars)
+        graph = build_extraction_graph(extractor)
+        result = graph.invoke(
+            {
+                "source_text": ingested.content,
+                "source_id": source_id,
+                "source_type": "document",
+                "source_location": str(input_file),
+            }
+        )
+        if "error" in result:
+            rprint(f"[bold red]Extraction failed:[/bold red] {result['error']}")
+            raise typer.Exit(code=1)
+        capability = AlgorithmCapability.model_validate(result["capability"])
     chunks = SourceChunker().chunk(ingested)
     hits = LocalLexicalRetriever(chunks).search(capability.name, top_k=5)
     plan = ReproductionPlanner().build_plan(capability, hits)

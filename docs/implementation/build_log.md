@@ -149,6 +149,14 @@
 - Full validation after WSL backend changes: `uv run pytest -q` -> 62 passed, 0 skipped; Ruff and Mypy passed.
 - Acceptance status changed from Docker-runtime blocked to runtime verified/Mock-promotion pending.
 
+## 2026-11-07 — human-reviewed verified capability demo
+
+- Added `--capability-file` to `reproduce` for an explicit human-reviewed capability card path.
+- Ran `examples/inventory_forecast/reviewed_capability.json` with `--backend wsl --execute --registry`.
+- The generated unittest passed inside Docker, runtime validation passed, and SQLite registry promotion returned `status="verified"` for `cap_inventory_forecast_reviewed`.
+- This is a verified human-reviewed path; it does not claim real LLM extraction.
+- Full validation after this change: `uv run pytest -q` -> 63 passed, 0 skipped; Ruff and Mypy passed.
+
 ## 2026-11-07 — CI optional-extra coverage
 
 - Updated GitHub Actions to install API, retrieval and execution extras on both Python 3.12 and 3.13 matrix jobs.

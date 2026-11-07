@@ -186,6 +186,8 @@ The full requirements traceability matrix is in `docs/requirements/requirements_
 
 The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata; Qdrant, embeddings and reranking remain later adapters. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
 
+For a human-reviewed capability card, pass `--capability-file examples/inventory_forecast/reviewed_capability.json`; with `--backend wsl --execute --registry ...`, the runtime report can promote the card to `verified`. This path is explicitly human-reviewed and does not claim real LLM extraction.
+
 For the remaining Windows Docker runtime gate, see `docs/implementation/windows_runtime_setup.md`.
 
 ## 9. Engineering principles
