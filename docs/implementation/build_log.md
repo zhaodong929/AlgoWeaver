@@ -110,6 +110,11 @@
 - Updated deterministic template routing to recognize the Chinese algorithm name and added a regression test; the domain demo now generates the moving-average implementation.
 - Full validation after the routing fix: `uv run pytest -q` -> 55 passed, 0 skipped.
 
+## 2026-11-07 — Docker SDK verification
+
+- Installed the `execution` extra with `uv sync --group dev --extra api --extra retrieval --extra execution`.
+- Re-ran the inventory forecast demo with `--execute`; the runner reached the Docker SDK but returned `blocked` because the Docker daemon/pipe is unavailable. No host execution occurred.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
