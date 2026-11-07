@@ -259,6 +259,11 @@
 - Unresolved: `/metrics` evaluates supplied predictions; automatic extraction of predictions from sandbox stdout and UI visualization remain future work.
 - Git commit: `118cd92` (`feat: expose regression metrics through API`).
 
+## 2026-11-07 — README acceptance refresh
+
+- Updated the Windows/Linux runbook and acceptance checklist to match the current 82-test baseline, CI #55, executable LangGraph/WSL path, API execution/persistence/metrics flags and explicit unverified boundaries.
+- Git commit: `d30f250` (`docs: refresh MVP runbook and acceptance status`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
