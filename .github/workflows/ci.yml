@@ -34,7 +34,9 @@ jobs:
           root = ET.parse("test-results.xml").getroot()
           failures = []
           for case in root.findall(".//testcase"):
-              failure = case.find("failure") or case.find("error")
+              failure = case.find("failure")
+              if failure is None:
+                  failure = case.find("error")
               if failure is not None:
                   failures.append((case.attrib.get("name", "unknown"), failure))
           for name, failure in failures[:5]:
