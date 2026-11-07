@@ -125,12 +125,15 @@ def reproduce(
         Path | None,
         typer.Option("--capability-file", exists=True, readable=True),
     ] = None,
+    reuse_query: Annotated[str | None, typer.Option("--reuse-query")] = None,
 ) -> None:
     """Build an evidence-linked reproduction bundle and run safe static checks."""
     if mode not in {"mock", "litellm"}:
         raise typer.BadParameter("mode must be 'mock' or 'litellm'")
     if backend not in {"docker", "wsl"}:
         raise typer.BadParameter("backend must be 'docker' or 'wsl'")
+    if capability_file is not None and reuse_query is not None:
+        raise typer.BadParameter("use either --capability-file or --reuse-query, not both")
 
     settings = get_settings().model_copy(update={"llm_mode": mode})
     ingested = SourceIngestor().ingest_path(
@@ -144,7 +147,16 @@ def reproduce(
 
     from algo_weaver.schemas.capability import AlgorithmCapability
 
-    if capability_file is not None:
+    if reuse_query is not None:
+        if registry_path is None:
+            raise typer.BadParameter("--reuse-query requires --registry")
+        reusable = CapabilityRegistry(registry_path).search_reusable(reuse_query, limit=1)
+        if not reusable:
+            rprint(f"[bold red]No verified capability matched:[/bold red] {reuse_query}")
+            raise typer.Exit(code=1)
+        capability = AlgorithmCapability.model_validate(reusable[0].capability)
+        rprint(f"Reusing verified capability: {capability.name} (v{reusable[0].version})")
+    elif capability_file is not None:
         capability = AlgorithmCapability.model_validate_json(
             capability_file.read_text(encoding="utf-8")
         )
@@ -209,7 +221,7 @@ def reproduce(
         encoding="utf-8",
     )
     saved = None
-    verification_status = "unverified"
+    verification_status = "verified" if capability.status == "verified" else "unverified"
     if registry_path is not None:
         saved = CapabilityRegistry(registry_path).save(capability)
         (output_dir / "registry_record.json").write_text(

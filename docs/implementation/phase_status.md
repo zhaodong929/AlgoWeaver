@@ -11,7 +11,7 @@
 | Phase 4 RAG、混合检索、检索评估 | IN_PROGRESS | lexical retrieval、Recall@k/MRR/provenance coverage、score fusion 和 Qdrant in-memory vector adapter 已测试；embedding/reranker 未验证 | 接入真实 embedding/vector adapter并建立评估集 |
 | Phase 5 LangGraph 算法复刻 Agent | IN_PROGRESS | `ReproductionPlanner`、`TemplateArtifactWriter` 已生成 evidence-linked、unverified artifacts；尚无 LangGraph 复刻图 | 接入检索上下文、计划节点和 artifact state |
 | Phase 6 Docker 沙箱、自动测试、错误修复 | IN_PROGRESS | WSL2 Docker runner 已真实执行 inventory unittest；runtime report、`BoundedRepairLoop` 和 offline `TemplateRepairer` 已测试，LLM repair/metrics 未验证 | 接入真实 provider repair 和性能指标 |
-| Phase 7 持久化、版本管理、复用 | IN_PROGRESS | `CapabilityRegistry` 已提供 SQLite 版本追加、name search、passing-report promotion、verified-only reuse search 和 CLI reuse query；reviewed capability 已由 WSL runtime 晋升 verified | 连接检索结果、版本比较和自动复用 workflow |
+| Phase 7 持久化、版本管理、复用 | IN_PROGRESS | `CapabilityRegistry` + CLI `reuse` + `reproduce --reuse-query` 已选择并重新验证 verified capability；reviewed capability 已由 WSL runtime 晋升 verified | 连接检索结果、版本比较和自动复用 workflow |
 | Phase 8 API、展示界面、端到端集成 | IN_PROGRESS | CLI `reproduce` 和可选 FastAPI `/health`, `/extract`, `/reproduce` 已测试；UI 未实现 | 接入 sandbox result、registry write-back 和可视化输出 |
 | Phase 9 最终验收、性能、文档、Demo | IN_PROGRESS | WSL sandbox runtime 和 reviewed capability verified promotion 已有真实证据；`docs/reports/acceptance_matrix.md` 已逐项审计当前 Must-have | 补齐真实 provider、LLM repair 和性能指标 |
 

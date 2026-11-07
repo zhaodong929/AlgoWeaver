@@ -101,10 +101,12 @@ class ValidationService:
             ValidationCheck(
                 check_id="capability.review_state",
                 name="Review state",
-                status="passed" if capability.status == "draft" else "failed",
+                status="passed" if capability.status in {"draft", "verified"} else "failed",
                 message=(
                     "Capability is a complete draft eligible for independent runtime verification."
                     if capability.status == "draft"
+                    else "Capability is already verified and passed runtime revalidation."
+                    if capability.status == "verified"
                     else f"Capability status '{capability.status}' still requires review."
                 ),
             ),

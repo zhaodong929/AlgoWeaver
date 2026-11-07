@@ -106,3 +106,50 @@ def test_reuse_command_returns_verified_capabilities_only(tmp_path) -> None:
     assert result.exit_code == 0, result.stdout
     assert "cap_reuse_cli" in result.stdout
     assert "verified" in result.stdout
+
+
+def test_reproduce_can_select_a_verified_capability_for_reuse(tmp_path) -> None:
+    source = tmp_path / "algorithm.md"
+    source.write_text("# Inventory forecast\n", encoding="utf-8")
+    capability = tmp_path / "capability.json"
+    capability.write_text(
+        '{"capability_id":"cap_reuse_run","name":"Inventory Forecast",'
+        '"problem_definition":"Forecast demand.","inputs":["sales"],'
+        '"outputs":["forecast"],"algorithm_steps":["Average recent sales."],'
+        '"evidence":[{"source_id":"doc","source_type":"document","excerpt":"forecast"}],'
+        '"status":"draft"}',
+        encoding="utf-8",
+    )
+    registry_path = tmp_path / "capabilities.sqlite3"
+    registry = CapabilityRegistry(registry_path)
+    saved = registry.save(AlgorithmCapability.model_validate_json(capability.read_text()))
+    registry.promote_verified(
+        saved.capability_id,
+        ValidationReport(
+            target_type="capability",
+            target_id=saved.capability_id,
+            checks=[ValidationCheck(check_id="p", name="p", status="passed", message="p")],
+            overall_status="passed",
+        ),
+    )
+    output_dir = tmp_path / "bundle"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "reproduce",
+            "--input",
+            str(source),
+            "--output-dir",
+            str(output_dir),
+            "--registry",
+            str(registry_path),
+            "--reuse-query",
+            "Inventory",
+            "--mode",
+            "mock",
+        ],
+    )
+
+    assert result.exit_code == 0, result.stdout
+    assert "Reusing verified capability" in result.stdout

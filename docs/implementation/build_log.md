@@ -164,6 +164,12 @@
 - CLI reuse regression proves draft records are excluded and promoted records are returned.
 - Full validation after this change: `uv run pytest -q` -> 64 passed, 0 skipped; Ruff and Mypy passed.
 
+## 2026-11-07 — verified capability reuse in reproduction
+
+- Added `--reuse-query` to `reproduce`; it selects only verified registry records and rejects missing matches.
+- Revalidated the reviewed inventory capability through WSL Docker using `--reuse-query`; execution passed and the existing verified status was preserved.
+- Fixed runtime report handling for already-verified capabilities.
+
 ## 2026-11-07 — bounded offline repair path
 
 - Added `TemplateRepairer`, which restores only reviewed bundle artifacts after a failed or timed-out execution and rejects path escapes.

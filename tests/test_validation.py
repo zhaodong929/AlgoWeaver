@@ -94,3 +94,18 @@ def test_runtime_report_rejects_review_pending_or_blocked_execution() -> None:
     report = ValidationService().build_runtime_report(capability, execution)
 
     assert report.overall_status == "failed"
+
+
+def test_runtime_report_revalidates_an_existing_verified_capability() -> None:
+    capability = _capability().model_copy(update={"status": "verified"})
+    execution = ExecutionResult(
+        status="passed",
+        command=["pytest", "-q"],
+        image="python:3.12-slim",
+        exit_code=0,
+        duration_seconds=0.1,
+    )
+
+    report = ValidationService().build_runtime_report(capability, execution)
+
+    assert report.overall_status == "passed"

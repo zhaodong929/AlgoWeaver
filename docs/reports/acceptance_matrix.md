@@ -15,8 +15,8 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 | Isolated code execution | `ExecutionPolicy`, `ExecutionResult`, Docker SDK runner and WSL2 `WslDockerSandboxRunner`; inventory forecast unittest passed inside `python:3.12-slim` with network disabled and read-only workspace. | PARTIAL | Windows Docker pipe is optional; final capability promotion requires a complete draft from a real provider. |
 | Automated tests, error analysis and repair | `ValidationService` performs AST/contract/runtime report checks; generated unittest passed in WSL Docker; WSL integration test demonstrates fail → bounded template repair → pass; MAE/RMSE baseline evaluator is tested. | PARTIAL | No LLM edit/repair callback or automatic metric ingestion from sandbox outputs is integrated. |
 | Capability versioning and persistence | SQLite `CapabilityRegistry`, immutable versions, search and passing-report-only promotion; WSL CLI run promoted the human-reviewed inventory card to `verified`. | PARTIAL | Real-provider extraction and automated reuse workflow remain open. |
-| Historical capability retrieval and reuse | Lexical retrieval and registry name search are independently tested; `search_reusable()` and CLI `reuse` filter to verified versions. | PARTIAL | Retrieval hits are not yet automatically selected into a new reproduction plan. |
-| Complete end-to-end demo | `algo-weaver reproduce --capability-file examples/inventory_forecast/reviewed_capability.json --backend wsl --execute` produced a passed sandbox run and promoted the card to `verified`. | PARTIAL | The verified path is human-reviewed; real-provider extraction and LLM repair are not demonstrated. |
+| Historical capability retrieval and reuse | Lexical retrieval and registry name search are independently tested; `search_reusable()` and CLI `reuse` filter to verified versions; `reproduce --reuse-query` selects a verified card and revalidates it in WSL Docker. | PARTIAL | Retrieval hits are not yet automatically selected into a new reproduction plan. |
+| Complete end-to-end demo | `algo-weaver reproduce --capability-file ... --backend wsl --execute` promoted a card to `verified`; `--reuse-query` then selected and revalidated that verified card in WSL Docker. | PARTIAL | The verified path is human-reviewed; real-provider extraction and LLM repair are not demonstrated. |
 
 ## Verification evidence
 
@@ -24,7 +24,7 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 - `uv run ruff check src tests`: passed.
 - `uv run mypy src`: passed for 36 source files.
 - Mock CLI reproduction run created `algorithm.py`, `test_algorithm.py`, `reproduction_bundle.json`, `dependency_report.json` and `validation_reports.json`.
-- WSL CLI `--backend wsl --execute` recorded `status=passed` for the generated unittest. The explicit reviewed-capability run promoted `cap_inventory_forecast_reviewed` to `verified`; the Mock extraction run remained `needs_review`.
+- WSL CLI `--backend wsl --execute` recorded `status=passed` for the generated unittest. The reviewed-capability run promoted `cap_inventory_forecast_reviewed` to `verified`, and `--reuse-query` revalidated that verified card; the Mock extraction run remained `needs_review`.
 - FastAPI tests cover `/health`, `/extract` and `/reproduce`; the API does not execute generated code.
 - Git branch `feat/initial-audit-and-ingestion` is synchronized with `origin`; `main` has not been merged.
 
