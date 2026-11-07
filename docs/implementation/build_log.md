@@ -311,6 +311,15 @@
 - Unresolved: no live provider repair call was made without credentials; API-side automatic metric collection remains a separate milestone.
 - Git commit: `1c20d1c` (`feat: add structured LLM repair boundary`).
 
+## 2026-11-08 — API sandbox metrics collection
+
+- Added `SandboxMetricsRequest` to `/reproduce` with a fixed `inventory_demand` task, actual samples, moving-average window and MAE/RMSE thresholds. Metrics require `execute=true` and reject windows larger than the supplied samples.
+- The endpoint writes a JSON input inside the temporary workspace and runs a fixed `python -c` moving-average evaluation command through the same Docker/WSL boundary. It returns `metric_execution` plus a thresholded `metric_report`; arbitrary user commands are not accepted.
+- Added an injectable metric runner for API tests without weakening the production sandbox path.
+- Focused validation: API tests -> 15 passed. Full Windows validation: `uv run pytest -q` -> 102 passed, 0 skipped; Ruff passed; Mypy passed for 41 source files.
+- Unresolved: Linux CI-equivalent validation and a real API WSL metrics run are pending; support for other task types and automatic registry promotion by metrics remains open.
+- Git commit: `5532c16` (`feat: collect metrics in API sandbox`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

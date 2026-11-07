@@ -202,7 +202,7 @@ docs/              # Architecture and design documents
 ## 8. Current acceptance status
 
 - [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
-- [x] `uv run pytest -q` passes in the current environment: 100 passed, 0 skipped.
+- [x] `uv run pytest -q` passes in the current environment: 102 passed, 0 skipped.
 - [x] GitHub Actions CI passes on Python 3.12 and 3.13 (latest verified run #65 on `feat/model-code-generation`).
 - [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
 - [x] The capability card records source provenance.

@@ -4,7 +4,7 @@ Updated: 2026-11-07 (Asia/Shanghai)
 
 ## Current milestone
 
-**Phase 6: bounded structured repair.** The reproduction graph, CLI and API now support deterministic template repair or a Pydantic-validated `LLMRepairer` callback. Patches are restricted to existing artifacts, hashes are refreshed, execution remains sandbox-bound and retry counts remain finite. The next executable work is a real provider acceptance run when credentials are available, while API-side metric collection continues independently.
+**Phase 8: sandbox metrics integration.** The reproduction graph, CLI and API support bounded repair, and `/reproduce` can now run a fixed inventory metric command in the same Docker/WSL context and return thresholded MAE/RMSE results. The next executable work is a real provider acceptance run when credentials are available, while automated reuse and broader task metric policies remain independent gaps.
 
 ## Milestones
 
