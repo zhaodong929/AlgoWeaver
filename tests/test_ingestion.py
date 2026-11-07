@@ -1,3 +1,4 @@
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -66,7 +67,69 @@ def test_office_formats_report_missing_optional_dependency(tmp_path: Path, monke
         raise ModuleNotFoundError("docling")
 
     monkeypatch.setattr(ingestion, "_decode_with_docling", missing_docling)
+    monkeypatch.setattr(
+        ingestion,
+        "_decode_with_stdlib_office",
+        lambda *_: (_ for _ in ()).throw(ModuleNotFoundError("docling")),
+    )
     result = SourceIngestor().ingest_path(source)
 
     assert result.status == "unsupported"
     assert result.error and "optional 'documents' extra" in result.error
+
+
+def _zip_file(path: Path, name: str, content: str) -> None:
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr(name, content)
+
+
+def test_docx_stdlib_fallback_extracts_paragraphs(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "report.docx"
+    _zip_file(
+        source,
+        "word/document.xml",
+        '<document xmlns:w="urn"><body><w:p><w:r><w:t>Inventory plan</w:t></w:r></w:p></body></document>',
+    )
+    monkeypatch.setattr(ingestion, "_decode_with_docling", lambda _: (_ for _ in ()).throw(ModuleNotFoundError()))
+
+    result = SourceIngestor().ingest_path(source)
+
+    assert result.status == "ingested"
+    assert result.content == "Inventory plan"
+    assert result.metadata["parser"] == "stdlib-office"
+
+
+def test_xlsx_stdlib_fallback_extracts_shared_strings(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "metrics.xlsx"
+    with zipfile.ZipFile(source, "w") as archive:
+        archive.writestr(
+            "xl/sharedStrings.xml",
+            '<sst xmlns="urn"><si><t>metric</t></si><si><t>accuracy</t></si></sst>',
+        )
+        archive.writestr(
+            "xl/worksheets/sheet1.xml",
+            '<worksheet xmlns="urn"><sheetData><row><c t="s"><v>0</v></c></row><row><c t="s"><v>1</v></c></row></sheetData></worksheet>',
+        )
+    monkeypatch.setattr(ingestion, "_decode_with_docling", lambda _: (_ for _ in ()).throw(ModuleNotFoundError()))
+
+    result = SourceIngestor().ingest_path(source)
+
+    assert result.status == "ingested"
+    assert "metric" in result.content
+    assert "accuracy" in result.content
+
+
+def test_pptx_stdlib_fallback_extracts_slide_text(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "slides.pptx"
+    _zip_file(
+        source,
+        "ppt/slides/slide1.xml",
+        '<p:sld xmlns:p="urnp" xmlns:a="urn"><a:t>Forecast result</a:t></p:sld>',
+    )
+    monkeypatch.setattr(ingestion, "_decode_with_docling", lambda _: (_ for _ in ()).throw(ModuleNotFoundError()))
+
+    result = SourceIngestor().ingest_path(source)
+
+    assert result.status == "ingested"
+    assert result.content == "Forecast result"
+    assert result.metadata["parser"] == "stdlib-office"

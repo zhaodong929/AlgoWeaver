@@ -115,6 +115,11 @@
 - Installed the `execution` extra with `uv sync --group dev --extra api --extra retrieval --extra execution`.
 - Re-ran the inventory forecast demo with `--execute`; the runner reached the Docker SDK but returned `blocked` because the Docker daemon/pipe is unavailable. No host execution occurred.
 
+## 2026-11-07 — stdlib Office fallback
+
+- Added dependency-free DOCX/PPTX/XLSX ZIP/XML text fallbacks used only when Docling is unavailable; PDF remains explicitly unsupported without Docling.
+- Added synthetic DOCX/PPTX/XLSX fixtures. Focused ingestion validation: 9 passed; Ruff/Mypy passed.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

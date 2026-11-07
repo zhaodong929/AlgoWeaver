@@ -6,7 +6,7 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 
 | Must-have | Current evidence | Status | Remaining acceptance gap |
 |---|---|---|---|
-| Multi-source documents and historical code | `SourceIngestor` handles text/Markdown/Python/CSV/JSON/YAML; lazy Docling paths cover PDF/DOCX/PPTX/XLSX; `PythonCodeParser` indexes imports/classes/functions. | PARTIAL | Docling is not installed, so real office/PDF parsing is unverified; no repository-scale Tree-sitter path. |
+| Multi-source documents and historical code | `SourceIngestor` handles text/Markdown/Python/CSV/JSON/YAML; lazy Docling paths cover PDF/DOCX/PPTX/XLSX; stdlib ZIP/XML fallbacks cover basic DOCX/PPTX/XLSX text; `PythonCodeParser` indexes imports/classes/functions. | PARTIAL | PDF/complex Office parsing remains unverified without Docling; no repository-scale Tree-sitter path. |
 | Algorithm knowledge extraction | `CapabilityExtractor`, Mock model, LiteLLM adapter, Pydantic `AlgorithmDraft`/`AlgorithmCapability`, missing-information handling. | PARTIAL | No real provider call has been executed in this environment; extraction remains a draft/review workflow. |
 | Standard capability cards | `AlgorithmCapability`, `EvidenceRef`, explicit `draft`/`needs_review`/`verified` statuses, JSON output and registry payloads. | DONE for schema baseline | Full verified promotion still depends on an independent runtime report. |
 | Evidence-linked RAG retrieval | `SourceChunker`, `EvidenceChunk`, `LocalLexicalRetriever`, `RetrievalEvaluator` and local in-memory `QdrantVectorRetriever` preserve line/path/source metadata; Recall@k, MRR and provenance coverage are tested. | PARTIAL | No embedding model, remote Qdrant service or reranker quality evaluation is configured. |

@@ -6,8 +6,11 @@ import csv
 import hashlib
 import io
 import json
+import re
+import zipfile
 from pathlib import Path
 from typing import Final, cast
+from xml.etree import ElementTree as ET
 
 from algo_weaver.schemas.ingestion import IngestedSource, SourceFormat
 
@@ -80,6 +83,25 @@ class SourceIngestor:
             try:
                 content = _decode_with_docling(source_path)
             except ModuleNotFoundError:
+                if source_format in {"docx", "pptx", "xlsx"}:
+                    try:
+                        content = _decode_with_stdlib_office(source_path, source_format)
+                    except ModuleNotFoundError:
+                        pass
+                    except Exception as exc:
+                        return _failed_office_result(
+                            identifier, source_path, source_format, media_type, digest, exc
+                        )
+                    else:
+                        return _office_result(
+                            identifier,
+                            source_path,
+                            source_format,
+                            media_type,
+                            digest,
+                            content,
+                            parser="stdlib-office",
+                        )
                 return IngestedSource(
                     source_id=identifier,
                     path=str(source_path),
@@ -161,6 +183,125 @@ def _decode_with_docling(path: Path) -> str:
 
     result = DocumentConverter().convert(str(path))
     return cast(str, result.document.export_to_markdown())
+
+
+def _decode_with_stdlib_office(path: Path, source_format: SourceFormat) -> str:
+    """Extract basic text from OOXML files without importing an Office package."""
+    if source_format not in {"docx", "pptx", "xlsx"}:
+        raise ModuleNotFoundError("stdlib office fallback does not support this format")
+    with zipfile.ZipFile(path) as archive:
+        if source_format == "docx":
+            return _docx_text(archive.read("word/document.xml"))
+        if source_format == "pptx":
+            slide_names = sorted(
+                (name for name in archive.namelist() if re.fullmatch(r"ppt/slides/slide\d+\.xml", name)),
+                key=_slide_number,
+            )
+            return "\n".join(
+                text
+                for name in slide_names
+                if (text := _xml_text(archive.read(name)))
+            )
+        return _xlsx_text(archive)
+
+
+def _docx_text(raw: bytes) -> str:
+    root = ET.fromstring(raw)
+    paragraphs = []
+    for paragraph in root.findall(".//{*}p"):
+        text = "".join(node.text or "" for node in _local_nodes(paragraph, "t")).strip()
+        if text:
+            paragraphs.append(text)
+    return "\n".join(paragraphs)
+
+
+def _xml_text(raw: bytes) -> str:
+    root = ET.fromstring(raw)
+    return " ".join(node.text or "" for node in _local_nodes(root, "t")).strip()
+
+
+def _slide_number(name: str) -> int:
+    match = re.search(r"slide(\d+)", name)
+    return int(match.group(1)) if match else 0
+
+
+def _xlsx_text(archive: zipfile.ZipFile) -> str:
+    shared: list[str] = []
+    if "xl/sharedStrings.xml" in archive.namelist():
+        root = ET.fromstring(archive.read("xl/sharedStrings.xml"))
+        shared = [
+            " ".join(node.text or "" for node in _local_nodes(item, "t"))
+            for item in _local_nodes(root, "si")
+        ]
+    rows: list[str] = []
+    sheet_names = sorted(name for name in archive.namelist() if re.fullmatch(r"xl/worksheets/sheet\d+\.xml", name))
+    for name in sheet_names:
+        root = ET.fromstring(archive.read(name))
+        for row in _local_nodes(root, "row"):
+            cells: list[str] = []
+            for cell in _local_nodes(row, "c"):
+                value = next((node.text or "" for node in _local_nodes(cell, "v")), "")
+                if cell.get("t") == "s" and value.isdigit() and int(value) < len(shared):
+                    value = shared[int(value)]
+                cells.append(value)
+            if cells:
+                rows.append("| " + " | ".join(cells) + " |")
+    return "\n".join(rows)
+
+
+def _local_nodes(root: ET.Element, local_name: str) -> list[ET.Element]:
+    return [
+        node
+        for node in root.iter()
+        if isinstance(node.tag, str) and node.tag.rsplit("}", 1)[-1] == local_name
+    ]
+
+
+def _office_result(
+    identifier: str,
+    path: Path,
+    source_format: SourceFormat,
+    media_type: str,
+    digest: str,
+    content: str,
+    *,
+    parser: str,
+) -> IngestedSource:
+    return IngestedSource(
+        source_id=identifier,
+        path=str(path),
+        source_type="document",
+        source_format=source_format,
+        media_type=media_type,
+        content=content,
+        content_sha256=digest,
+        metadata={
+            "file_name": path.name,
+            "size_bytes": path.stat().st_size,
+            "line_count": content.count("\n") + (1 if content else 0),
+            "parser": parser,
+        },
+    )
+
+
+def _failed_office_result(
+    identifier: str,
+    path: Path,
+    source_format: SourceFormat,
+    media_type: str,
+    digest: str,
+    error: Exception,
+) -> IngestedSource:
+    return IngestedSource(
+        source_id=identifier,
+        path=str(path),
+        source_type="document",
+        source_format=source_format,
+        media_type=media_type,
+        content_sha256=digest,
+        status="failed",
+        error=f"stdlib office fallback failed for {path.name}: {error}",
+    )
 
 
 def _csv_as_markdown(text: str) -> str:
