@@ -1,4 +1,5 @@
 """Application services."""
+from algo_weaver.services.code_generation import LLMCodeGenerator, MockCodeGenerator
 from algo_weaver.services.code_parser import PythonCodeParser
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.ingestion import SourceIngestor
@@ -25,6 +26,8 @@ __all__ = [
     "LocalLexicalRetriever",
     "RetrievalEvaluator",
     "PythonCodeParser",
+    "LLMCodeGenerator",
+    "MockCodeGenerator",
     "QdrantVectorRetriever",
     "ReproductionPlanner",
     "SourceChunker",

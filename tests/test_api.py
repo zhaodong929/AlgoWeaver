@@ -90,6 +90,36 @@ def test_reproduce_endpoint_returns_unverified_bundle() -> None:
     assert payload["dependency_reports"]
 
 
+def test_reproduce_endpoint_exposes_mock_generation_mode() -> None:
+    response = TestClient(create_app()).post(
+        "/reproduce",
+        json={
+            "source_text": "# 移动平均算法\n用于时间序列平滑。",
+            "source_id": "api-generation-mode",
+            "generation_mode": "mock",
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["plan"]["generation_mode"] == "mock"
+    assert payload["bundle"]["artifacts"][0]["generation_mode"] == "mock"
+
+
+def test_reproduce_endpoint_requires_litellm_for_llm_generation() -> None:
+    response = TestClient(create_app()).post(
+        "/reproduce",
+        json={
+            "source_text": "# moving average\nSmooth a time series.",
+            "source_id": "api-llm-mode",
+            "generation_mode": "llm",
+        },
+    )
+
+    assert response.status_code == 400
+    assert "requires mode='litellm'" in response.json()["detail"]
+
+
 def test_reproduce_endpoint_retrieves_additional_sources() -> None:
     response = TestClient(create_app()).post(
         "/reproduce",

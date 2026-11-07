@@ -12,6 +12,7 @@ from algo_weaver.config import get_settings
 from algo_weaver.llm.factory import create_chat_model
 from algo_weaver.schemas.execution import ExecutionPolicy
 from algo_weaver.services.capability_extractor import CapabilityExtractor
+from algo_weaver.services.code_generation import LLMCodeGenerator, MockCodeGenerator
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.ingestion import SourceIngestor
 from algo_weaver.services.metrics import RegressionMetricEvaluator
@@ -122,6 +123,9 @@ def reproduce(
     ),
     source_id: Annotated[str, typer.Option("--source-id")] = "local-input-001",
     mode: Annotated[str, typer.Option("--mode", help="mock or litellm")] = "mock",
+    generation_mode: Annotated[
+        str, typer.Option("--generation-mode", help="template, mock or llm")
+    ] = "template",
     execute: Annotated[bool, typer.Option("--execute", help="run pytest inside Docker")] = False,
     registry_path: Annotated[Path | None, typer.Option("--registry")] = None,
     backend: Annotated[str, typer.Option("--backend", help="docker or wsl")] = "docker",
@@ -141,6 +145,10 @@ def reproduce(
         additional_input = []
     if mode not in {"mock", "litellm"}:
         raise typer.BadParameter("mode must be 'mock' or 'litellm'")
+    if generation_mode not in {"template", "mock", "llm"}:
+        raise typer.BadParameter("generation-mode must be 'template', 'mock' or 'llm'")
+    if generation_mode == "llm" and mode != "litellm":
+        raise typer.BadParameter("generation-mode 'llm' requires --mode litellm")
     if backend not in {"docker", "wsl"}:
         raise typer.BadParameter("backend must be 'docker' or 'wsl'")
     if capability_file is not None and reuse_query is not None:
@@ -212,7 +220,12 @@ def reproduce(
         rprint(f"[bold red]Reproduction plan blocked:[/bold red] {plan.blocking_reasons}")
         raise typer.Exit(code=1)
 
-    bundle = TemplateArtifactWriter().generate(plan)
+    if generation_mode == "mock":
+        bundle = MockCodeGenerator().generate(plan, hits)
+    elif generation_mode == "llm":
+        bundle = LLMCodeGenerator(create_chat_model(settings)).generate(plan, hits)
+    else:
+        bundle = TemplateArtifactWriter().generate(plan)
     output_dir.mkdir(parents=True, exist_ok=True)
     artifact_paths = TemplateArtifactWriter().write(bundle, output_dir)
     validator = ValidationService()

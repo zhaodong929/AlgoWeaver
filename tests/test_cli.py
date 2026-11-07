@@ -1,3 +1,5 @@
+import json
+
 from typer.testing import CliRunner
 
 from algo_weaver.cli import app
@@ -66,6 +68,48 @@ def test_reproduce_command_accepts_additional_input(tmp_path) -> None:
     assert result.exit_code == 0, result.stdout
     assert "1 ingested" in result.stdout
     assert (output_dir / "ingestion_batch.json").exists()
+
+
+def test_reproduce_command_accepts_mock_generation_mode(tmp_path) -> None:
+    source = tmp_path / "algorithm.md"
+    source.write_text("# 移动平均算法\n用于时间序列平滑。", encoding="utf-8")
+    output_dir = tmp_path / "bundle"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "reproduce",
+            "--input",
+            str(source),
+            "--output-dir",
+            str(output_dir),
+            "--generation-mode",
+            "mock",
+        ],
+    )
+
+    assert result.exit_code == 0, result.stdout
+    bundle = json.loads((output_dir / "reproduction_bundle.json").read_text(encoding="utf-8"))
+    assert bundle["plan"]["generation_mode"] == "mock"
+
+
+def test_reproduce_command_requires_litellm_for_llm_generation(tmp_path) -> None:
+    source = tmp_path / "algorithm.md"
+    source.write_text("# Moving Average\nSmooth a time series.", encoding="utf-8")
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "reproduce",
+            "--input",
+            str(source),
+            "--generation-mode",
+            "llm",
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert "requires --mode litellm" in result.output
 
 
 def test_reproduce_accepts_an_explicit_reviewed_capability_file(tmp_path) -> None:

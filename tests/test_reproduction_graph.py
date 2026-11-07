@@ -55,6 +55,22 @@ def test_reproduction_graph_retrieves_from_additional_sources() -> None:
     assert any(hit["chunk"]["source_id"] == "history-code" for hit in result["hits"])
 
 
+def test_reproduction_graph_accepts_an_explicit_generator() -> None:
+    calls: list[str] = []
+
+    class Generator:
+        def generate(self, plan, evidence=()):
+            calls.append(plan.capability_name)
+            from algo_weaver.services.code_generation import MockCodeGenerator
+
+            return MockCodeGenerator().generate(plan, evidence)
+
+    result = build_reproduction_graph(generator=Generator()).invoke(_state())
+
+    assert calls == ["Moving Average"]
+    assert result["bundle"]["plan"]["generation_mode"] == "mock"
+
+
 def _state() -> dict:
     source = IngestedSource(
         source_id="doc-graph-execution",

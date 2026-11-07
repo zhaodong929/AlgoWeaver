@@ -66,3 +66,13 @@ class ReproductionBundle(BaseModel):
 
     plan: ReproductionPlan
     artifacts: list[GeneratedArtifact] = Field(min_length=1)
+
+
+class GeneratedCodeDraft(BaseModel):
+    """Structured code returned by a model before static validation."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    algorithm_source: str = Field(min_length=1)
+    test_source: str = Field(min_length=1)
+    dependencies: list[str] = Field(default_factory=list)

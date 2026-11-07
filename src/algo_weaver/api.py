@@ -18,6 +18,11 @@ from algo_weaver.schemas.execution import ExecutionPolicy, ExecutionResult
 from algo_weaver.schemas.ingestion import IngestedSource, SourceFormat
 from algo_weaver.schemas.reproduction import ReproductionBundle
 from algo_weaver.services.capability_extractor import CapabilityExtractor
+from algo_weaver.services.code_generation import (
+    ArtifactGenerator,
+    LLMCodeGenerator,
+    MockCodeGenerator,
+)
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.metrics import RegressionMetricEvaluator
 from algo_weaver.services.registry import CapabilityRegistry
@@ -59,6 +64,7 @@ class ReproduceRequest(ExtractRequest):
     max_repair_attempts: int = Field(default=2, ge=0, le=5)
     persist: bool = False
     additional_sources: list[AdditionalSourceRequest] = Field(default_factory=list)
+    generation_mode: Literal["template", "mock", "llm"] = "template"
 
 
 class MetricsRequest(BaseModel):
@@ -121,6 +127,11 @@ def create_app(
     @app.post("/reproduce")
     def reproduce(request: ReproduceRequest) -> dict:
         try:
+            if request.generation_mode == "llm" and request.mode != "litellm":
+                raise HTTPException(
+                    status_code=400,
+                    detail="generation_mode='llm' requires mode='litellm'",
+                )
             model_settings = active_settings.model_copy(update={"llm_mode": request.mode})
             extractor = CapabilityExtractor(
                 create_chat_model(model_settings),
@@ -177,6 +188,11 @@ def create_app(
                 )
 
             repair_callback = _template_repair_callback if request.repair else None
+            generator: ArtifactGenerator | None = None
+            if request.generation_mode == "mock":
+                generator = MockCodeGenerator()
+            elif request.generation_mode == "llm":
+                generator = LLMCodeGenerator(create_chat_model(model_settings))
             if request.execute:
                 with TemporaryDirectory(prefix="algo-weaver-api-") as workspace:
                     result = build_reproduction_graph(
@@ -184,9 +200,10 @@ def create_app(
                         runner=run_in_sandbox,
                         repair=repair_callback,
                         max_repair_attempts=request.max_repair_attempts,
+                        generator=generator,
                     ).invoke(state)
             else:
-                result = build_reproduction_graph().invoke(state)
+                result = build_reproduction_graph(generator=generator).invoke(state)
 
             if "error" in result:
                 raise HTTPException(status_code=422, detail=result["error"])

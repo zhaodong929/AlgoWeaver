@@ -11,6 +11,7 @@ from algo_weaver.schemas.execution import ExecutionResult
 from algo_weaver.schemas.ingestion import IngestedSource
 from algo_weaver.schemas.reproduction import ReproductionBundle, ReproductionPlan
 from algo_weaver.schemas.retrieval import RetrievalHit
+from algo_weaver.services.code_generation import ArtifactGenerator
 from algo_weaver.services.repair import BoundedRepairLoop
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
 from algo_weaver.services.retrieval import LocalLexicalRetriever, SourceChunker
@@ -56,6 +57,7 @@ def build_reproduction_graph(
     runner: ExecutionRunner | None = None,
     repair: RepairAction | None = None,
     max_repair_attempts: int = 0,
+    generator: ArtifactGenerator | None = None,
 ):
     """Build a reproduction workflow with optional isolated execution and repair.
 
@@ -92,8 +94,16 @@ def build_reproduction_graph(
 
     def generate_node(state: ReproductionState) -> dict:
         plan = ReproductionPlan.model_validate(state["plan"])
-        bundle = TemplateArtifactWriter().generate(plan)
-        return {"bundle": bundle.model_dump(mode="json")}
+        hits = [RetrievalHit.model_validate(item) for item in state.get("hits", [])]
+        bundle = (
+            generator.generate(plan, hits)
+            if generator is not None
+            else TemplateArtifactWriter().generate(plan)
+        )
+        return {
+            "plan": bundle.plan.model_dump(mode="json"),
+            "bundle": bundle.model_dump(mode="json"),
+        }
 
     def write_node(state: ReproductionState) -> dict:
         if workspace_path is None:
