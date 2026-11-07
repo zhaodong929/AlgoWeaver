@@ -282,6 +282,15 @@
 - Unresolved: no live provider call was made without credentials; generated LLM artifacts still require static checks and isolated runtime acceptance before promotion, and LLM repair remains open.
 - Git commit: `d76637c` (`feat: add structured code generation modes`).
 
+## 2026-11-07 — CI #58 WSL platform diagnosis and fix
+
+- CI #58 failed in the `Test` step on both Python 3.12 and 3.13; dependency installation and Ruff completed successfully.
+- Root cause: `tests/test_wsl_repair_integration.py` treated the presence of `wsl.exe` as sufficient on every host. The Ubuntu runner exposed a compatibility command, so the Windows-only integration test used a POSIX `/tmp` path and `WslDockerSandboxRunner` correctly rejected it.
+- Changed the existing skip boundary to require both `sys.platform == "win32"` and an available `wsl.exe`. The WSL integration test remains active on Windows and is still a real runtime test there.
+- Linux CI-equivalent validation in an isolated environment: 93 passed, 1 platform-appropriate skip; Ruff and Mypy passed. Windows validation in an isolated environment: 94 passed; Ruff and Mypy passed.
+- No tests were deleted, and no quality check was disabled. The next GitHub Actions run is the acceptance gate for this fix.
+- Git commit: `a7fb5c7` (`fix: gate WSL integration by host platform`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
