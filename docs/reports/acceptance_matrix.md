@@ -20,7 +20,7 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 
 ## Verification evidence
 
-- `uv run pytest -q`: 69 passed, 0 skipped after installing the declared LangGraph, API, retrieval and execution dependencies.
+- `uv run pytest -q`: 71 passed, 0 skipped after installing the declared LangGraph, API, retrieval and execution dependencies.
 - `uv run ruff check src tests`: passed.
 - `uv run mypy src`: passed for 36 source files.
 - Mock CLI reproduction run created `algorithm.py`, `test_algorithm.py`, `reproduction_bundle.json`, `dependency_report.json` and `validation_reports.json`.
