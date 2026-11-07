@@ -2,6 +2,7 @@
 from algo_weaver.services.code_parser import PythonCodeParser
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.ingestion import SourceIngestor
+from algo_weaver.services.qdrant_retrieval import QdrantVectorRetriever
 from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.repair import BoundedRepairLoop
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
@@ -22,6 +23,7 @@ __all__ = [
     "LocalLexicalRetriever",
     "RetrievalEvaluator",
     "PythonCodeParser",
+    "QdrantVectorRetriever",
     "ReproductionPlanner",
     "SourceChunker",
     "combine_lexical_and_dense_scores",

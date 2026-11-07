@@ -92,6 +92,13 @@
 - Re-ran the authoritative commands: `uv run pytest -q` -> 53 passed, 0 skipped; `uv run ruff check src tests` passed; `uv run mypy src` passed for 35 source files.
 - The Docker CLI/daemon and Docling remain unavailable, so real sandbox and office-document integration are still unverified.
 
+## 2026-11-07 — Qdrant vector contract
+
+- Added optional `QdrantVectorRetriever` over `EvidenceChunk`/`RetrievalHit`, using Qdrant's local in-memory client and externally supplied synthetic vectors.
+- Installed the retrieval extra with `uv sync --group dev --extra api --extra retrieval`.
+- Full validation: `uv run pytest -q` -> 54 passed, 0 skipped; Ruff and Mypy passed for 36 source files.
+- This validates the vector-store/provenance contract only; no embedding model or remote vector service was used.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

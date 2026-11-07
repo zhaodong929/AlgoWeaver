@@ -17,6 +17,7 @@ An agentic system for algorithm knowledge extraction, code reproduction, automat
 - Lazy Docling boundaries for PDF, DOCX, PPTX and XLSX; missing optional dependencies are reported explicitly.
 - Python AST indexing for imports, classes, methods, functions and source locations without executing code.
 - Provenance-preserving local lexical retrieval with source and metadata filters.
+- Optional Qdrant in-memory vector adapter with the same provenance contract.
 - Deterministic static validation reports for capability contracts and generated Python source.
 - SQLite capability versioning with passing-report promotion to `verified`.
 - Docker-only execution boundary with explicit `blocked` behavior when the daemon or SDK is unavailable.

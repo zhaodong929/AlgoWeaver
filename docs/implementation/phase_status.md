@@ -8,7 +8,7 @@
 | Phase 1 多格式文档解析与来源追踪 | IN_PROGRESS | `SourceIngestor` 支持 text/Markdown/Python/CSV/JSON/YAML，PDF/DOCX/PPTX/XLSX 有懒加载 Docling 边界；实际 Docling 解析未在本环境验证 | 安装/验证 documents extra 后完成真实样例 |
 | Phase 2 历史代码结构化解析 | DONE | `PythonCodeParser`、`PythonSourceFile`、19 passed/2 skipped，提交 `f0c794e` | 接入检索和证据定位 |
 | Phase 3 真实 LLM 抽取与证据校验 | IN_PROGRESS | `EvidenceRef` 已支持应用控制的行号和 SHA-256；真实 provider 未调用 | 用真实 provider 做一次可复现抽取并评估证据覆盖率 |
-| Phase 4 RAG、混合检索、检索评估 | IN_PROGRESS | lexical retrieval、Recall@k/MRR/provenance coverage 和外部 dense score fusion 已测试；Qdrant/embedding/reranker 尚未接入 | 接入真实 embedding/vector adapter并建立评估集 |
+| Phase 4 RAG、混合检索、检索评估 | IN_PROGRESS | lexical retrieval、Recall@k/MRR/provenance coverage、score fusion 和 Qdrant in-memory vector adapter 已测试；embedding/reranker 未验证 | 接入真实 embedding/vector adapter并建立评估集 |
 | Phase 5 LangGraph 算法复刻 Agent | IN_PROGRESS | `ReproductionPlanner`、`TemplateArtifactWriter` 已生成 evidence-linked、unverified artifacts；尚无 LangGraph 复刻图 | 接入检索上下文、计划节点和 artifact state |
 | Phase 6 Docker 沙箱、自动测试、错误修复 | IN_PROGRESS | `ValidationService` + Docker-only `DockerSandboxRunner` + `BoundedRepairLoop` 已测试；真实 daemon、pytest runtime 和 LLM repair 未验证 | 接入隔离运行报告、故障反馈和有限修复 |
 | Phase 7 持久化、版本管理、复用 | IN_PROGRESS | `CapabilityRegistry` 已提供 SQLite 版本追加、name search、passing-report promotion，并可由 `reproduce --registry` 写入 draft | 连接检索结果、版本比较和 verified reuse |
