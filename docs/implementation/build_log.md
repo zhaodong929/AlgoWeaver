@@ -180,6 +180,11 @@
 - Added `RegressionMetricEvaluator` with MAE/RMSE and explicit threshold status for inventory demand evaluation.
 - Added schema, service, tests and architecture documentation; automatic collection from sandbox prediction files remains future integration work.
 
+## 2026-11-07 — sandbox hardening
+
+- Extended both Docker execution backends with read-only root filesystems, dropped capabilities, `no-new-privileges` and a bounded noexec `/tmp` tmpfs.
+- Re-ran the reviewed inventory capability through WSL Docker after the hardening change; execution passed and registry promotion remained verified.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

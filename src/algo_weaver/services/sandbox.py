@@ -53,9 +53,13 @@ class DockerSandboxRunner:
                     }
                 },
                 network_disabled=not active_policy.network_enabled,
+                read_only=active_policy.read_only_workspace,
                 mem_limit=f"{active_policy.memory_mb}m",
                 nano_cpus=int(active_policy.cpu_limit * 1_000_000_000),
                 pids_limit=active_policy.pids_limit,
+                cap_drop=["ALL"],
+                security_opt=["no-new-privileges:true"],
+                tmpfs={"/tmp": "rw,noexec,nosuid,size=64m"},
                 environment={},
                 detach=True,
                 remove=False,
@@ -134,6 +138,7 @@ class WslDockerSandboxRunner:
             "run",
             "--rm",
             "--security-opt=no-new-privileges:true",
+            "--cap-drop=ALL",
             "--memory",
             f"{active_policy.memory_mb}m",
             "--cpus",
@@ -149,6 +154,8 @@ class WslDockerSandboxRunner:
         ]
         if not active_policy.network_enabled:
             docker_command.extend(["--network", "none"])
+        if active_policy.read_only_workspace:
+            docker_command.append("--read-only")
         docker_command.extend([active_policy.image, *command_list])
         full_command = ["wsl.exe", "-d", self.distro, "--", *docker_command]
         started = time.monotonic()

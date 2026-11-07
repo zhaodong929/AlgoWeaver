@@ -53,6 +53,9 @@ def test_runner_applies_isolation_policy_with_fake_client(tmp_path: Path) -> Non
 
     assert result.status == "passed"
     assert calls["network_disabled"] is True
+    assert calls["read_only"] is True
+    assert calls["cap_drop"] == ["ALL"]
+    assert calls["security_opt"] == ["no-new-privileges:true"]
     assert calls["mem_limit"] == "256m"
     assert calls["nano_cpus"] == 500_000_000
     assert calls["removed"] is True
@@ -80,3 +83,5 @@ def test_wsl_runner_translates_policy_without_host_execution(tmp_path: Path) -> 
     assert calls["command"][0:5] == ["wsl.exe", "-d", "Ubuntu-24.04", "--", "docker"]
     assert "--network" in calls["command"]
     assert "none" in calls["command"]
+    assert "--read-only" in calls["command"]
+    assert "--cap-drop=ALL" in calls["command"]
