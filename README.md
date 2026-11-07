@@ -3,7 +3,7 @@
 **Algorithm Intelligence & Reproduction Agent**  
 An agentic system for algorithm knowledge extraction, code reproduction, automated verification, and reusable capability accumulation.
 
-> Current milestone: **v0.1.1 — v0.1.0 audit + evidence-linked extraction + multi-source text ingestion**.
+> Current milestone: **MVP execution baseline — evidence-linked extraction, executable LangGraph workflow, WSL2 sandbox, API and SQLite capability persistence**.
 
 ## 1. What is implemented
 
@@ -21,8 +21,10 @@ An agentic system for algorithm knowledge extraction, code reproduction, automat
 - Deterministic static validation reports for capability contracts and generated Python source.
 - SQLite capability versioning with passing-report promotion to `verified`.
 - Docker-only execution boundary with explicit `blocked` behavior when the daemon or SDK is unavailable.
-- CLI command that reads Markdown/text and writes a JSON capability card.
-- Pytest coverage for schema validation, extraction, and graph execution.
+- LangGraph reproduction flow with optional artifact writing, sandbox execution, conditional bounded repair and runtime reports.
+- CLI and FastAPI surfaces for extraction, reproduction, sandbox execution, repair, registry persistence and MAE/RMSE threshold evaluation.
+- WSL2 Docker runtime acceptance for the reviewed inventory forecasting capability.
+- Pytest coverage for schema validation, extraction, graph execution, API behavior and safety boundaries.
 
 The mock model is for engineering smoke tests only. Its output is explicitly marked as needing review; it must not be treated as a real algorithm extraction or a verified capability.
 
@@ -42,7 +44,7 @@ GPU is not required for this first milestone because model inference is API-base
 cd algo-weaver
 
 # 2. Create the virtual environment and install core + development dependencies
-uv sync --group dev
+uv sync --group dev --extra api --extra retrieval --extra execution
 
 # 3. Create local environment config
 Copy-Item .env.example .env
@@ -64,7 +66,7 @@ uv run algo-weaver extract `
 
 ```bash
 cd algo-weaver
-uv sync --group dev
+uv sync --group dev --extra api --extra retrieval --extra execution
 cp .env.example .env
 uv run pytest
 uv run algo-weaver version
@@ -89,9 +91,16 @@ uv run algo-weaver reproduce \
   --backend wsl \
   --mode mock
 
-# Optional FastAPI surface
-uv sync --group dev --extra api
+# FastAPI surface
 uv run uvicorn algo_weaver.api:create_app --factory --host 127.0.0.1 --port 8000
+
+# API metric evaluation example
+curl -X POST http://127.0.0.1:8000/metrics \
+  -H "Content-Type: application/json" \
+  -d '{"task":"inventory_demand","actual":[10,12,14],"predicted":[11,11,15],"max_mae":1.0,"max_rmse":1.0}'
+
+# API reproduction is static by default. Add execute=true for explicit Docker/WSL execution,
+# repair=true for bounded template repair, and persist=true for configured SQLite write-back.
 ```
 
 ## 5. Enable a real model (LiteLLM)
@@ -153,7 +162,7 @@ uv sync --group dev --extra execution
 - `retrieval`: Qdrant client for hybrid retrieval infrastructure.
 - `api`: FastAPI and Uvicorn.
 - `observability`: Langfuse and OpenTelemetry.
-- `execution`: Docker SDK; the actual sandbox image and runtime policy will be added in the execution milestone.
+- `execution`: Docker SDK and the WSL2 Docker runner used by the reviewed runtime demo.
 
 ## 7. Project structure
 
@@ -175,18 +184,19 @@ docs/              # Architecture and design documents
 ## 8. Current acceptance status
 
 - [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
-- [x] `uv run pytest -q` passes in the current environment: 62 passed, 0 skipped.
+- [x] `uv run pytest -q` passes in the current environment: 82 passed, 0 skipped.
+- [x] GitHub Actions CI passes on Python 3.12 and 3.13 (latest verified run #55).
 - [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
 - [x] The capability card records source provenance.
 - [x] Mock-generated output is never marked `verified`.
 - [x] Real provider configuration is loaded from environment variables, not source code.
 - [x] Supported text-like sources are normalized and hashed by `SourceIngestor`.
 
-The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports a deterministic moving-average reproduction template, but does not yet claim general code reproduction, sandbox execution, automatic repair or semantic retrieval completion.
+The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports a deterministic moving-average reproduction template and a real WSL2 Docker execution path for the reviewed inventory capability. General LLM code generation, LLM repair and semantic embedding/reranking remain explicitly unverified.
 
 The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata; Qdrant, embeddings and reranking remain later adapters. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
 
-For a human-reviewed capability card, pass `--capability-file examples/inventory_forecast/reviewed_capability.json`; with `--backend wsl --execute --registry ...`, the runtime report can promote the card to `verified`. This path is explicitly human-reviewed and does not claim real LLM extraction.
+For a human-reviewed capability card, pass `--capability-file examples/inventory_forecast/reviewed_capability.json`; with `--backend wsl --execute --registry ...`, the runtime report can promote the card to `verified`. The same execution/repair boundary is available from FastAPI `/reproduce` with explicit request flags. These paths are explicitly human-reviewed and do not claim real LLM extraction.
 
 Add `--repair` to enable the bounded offline template repair action after a failed or timed-out sandbox run.
 
