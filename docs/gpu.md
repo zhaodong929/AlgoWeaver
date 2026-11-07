@@ -2,6 +2,8 @@
 
 The v0.1.0 extraction path uses a remote model API or deterministic mock mode. It does not require CUDA. Do not install a large CUDA/PyTorch stack until the actual GPU model, VRAM, driver, and local-inference target are known.
 
+Current environment evidence (2026-11-08): Windows and WSL2 both report an NVIDIA GeForce RTX 5070 Laptop GPU with 8,151 MiB VRAM, driver 573.22 and CUDA 12.8. Docker Engine 29.1.3 is available through WSL2. A CUDA container smoke test was not completed because the image pull ended with a registry network EOF, and Docker GPU runtime exposure remains unverified.
+
 ## 1. Inspect the machine
 
 Windows PowerShell or Linux shell:
@@ -33,4 +35,4 @@ For Ollama, use the LiteLLM provider/model identifier supported by the installed
 
 ## 4. GPU embedding and reranking are a later milestone
 
-The retrieval milestone will benchmark Qwen3-Embedding and Qwen3-Reranker on the actual GPU before choosing a model size and batch size. This avoids guessing VRAM requirements and installing incompatible CUDA wheels.
+The retrieval milestone will benchmark Qwen3-Embedding and Qwen3-Reranker on the actual GPU before choosing a model size and batch size. This avoids guessing VRAM requirements and installing incompatible CUDA wheels. Until the Docker GPU runtime and image supply path are verified, the product keeps lexical retrieval and the external-vector Qdrant contract as the tested path.
