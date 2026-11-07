@@ -345,6 +345,13 @@
 - Unresolved: semantic embedding/reranker-based reuse remains open.
 - Git commit: `f42e604` (`feat: add automatic verified reuse by name`).
 
+## 2026-11-08 — GPU and Docker runtime audit
+
+- Windows and WSL2 report an NVIDIA GeForce RTX 5070 Laptop GPU with 8,151 MiB VRAM, driver 573.22 and CUDA 12.8; WSL Docker Engine 29.1.3 is available.
+- A CUDA container smoke test was not completed because the image pull ended with a registry network EOF; no model weights or CUDA/PyTorch wheels were downloaded.
+- GitHub Actions run #76 passed on Python 3.12 and 3.13 after the documentation-only audit.
+- Git commit: `23b5470` (`docs: record GPU and Docker runtime audit`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
