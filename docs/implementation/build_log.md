@@ -272,6 +272,16 @@
 - Unresolved: complex document layout, semantic embeddings/reranking and repository-scale ingestion remain open.
 - Git commit: `5db6d94` (`feat: support multi-source reproduction inputs`).
 
+## 2026-11-07 — structured code generation boundary
+
+- Added `GeneratedCodeDraft` with strict Pydantic validation and a provider-neutral `ArtifactGenerator` protocol.
+- Added deterministic `MockCodeGenerator` and provider-backed `LLMCodeGenerator`; the latter sends the evidence-linked plan to `ChatModel.complete_json`, merges model-declared dependencies into the plan and labels artifacts `llm` while keeping them `unverified`.
+- Wired `generation_mode=template|mock|llm` into the reproduction graph, CLI and FastAPI. The LLM mode requires explicit `litellm` provider configuration so a mock extraction response cannot be mistaken for generated code.
+- Focused validation: `uv run pytest tests/test_code_generation.py tests/test_reproduction_graph.py tests/test_api.py tests/test_cli.py -q` -> 29 passed.
+- Full validation: `uv run pytest -q` -> 94 passed, 0 skipped; `uv run ruff check .` passed; `uv run mypy src` passed for 40 source files.
+- Unresolved: no live provider call was made without credentials; generated LLM artifacts still require static checks and isolated runtime acceptance before promotion, and LLM repair remains open.
+- Git commit: `d76637c` (`feat: add structured code generation modes`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

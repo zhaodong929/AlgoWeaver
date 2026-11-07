@@ -22,6 +22,7 @@ An agentic system for algorithm knowledge extraction, code reproduction, automat
 - SQLite capability versioning with passing-report promotion to `verified`.
 - Docker-only execution boundary with explicit `blocked` behavior when the daemon or SDK is unavailable.
 - LangGraph reproduction flow with optional artifact writing, sandbox execution, conditional bounded repair and runtime reports.
+- Provider-neutral code generation boundary with deterministic `template`, offline `mock` and structured `llm` modes; model output is Pydantic-validated before artifacts are written.
 - CLI and FastAPI surfaces for extraction, reproduction, sandbox execution, repair, registry persistence and MAE/RMSE threshold evaluation.
 - WSL2 Docker runtime acceptance for the reviewed inventory forecasting capability.
 - Pytest coverage for schema validation, extraction, graph execution, API behavior and safety boundaries.
@@ -89,6 +90,13 @@ uv run algo-weaver extract \
 uv run algo-weaver reproduce \
   --input examples/moving_average/algorithm.md \
   --output-dir data/processed/reproduction \
+  --mode mock
+
+# Exercise the offline generation boundary while keeping artifacts unverified.
+uv run algo-weaver reproduce \
+  --input examples/moving_average/algorithm.md \
+  --output-dir data/processed/reproduction \
+  --generation-mode mock \
   --mode mock
 
 # Add historical code or experiment material to the same retrieval context.
@@ -193,15 +201,15 @@ docs/              # Architecture and design documents
 ## 8. Current acceptance status
 
 - [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
-- [x] `uv run pytest -q` passes in the current environment: 86 passed, 0 skipped.
-- [x] GitHub Actions CI passes on Python 3.12 and 3.13 (latest verified run #55).
+- [x] `uv run pytest -q` passes in the current environment: 94 passed, 0 skipped.
+- [x] GitHub Actions CI passes on Python 3.12 and 3.13 (latest verified run #57 on the previous multi-source branch).
 - [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
 - [x] The capability card records source provenance.
 - [x] Mock-generated output is never marked `verified`.
 - [x] Real provider configuration is loaded from environment variables, not source code.
 - [x] Supported text-like sources are normalized and hashed by `SourceIngestor`.
 
-The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports a deterministic moving-average reproduction template and a real WSL2 Docker execution path for the reviewed inventory capability. General LLM code generation, LLM repair and semantic embedding/reranking remain explicitly unverified.
+The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports deterministic moving-average template generation, an offline Mock generation label, a Pydantic-validated LLM generation boundary and a real WSL2 Docker execution path for the reviewed inventory capability. Real-provider generation, LLM repair and semantic embedding/reranking remain explicitly unverified. Use `--generation-mode llm --mode litellm` only with a configured provider; tests do not claim a live provider call.
 
 The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata; Qdrant, embeddings and reranking remain later adapters. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
 

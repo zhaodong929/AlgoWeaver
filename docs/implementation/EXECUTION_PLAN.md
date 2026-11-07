@@ -4,7 +4,7 @@ Updated: 2026-11-07 (Asia/Shanghai)
 
 ## Current milestone
 
-**Phase 1/4/8: multi-source workflow.** Batch ingestion, multi-source chunk aggregation and API/CLI additional inputs now feed the same evidence-preserving retrieval and reproduction path. The next executable work is a reproducible dashboard/demo and automatic metric collection from sandbox output.
+**Phase 3/5: structured code generation boundary.** The reproduction graph, CLI and API now select deterministic template, offline Mock or provider-backed LLM generation. Model JSON is validated by Pydantic and generated dependencies are retained in the plan. The next executable work is a real provider acceptance run when credentials are available, while independent LLM repair and metric integration continue in parallel.
 
 ## Milestones
 
@@ -15,7 +15,7 @@ Updated: 2026-11-07 (Asia/Shanghai)
 | M2 | Python AST code parsing | Function/class/import schema, syntax-error behavior, tests | DONE |
 | M3 | Evidence-aware extraction | Mock/LLM extraction maps claims to application-controlled source locations and hashes | DONE |
 | M4 | Local retrieval baseline | Chunking, deterministic lexical ranking, metadata filters, provenance hits and tests | DONE |
-| M5 | Reproduction plan and generated artifacts | Structured plan, evidence IDs, deterministic moving-average code/test artifacts | DONE |
+| M5 | Reproduction plan and generated artifacts | Structured plan, evidence IDs, deterministic template, Mock and Pydantic-validated LLM artifact boundary | IN_PROGRESS |
 | M6 | Safe validation and bounded repair | Static checks, Docker-only policy boundary, bounded repair orchestration and retry limit | IN_PROGRESS |
 | M7 | Capability registry and reuse | SQLite versions, verified-only promotion and name search | IN_PROGRESS |
 | M8 | API/demo integration | CLI `reproduce` writes plan, artifacts and static validation reports | IN_PROGRESS |
