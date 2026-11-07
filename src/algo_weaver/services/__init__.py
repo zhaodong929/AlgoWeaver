@@ -8,6 +8,7 @@ from algo_weaver.services.embedding import (
     MockEmbeddingProvider,
     create_embedding_provider,
 )
+from algo_weaver.services.hybrid_retrieval import HybridRetriever
 from algo_weaver.services.ingestion import SourceIngestor
 from algo_weaver.services.llm_repair import LLMRepairer
 from algo_weaver.services.metrics import RegressionMetricEvaluator
@@ -36,6 +37,7 @@ __all__ = [
     "DashScopeEmbeddingProvider",
     "DashScopeRerankerProvider",
     "EmbeddingProvider",
+    "HybridRetriever",
     "MockEmbeddingProvider",
     "MockRerankerProvider",
     "PythonDependencyAnalyzer",

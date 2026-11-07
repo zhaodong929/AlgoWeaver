@@ -25,9 +25,11 @@ from algo_weaver.services.code_generation import (
     MockCodeGenerator,
 )
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
+from algo_weaver.services.embedding import create_embedding_provider
 from algo_weaver.services.llm_repair import LLMRepairer
 from algo_weaver.services.metrics import RegressionMetricEvaluator
 from algo_weaver.services.registry import CapabilityRegistry
+from algo_weaver.services.reranker import create_reranker_provider
 from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
 from algo_weaver.services.template_repair import TemplateRepairer
 
@@ -282,6 +284,16 @@ def create_app(
                 generator = LLMCodeGenerator(
                     create_chat_model(model_settings, model=model_settings.code_llm_model)
                 )
+            embedding_provider = (
+                create_embedding_provider(active_settings)
+                if active_settings.embedding_mode != "mock"
+                else None
+            )
+            reranker_provider = (
+                create_reranker_provider(active_settings)
+                if active_settings.reranker_mode != "mock"
+                else None
+            )
             metric_execution: ExecutionResult | None = None
             metric_report: dict | None = None
             if request.execute:
@@ -292,6 +304,8 @@ def create_app(
                         repair=repair_callback,
                         max_repair_attempts=request.max_repair_attempts,
                         generator=generator,
+                        embedding_provider=embedding_provider,
+                        reranker_provider=reranker_provider,
                     ).invoke(state)
                     if request.metrics is not None and result.get("execution", {}).get("status") == "passed":
                         workspace_path = Path(workspace)
@@ -331,7 +345,11 @@ def create_app(
                                 max_rmse=request.metrics.max_rmse,
                             ).model_dump(mode="json")
             else:
-                result = build_reproduction_graph(generator=generator).invoke(state)
+                result = build_reproduction_graph(
+                    generator=generator,
+                    embedding_provider=embedding_provider,
+                    reranker_provider=reranker_provider,
+                ).invoke(state)
 
             if "error" in result:
                 raise HTTPException(status_code=422, detail=result["error"])

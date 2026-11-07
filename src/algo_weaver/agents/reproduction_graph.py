@@ -12,8 +12,11 @@ from algo_weaver.schemas.ingestion import IngestedSource
 from algo_weaver.schemas.reproduction import ReproductionBundle, ReproductionPlan
 from algo_weaver.schemas.retrieval import RetrievalHit
 from algo_weaver.services.code_generation import ArtifactGenerator
+from algo_weaver.services.embedding import EmbeddingProvider
+from algo_weaver.services.hybrid_retrieval import HybridRetriever
 from algo_weaver.services.repair import BoundedRepairLoop
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
+from algo_weaver.services.reranker import RerankerProvider
 from algo_weaver.services.retrieval import LocalLexicalRetriever, SourceChunker
 from algo_weaver.services.validation import ValidationService
 
@@ -58,6 +61,8 @@ def build_reproduction_graph(
     repair: RepairAction | None = None,
     max_repair_attempts: int = 0,
     generator: ArtifactGenerator | None = None,
+    embedding_provider: EmbeddingProvider | None = None,
+    reranker_provider: RerankerProvider | None = None,
 ):
     """Build a reproduction workflow with optional isolated execution and repair.
 
@@ -81,7 +86,14 @@ def build_reproduction_graph(
         source_records = state.get("sources") or [state["source"]]
         sources = [IngestedSource.model_validate(item) for item in source_records]
         chunks = [chunk for source in sources for chunk in SourceChunker().chunk(source)]
-        hits = LocalLexicalRetriever(chunks).search(capability.name, top_k=5)
+        if embedding_provider is not None:
+            hits = HybridRetriever(
+                chunks,
+                embedding_provider,
+                reranker_provider=reranker_provider,
+            ).search(capability.name, top_k=5)
+        else:
+            hits = LocalLexicalRetriever(chunks).search(capability.name, top_k=5)
         return {"hits": [hit.model_dump(mode="json") for hit in hits]}
 
     def plan_node(state: ReproductionState) -> dict:

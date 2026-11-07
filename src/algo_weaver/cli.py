@@ -14,12 +14,15 @@ from algo_weaver.schemas.execution import ExecutionPolicy
 from algo_weaver.services.capability_extractor import CapabilityExtractor
 from algo_weaver.services.code_generation import LLMCodeGenerator, MockCodeGenerator
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
+from algo_weaver.services.embedding import create_embedding_provider
+from algo_weaver.services.hybrid_retrieval import HybridRetriever
 from algo_weaver.services.ingestion import SourceIngestor
 from algo_weaver.services.llm_repair import LLMRepairer
 from algo_weaver.services.metrics import RegressionMetricEvaluator
 from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.repair import BoundedRepairLoop
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
+from algo_weaver.services.reranker import create_reranker_provider
 from algo_weaver.services.retrieval import LocalLexicalRetriever, SourceChunker
 from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
 from algo_weaver.services.template_repair import TemplateRepairer
@@ -224,7 +227,18 @@ def reproduce(
     if additional_batch is not None:
         for additional_source in additional_batch.sources:
             chunks.extend(SourceChunker().chunk(additional_source))
-    hits = LocalLexicalRetriever(chunks).search(capability.name, top_k=5)
+    if settings.embedding_mode != "mock":
+        hits = HybridRetriever(
+            chunks,
+            create_embedding_provider(settings),
+            reranker_provider=(
+                create_reranker_provider(settings)
+                if settings.reranker_mode != "mock"
+                else None
+            ),
+        ).search(capability.name, top_k=5)
+    else:
+        hits = LocalLexicalRetriever(chunks).search(capability.name, top_k=5)
     plan = ReproductionPlanner().build_plan(capability, hits)
     if plan.status != "ready":
         rprint(f"[bold red]Reproduction plan blocked:[/bold red] {plan.blocking_reasons}")

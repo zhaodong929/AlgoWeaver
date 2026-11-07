@@ -110,6 +110,10 @@ uv run algo-weaver reproduce \
 # FastAPI surface
 uv run uvicorn algo_weaver.api:create_app --factory --host 127.0.0.1 --port 8000
 
+# Optional Streamlit dashboard
+uv sync --group dev --extra api --extra retrieval --extra execution --extra ui
+uv run algo-weaver-ui
+
 # API metric evaluation example
 curl -X POST http://127.0.0.1:8000/metrics \
   -H "Content-Type: application/json" \
@@ -179,8 +183,9 @@ ALGOWEAVER_RERANKER_API_KEY=<your-api-key>
 ALGOWEAVER_RERANKER_API_BASE=https://<workspace-id>.cn-beijing.maas.aliyuncs.com/api/v1
 ```
 
-The provider boundaries are live-tested, while lexical retrieval remains the
-default until dense/hybrid retrieval is explicitly enabled by the workflow.
+The provider boundaries are live-tested. Set the embedding and reranker modes
+to `dashscope` to enable the hybrid retrieval path; otherwise lexical retrieval
+is used as the offline fallback.
 
 Do not commit `.env` or API keys. Keep `.env.example` free of secrets.
 
@@ -224,18 +229,20 @@ docs/              # Architecture and design documents
 ## 8. Current acceptance status
 
 - [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
-- [x] `uv run pytest -q` passes in the current environment: 114 passed, 0 skipped.
+- [x] `uv run pytest -q` passes in the current environment: 117 passed, 0 skipped.
 - [x] GitHub Actions CI passes on Python 3.12 and 3.13 (latest verified run #79 on `feat/api-capability-reuse`).
 - [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
 - [x] The capability card records source provenance.
 - [x] Mock-generated output is never marked `verified`.
 - [x] Real Bailian provider calls have been verified for the primary model, code model, embedding model and reranker.
 - [x] Real provider configuration is loaded from environment variables, not source code.
+- [x] Hybrid lexical/dense retrieval and optional reranking are available through injectable providers.
+- [x] Streamlit dashboard starts with the optional `ui` extra and displays evidence, plans, artifacts and reports.
 - [x] Supported text-like sources are normalized and hashed by `SourceIngestor`.
 
 The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports deterministic moving-average template generation, an offline Mock generation label, Pydantic-validated LLM generation and repair boundaries, a real WSL2 Docker execution path for the reviewed inventory capability, and live Bailian provider boundaries. Use `--generation-mode llm --mode litellm` or `--repair --repair-mode llm --mode litellm` only with a configured provider; live provider checks are recorded separately from offline tests.
 
-The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata. Injectable DashScope embedding and reranker adapters are available for the next dense/hybrid workflow; the lexical fallback remains the default. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
+The retrieval path combines lexical evidence with optional Qdrant in-memory dense retrieval and reranking. It returns line-addressable evidence chunks with source IDs, paths and metadata, and falls back to lexical retrieval when semantic providers are not configured. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
 
 Multiple local materials can be supplied with repeated `--additional-input` options. The API equivalent is `additional_sources`; both paths preserve each source's ingestion status and provenance in retrieval hits.
 

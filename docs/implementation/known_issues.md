@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | KI-001 | `uv` was initially unavailable | Lockfile and uv-based install were unverified | `uv 0.13.7`, `uv.lock` and `uv sync --group dev --extra api` now verified | CLOSED |
 | KI-002 | LangGraph was initially unavailable | Graph tests were skipped | LangGraph 1.2.20 installed; full graph tests now run | CLOSED |
-| KI-003 | Docling and complex PDF layout parsing are unavailable; live embedding/reranker providers exist but are not yet wired into graph/API retrieval | WSL2 Docker execution and standalone semantic provider calls are verified; complex PDF layout and end-to-end hybrid retrieval remain unverified | Connect providers to dense/hybrid retrieval after the first live demo | OPEN |
+| KI-003 | Docling and complex PDF layout parsing are unavailable; hybrid retrieval currently uses in-memory Qdrant | Live embedding/reranker calls and the graph/API hybrid path are verified; complex PDF layout and persistent vector service remain unverified | Add persistent Qdrant and complex-document evaluation | OPEN |
 | KI-004 | Project runs locally on Python 3.13.9 while the long-term target prefers Python 3.12 | Local and CI environments differ | CI #50 verified the full workflow on Python 3.12 and 3.13 | CLOSED |
 | KI-005 | Tencent document page was not independently exported by browser automation | Exact page formatting, comments and hidden content are unverified | Use the user-provided source text as the current requirements source | OPEN |
 | KI-006 | `main` has not been merged or published from the feature branch | Stable branch acceptance remains pending | Keep work on feature branches until explicit review/merge approval | OPEN |

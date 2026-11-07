@@ -367,3 +367,12 @@ Every later entry must record the changed module, test command, result, unresolv
 - Validation: `uv run --no-sync pytest -q` -> 114 passed; Ruff passed; Mypy passed for 44 source files. Retrieval provider focus -> 13 passed.
 - Security: the API key was supplied in chat and must be revoked and regenerated before deployment. The local `.env` is ignored and must never be committed.
 - Git commit: `974c528` (`feat: connect Bailian model and retrieval providers`).
+
+## 2026-11-08 — live repair loop, hybrid retrieval and Streamlit UI
+
+- Configured the Bailian workspace models as user-level Windows environment variables, outside the repository. The active roles are `qwen3.8-max-0902`, `deepseek-v4.1-flash-1017`, `qwen3.7-text-embedding-flash`, and `qwen3-rerank`.
+- Added `HybridRetriever` and connected it to LangGraph, CLI and FastAPI. It performs lexical retrieval, Qdrant in-memory dense retrieval, weighted score fusion and optional reranking, while preserving the lexical fallback.
+- Real hybrid evidence: qwen3.7-text-embedding-flash returned 1024-dimensional vectors; qwen3-rerank returned scores 0.8559 and 0.2150 for inventory versus image-classification candidates.
+- Completed a real failed-code repair loop: an intentionally broken moving-average artifact failed in the WSL2 Docker sandbox, `deepseek-v4.1-flash-1017` proposed and applied a patch, and the bounded one-attempt loop ended with `final=passed`.
+- Added a Streamlit dashboard with file upload, mode selection, API execution, evidence, plan, artifact, runtime and report panels. `streamlit run src/algo_weaver/ui.py --server.headless true --server.port 8505` started successfully and `/_stcore/health` returned HTTP 200.
+- Added the optional `ui` dependency group and `algo-weaver-ui` entry point. Full validation: 117 passed, Ruff passed, Mypy passed for 46 source files.
