@@ -2,6 +2,12 @@
 from algo_weaver.services.code_generation import LLMCodeGenerator, MockCodeGenerator
 from algo_weaver.services.code_parser import PythonCodeParser
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
+from algo_weaver.services.embedding import (
+    DashScopeEmbeddingProvider,
+    EmbeddingProvider,
+    MockEmbeddingProvider,
+    create_embedding_provider,
+)
 from algo_weaver.services.ingestion import SourceIngestor
 from algo_weaver.services.llm_repair import LLMRepairer
 from algo_weaver.services.metrics import RegressionMetricEvaluator
@@ -9,6 +15,12 @@ from algo_weaver.services.qdrant_retrieval import QdrantVectorRetriever
 from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.repair import BoundedRepairLoop
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
+from algo_weaver.services.reranker import (
+    DashScopeRerankerProvider,
+    MockRerankerProvider,
+    RerankerProvider,
+    create_reranker_provider,
+)
 from algo_weaver.services.retrieval import (
     LocalLexicalRetriever,
     RetrievalEvaluator,
@@ -21,6 +33,11 @@ from algo_weaver.services.validation import ValidationService
 
 __all__ = [
     "CapabilityRegistry",
+    "DashScopeEmbeddingProvider",
+    "DashScopeRerankerProvider",
+    "EmbeddingProvider",
+    "MockEmbeddingProvider",
+    "MockRerankerProvider",
     "PythonDependencyAnalyzer",
     "BoundedRepairLoop",
     "DockerSandboxRunner",
@@ -36,8 +53,11 @@ __all__ = [
     "SourceIngestor",
     "LLMRepairer",
     "RegressionMetricEvaluator",
+    "RerankerProvider",
     "TemplateArtifactWriter",
     "TemplateRepairer",
     "ValidationService",
     "WslDockerSandboxRunner",
+    "create_embedding_provider",
+    "create_reranker_provider",
 ]

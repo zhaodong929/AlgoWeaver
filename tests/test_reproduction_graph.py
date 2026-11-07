@@ -71,6 +71,19 @@ def test_reproduction_graph_accepts_an_explicit_generator() -> None:
     assert result["bundle"]["plan"]["generation_mode"] == "mock"
 
 
+def test_reproduction_graph_routes_blocked_plan_without_generating() -> None:
+    state = _state()
+    capability = AlgorithmCapability.model_validate(state["capability"]).model_copy(
+        update={"algorithm_steps": []}
+    )
+    state["capability"] = capability.model_dump(mode="json")
+
+    result = build_reproduction_graph().invoke(state)
+
+    assert "algorithm_steps" in result["error"]
+    assert "bundle" not in result
+
+
 def _state() -> dict:
     source = IngestedSource(
         source_id="doc-graph-execution",

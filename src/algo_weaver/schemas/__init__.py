@@ -9,6 +9,7 @@ from algo_weaver.schemas.repair import RepairAttempt, RepairLoopResult, RepairPa
 from algo_weaver.schemas.reproduction import GeneratedArtifact, ReproductionPlan
 from algo_weaver.schemas.retrieval import (
     EvidenceChunk,
+    RerankResult,
     RetrievalCase,
     RetrievalCaseResult,
     RetrievalEvaluation,
@@ -36,6 +37,7 @@ __all__ = [
     "RetrievalCase",
     "RetrievalCaseResult",
     "RetrievalEvaluation",
+    "RerankResult",
     "ValidationCheck",
     "ValidationReport",
 ]

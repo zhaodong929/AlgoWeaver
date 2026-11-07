@@ -5,7 +5,9 @@ from algo_weaver.llm.base import ChatModel
 from algo_weaver.llm.mock import MockChatModel
 
 
-def create_chat_model(settings: Settings) -> ChatModel:
+def create_chat_model(settings: Settings, *, model: str | None = None) -> ChatModel:
+    if model:
+        settings = settings.model_copy(update={"llm_model": model})
     if settings.llm_mode == "mock":
         return MockChatModel()
     if settings.llm_mode == "litellm":

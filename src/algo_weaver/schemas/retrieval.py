@@ -37,6 +37,16 @@ class RetrievalHit(BaseModel):
     chunk: EvidenceChunk
 
 
+class RerankResult(BaseModel):
+    """One reranker score tied to the original candidate document index."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    index: int = Field(ge=0)
+    score: float
+    text: str = Field(min_length=1)
+
+
 class RetrievalCase(BaseModel):
     """One deterministic retrieval evaluation query."""
 

@@ -127,9 +127,10 @@ Edit `.env`:
 
 ```dotenv
 ALGOWEAVER_LLM_MODE=litellm
-ALGOWEAVER_LLM_MODEL=openai/<your-model-name>
+ALGOWEAVER_LLM_MODEL=dashscope/qwen3.8-max-0902
+ALGOWEAVER_CODE_LLM_MODEL=dashscope/deepseek-v4.1-flash-1017
 ALGOWEAVER_LLM_API_KEY=<your-api-key>
-ALGOWEAVER_LLM_API_BASE=
+ALGOWEAVER_LLM_API_BASE=https://<workspace-id>.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
 ALGOWEAVER_LLM_TEMPERATURE=0.0
 ```
 
@@ -159,6 +160,27 @@ Then run:
 ```bash
 uv run algo-weaver extract --input examples/moving_average/algorithm.md --mode litellm
 ```
+
+`ALGOWEAVER_LLM_MODEL` is used for extraction and planning. When set,
+`ALGOWEAVER_CODE_LLM_MODEL` is used for LLM code generation and repair. The
+current live Bailian acceptance used `qwen3.8-max-0902` for the primary Agent
+and `deepseek-v4.1-flash-1017` for code generation and repair.
+
+Optional semantic retrieval providers are configured separately:
+
+```dotenv
+ALGOWEAVER_EMBEDDING_MODE=dashscope
+ALGOWEAVER_EMBEDDING_MODEL=qwen3.7-text-embedding-flash
+ALGOWEAVER_EMBEDDING_API_KEY=<your-api-key>
+ALGOWEAVER_EMBEDDING_API_BASE=https://<workspace-id>.cn-beijing.maas.aliyuncs.com/api/v1
+ALGOWEAVER_RERANKER_MODE=dashscope
+ALGOWEAVER_RERANKER_MODEL=qwen3-rerank
+ALGOWEAVER_RERANKER_API_KEY=<your-api-key>
+ALGOWEAVER_RERANKER_API_BASE=https://<workspace-id>.cn-beijing.maas.aliyuncs.com/api/v1
+```
+
+The provider boundaries are live-tested, while lexical retrieval remains the
+default until dense/hybrid retrieval is explicitly enabled by the workflow.
 
 Do not commit `.env` or API keys. Keep `.env.example` free of secrets.
 
@@ -202,17 +224,18 @@ docs/              # Architecture and design documents
 ## 8. Current acceptance status
 
 - [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
-- [x] `uv run pytest -q` passes in the current environment: 106 passed, 0 skipped.
+- [x] `uv run pytest -q` passes in the current environment: 114 passed, 0 skipped.
 - [x] GitHub Actions CI passes on Python 3.12 and 3.13 (latest verified run #79 on `feat/api-capability-reuse`).
 - [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
 - [x] The capability card records source provenance.
 - [x] Mock-generated output is never marked `verified`.
+- [x] Real Bailian provider calls have been verified for the primary model, code model, embedding model and reranker.
 - [x] Real provider configuration is loaded from environment variables, not source code.
 - [x] Supported text-like sources are normalized and hashed by `SourceIngestor`.
 
-The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports deterministic moving-average template generation, an offline Mock generation label, Pydantic-validated LLM generation and repair boundaries, and a real WSL2 Docker execution path for the reviewed inventory capability. Real-provider generation/repair and semantic embedding/reranking remain explicitly unverified. Use `--generation-mode llm --mode litellm` or `--repair --repair-mode llm --mode litellm` only with a configured provider; tests do not claim a live provider call.
+The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports deterministic moving-average template generation, an offline Mock generation label, Pydantic-validated LLM generation and repair boundaries, a real WSL2 Docker execution path for the reviewed inventory capability, and live Bailian provider boundaries. Use `--generation-mode llm --mode litellm` or `--repair --repair-mode llm --mode litellm` only with a configured provider; live provider checks are recorded separately from offline tests.
 
-The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata; Qdrant, embeddings and reranking remain later adapters. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
+The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata. Injectable DashScope embedding and reranker adapters are available for the next dense/hybrid workflow; the lexical fallback remains the default. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
 
 Multiple local materials can be supplied with repeated `--additional-input` options. The API equivalent is `additional_sources`; both paths preserve each source's ingestion status and provenance in retrieval hits.
 

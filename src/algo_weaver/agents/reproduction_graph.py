@@ -92,6 +92,9 @@ def build_reproduction_graph(
             return {"error": "; ".join(plan.blocking_reasons)}
         return {"plan": plan.model_dump(mode="json")}
 
+    def route_after_plan(state: ReproductionState) -> str:
+        return "error" if "error" in state else "generate"
+
     def generate_node(state: ReproductionState) -> dict:
         plan = ReproductionPlan.model_validate(state["plan"])
         hits = [RetrievalHit.model_validate(item) for item in state.get("hits", [])]
@@ -200,7 +203,11 @@ def build_reproduction_graph(
     builder.add_node("validate", validate_node)
     builder.add_edge(START, "retrieve")
     builder.add_edge("retrieve", "plan")
-    builder.add_edge("plan", "generate")
+    builder.add_conditional_edges(
+        "plan",
+        route_after_plan,
+        {"error": END, "generate": "generate"},
+    )
     if execution_enabled:
         builder.add_edge("generate", "write_artifacts")
         builder.add_edge("write_artifacts", "execute")

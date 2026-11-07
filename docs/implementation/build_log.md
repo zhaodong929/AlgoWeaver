@@ -355,3 +355,14 @@
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
+
+## 2026-11-08 — live Bailian providers and model routing
+
+- Configured the local ignored `.env` for the user's Bailian workspace without adding any secret to tracked files. The primary model is `dashscope/qwen3.8-max-0902`; `ALGOWEAVER_CODE_LLM_MODEL` routes generation and LLM repair to `dashscope/deepseek-v4.1-flash-1017`.
+- Added provider-neutral `EmbeddingProvider` and `RerankerProvider` boundaries with deterministic mocks and explicit DashScope implementations. `qwen3.7-text-embedding-flash` returned two 1024-dimensional vectors. `qwen3-rerank` returned ordered relevance scores through the workspace OpenAI-compatible rerank endpoint.
+- The requested `text-embedding-v4` endpoint returned HTTP 403 `insufficient_quota` because its free quota is exhausted in the current workspace; the enabled `qwen3.7-text-embedding-flash` remains the active fallback.
+- Fixed the reranker request format to use `/compatible-api/v1/reranks`; the DashScope `/api/v1/services/rank/...` route returned the official `url error` for this workspace/model combination.
+- Fixed LangGraph plan-error routing so an incomplete capability returns a controlled API error instead of reaching the generation node with a missing plan.
+- Live evidence: qwen JSON smoke test passed; DeepSeek JSON smoke test passed; CLI live extraction passed; CLI routed reproduction produced `algorithm.py` and `test_algorithm.py`; FastAPI `/reproduce` returned 200 with a ready plan and two LLM artifacts for a complete inventory description.
+- Validation: `uv run --no-sync pytest -q` -> 114 passed; Ruff passed; Mypy passed for 44 source files. Retrieval provider focus -> 13 passed.
+- Security: the API key was supplied in chat and must be revoked and regenerated before deployment. The local `.env` is ignored and must never be committed.

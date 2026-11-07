@@ -233,7 +233,9 @@ def reproduce(
     if generation_mode == "mock":
         bundle = MockCodeGenerator().generate(plan, hits)
     elif generation_mode == "llm":
-        bundle = LLMCodeGenerator(create_chat_model(settings)).generate(plan, hits)
+        bundle = LLMCodeGenerator(
+            create_chat_model(settings, model=settings.code_llm_model)
+        ).generate(plan, hits)
     else:
         bundle = TemplateArtifactWriter().generate(plan)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -293,7 +295,9 @@ def reproduce(
         )
         if repair and execution_result.status in {"failed", "timeout"}:
             repairer = (
-                LLMRepairer(create_chat_model(settings))
+                LLMRepairer(
+                    create_chat_model(settings, model=settings.code_llm_model)
+                )
                 if repair_mode == "llm"
                 else TemplateRepairer()
             )

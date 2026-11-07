@@ -269,7 +269,9 @@ def create_app(
             repair_callback = None
             if request.repair:
                 repair_callback = (
-                    LLMRepairer(create_chat_model(model_settings)).repair
+                    LLMRepairer(
+                        create_chat_model(model_settings, model=model_settings.code_llm_model)
+                    ).repair
                     if request.repair_mode == "llm"
                     else _template_repair_callback
                 )
@@ -277,7 +279,9 @@ def create_app(
             if request.generation_mode == "mock":
                 generator = MockCodeGenerator()
             elif request.generation_mode == "llm":
-                generator = LLMCodeGenerator(create_chat_model(model_settings))
+                generator = LLMCodeGenerator(
+                    create_chat_model(model_settings, model=model_settings.code_llm_model)
+                )
             metric_execution: ExecutionResult | None = None
             metric_report: dict | None = None
             if request.execute:
