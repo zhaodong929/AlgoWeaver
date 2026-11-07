@@ -27,7 +27,7 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 - WSL CLI `--backend wsl --execute` recorded `status=passed` for the generated unittest. The reviewed-capability run promoted `cap_inventory_forecast_reviewed` to `verified`, and `--reuse-query` revalidated that verified card; the Mock extraction run remained `needs_review`.
 - FastAPI tests cover `/health`, `/extract`, `/metrics` and `/reproduce`; execution, bounded repair, sandbox metric collection and pending registry persistence are covered with injected fake runners. A real `/reproduce` WSL2 run returned `execution=passed`, `metric_execution=passed`, and thresholded MAE/RMSE `overall_status="passed"` for the inventory moving-average scenario.
 - Git branch `feat/api-capability-reuse` contains the current generation, repair, API metrics and verified reuse boundaries; `main` has not been merged.
-- GitHub Actions run #72 passed on both Python 3.12 and 3.13 after the WSL platform gate, CLI error-boundary, structured repair, API metrics and verified reuse changes.
+- GitHub Actions run #74 passed on both Python 3.12 and 3.13 after the WSL platform gate, CLI error-boundary, structured repair, API metrics and verified reuse changes.
 
 ## Acceptance conclusion
 

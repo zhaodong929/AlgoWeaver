@@ -341,7 +341,7 @@
 
 - Added `auto_reuse=true` to `/reproduce`. After extraction, the API performs a verified-only registry name match; a hit replaces the draft capability and returns its `reused_record`. Explicit `reuse_query` and `auto_reuse` are mutually exclusive.
 - Added regression coverage for automatic name matching and the existing explicit reuse/missing-match paths.
-- Validation: API tests -> 19 passed; full Windows validation -> 106 passed, 0 skipped; Ruff and Mypy passed for 41 source files.
+- Validation: API tests -> 19 passed; full Windows validation -> 106 passed, 0 skipped; Linux/Python 3.13 with all CI extras -> 104 passed, 1 Windows-only WSL skip; Ruff and Mypy passed for 41 source files. GitHub Actions #74 passed on Python 3.12 and 3.13.
 - Unresolved: semantic embedding/reranker-based reuse remains open.
 - Git commit: `f42e604` (`feat: add automatic verified reuse by name`).
 
