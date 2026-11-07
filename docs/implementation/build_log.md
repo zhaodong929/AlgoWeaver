@@ -337,6 +337,14 @@
 - Unresolved: semantic retrieval-driven reuse without an explicit query remains open.
 - Git commit: `152dce4` (`feat: reuse verified capabilities in API`).
 
+## 2026-11-08 — automatic verified reuse by extracted name
+
+- Added `auto_reuse=true` to `/reproduce`. After extraction, the API performs a verified-only registry name match; a hit replaces the draft capability and returns its `reused_record`. Explicit `reuse_query` and `auto_reuse` are mutually exclusive.
+- Added regression coverage for automatic name matching and the existing explicit reuse/missing-match paths.
+- Validation: API tests -> 19 passed; full Windows validation -> 106 passed, 0 skipped; Ruff and Mypy passed for 41 source files.
+- Unresolved: semantic embedding/reranker-based reuse remains open.
+- Git commit: `f42e604` (`feat: add automatic verified reuse by name`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

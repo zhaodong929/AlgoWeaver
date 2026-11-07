@@ -202,7 +202,7 @@ docs/              # Architecture and design documents
 ## 8. Current acceptance status
 
 - [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
-- [x] `uv run pytest -q` passes in the current environment: 103 passed, 0 skipped.
+- [x] `uv run pytest -q` passes in the current environment: 106 passed, 0 skipped.
 - [x] GitHub Actions CI passes on Python 3.12 and 3.13 (latest verified run #72 on `feat/api-capability-reuse`).
 - [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
 - [x] The capability card records source provenance.
@@ -216,7 +216,7 @@ The current retrieval baseline is intentionally lexical and local. It returns li
 
 Multiple local materials can be supplied with repeated `--additional-input` options. The API equivalent is `additional_sources`; both paths preserve each source's ingestion status and provenance in retrieval hits.
 
-The API can reuse a verified registry capability by adding `reuse_query` to `/reproduce`; it returns the selected version in `reused_record` and skips a new capability extraction.
+The API can reuse a verified registry capability by adding `reuse_query` to `/reproduce`; it returns the selected version in `reused_record` and skips a new capability extraction. Set `auto_reuse=true` to try a verified name match after extraction.
 
 For a human-reviewed capability card, pass `--capability-file examples/inventory_forecast/reviewed_capability.json`; with `--backend wsl --execute --registry ...`, the runtime report can promote the card to `verified`. The same execution/repair boundary is available from FastAPI `/reproduce` with explicit request flags. These paths are explicitly human-reviewed and do not claim real LLM extraction.
 
