@@ -157,6 +157,13 @@
 - This is a verified human-reviewed path; it does not claim real LLM extraction.
 - Full validation after this change: `uv run pytest -q` -> 63 passed, 0 skipped; Ruff and Mypy passed.
 
+## 2026-11-07 — verified reuse CLI and runtime duration metric
+
+- Added `sandbox.duration` to runtime reports with measured wall time.
+- Added `algo-weaver reuse <query>`; it returns only registry records with `status="verified"`.
+- CLI reuse regression proves draft records are excluded and promoted records are returned.
+- Full validation after this change: `uv run pytest -q` -> 64 passed, 0 skipped; Ruff and Mypy passed.
+
 ## 2026-11-07 — CI optional-extra coverage
 
 - Updated GitHub Actions to install API, retrieval and execution extras on both Python 3.12 and 3.13 matrix jobs.

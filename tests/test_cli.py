@@ -1,6 +1,9 @@
 from typer.testing import CliRunner
 
 from algo_weaver.cli import app
+from algo_weaver.schemas.capability import AlgorithmCapability, EvidenceRef
+from algo_weaver.schemas.validation import ValidationCheck, ValidationReport
+from algo_weaver.services.registry import CapabilityRegistry
 
 
 def test_version_command() -> None:
@@ -65,3 +68,41 @@ def test_reproduce_accepts_an_explicit_reviewed_capability_file(tmp_path) -> Non
 
     assert result.exit_code == 0, result.stdout
     assert "reviewed capability card" in result.stdout
+
+
+def test_reuse_command_returns_verified_capabilities_only(tmp_path) -> None:
+    registry_path = tmp_path / "capabilities.sqlite3"
+    registry = CapabilityRegistry(registry_path)
+    capability = AlgorithmCapability(
+        capability_id="cap_reuse_cli",
+        name="Inventory Forecast",
+        problem_definition="Forecast demand.",
+        inputs=["sales"],
+        outputs=["forecast"],
+        algorithm_steps=["Average recent sales."],
+        evidence=[EvidenceRef(source_id="doc", excerpt="forecast")],
+    )
+    registry.save(capability)
+    report = ValidationReport(
+        target_type="capability",
+        target_id=capability.capability_id,
+        checks=[
+            ValidationCheck(
+                check_id="pass",
+                name="pass",
+                status="passed",
+                message="pass",
+            )
+        ],
+        overall_status="passed",
+    )
+    registry.promote_verified(capability.capability_id, report)
+
+    result = CliRunner().invoke(
+        app,
+        ["reuse", "Inventory", "--registry", str(registry_path)],
+    )
+
+    assert result.exit_code == 0, result.stdout
+    assert "cap_reuse_cli" in result.stdout
+    assert "verified" in result.stdout

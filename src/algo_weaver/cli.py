@@ -95,6 +95,19 @@ def version() -> None:
 
 
 @app.command()
+def reuse(
+    query: Annotated[str, typer.Argument(help="Capability name or text to search")],
+    registry_path: Annotated[Path, typer.Option("--registry")] = Path(
+        "data/processed/capabilities.sqlite3"
+    ),
+    limit: Annotated[int, typer.Option("--limit", min=1, max=100)] = 20,
+) -> None:
+    """Search only independently verified capability versions for reuse."""
+    records = CapabilityRegistry(registry_path).search_reusable(query, limit=limit)
+    rprint(json.dumps([record.model_dump(mode="json") for record in records], ensure_ascii=False, indent=2))
+
+
+@app.command()
 def reproduce(
     input_file: Annotated[Path, typer.Option("--input", "-i", exists=True, readable=True)],
     output_dir: Annotated[Path, typer.Option("--output-dir", "-o")] = Path(

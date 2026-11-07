@@ -119,6 +119,13 @@ class ValidationService:
                 ),
                 details={"exit_code": execution.exit_code or -1},
             ),
+            ValidationCheck(
+                check_id="sandbox.duration",
+                name="Sandbox duration metric",
+                status="passed" if execution.status == "passed" else "failed",
+                message=f"Sandbox wall time: {execution.duration_seconds:.3f} seconds.",
+                details={"duration_seconds": execution.duration_seconds},
+            ),
         ]
         for report in artifact_reports or []:
             checks.append(
