@@ -1,8 +1,9 @@
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 import pytest
 
 from algo_weaver.schemas.execution import ExecutionPolicy
+from algo_weaver.services import sandbox as sandbox_module
 from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
 
 
@@ -61,7 +62,15 @@ def test_runner_applies_isolation_policy_with_fake_client(tmp_path: Path) -> Non
     assert calls["removed"] is True
 
 
-def test_wsl_runner_translates_policy_without_host_execution(tmp_path: Path) -> None:
+def test_windows_to_wsl_path_uses_drive_mounts() -> None:
+    assert sandbox_module._windows_to_wsl_path(PureWindowsPath(r"C:\workspace\job")) == (
+        "/mnt/c/workspace/job"
+    )
+
+
+def test_wsl_runner_translates_policy_without_host_execution(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     calls: dict[str, object] = {}
 
     class Completed:
@@ -74,6 +83,7 @@ def test_wsl_runner_translates_policy_without_host_execution(tmp_path: Path) -> 
         calls["kwargs"] = kwargs
         return Completed()
 
+    monkeypatch.setattr(sandbox_module, "_windows_to_wsl_path", lambda _: "/mnt/c/workspace")
     result = WslDockerSandboxRunner(run_fn=fake_run).run(
         tmp_path,
         ["python", "-m", "unittest", "discover"],
