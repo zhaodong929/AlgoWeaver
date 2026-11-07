@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 pytest.importorskip("fastapi")
@@ -134,6 +136,66 @@ def test_reproduce_endpoint_requires_litellm_for_llm_repair() -> None:
 
     assert response.status_code == 400
     assert "requires mode='litellm'" in response.json()["detail"]
+
+
+def test_reproduce_endpoint_collects_metrics_inside_sandbox() -> None:
+    def runner(_backend: str, _workspace) -> ExecutionResult:
+        return ExecutionResult(
+            status="passed",
+            command=["python", "-m", "unittest"],
+            image="python:3.12-slim",
+            exit_code=0,
+            duration_seconds=0.1,
+        )
+
+    def metric_runner(_backend: str, workspace, command: list[str]) -> ExecutionResult:
+        assert (workspace / "metric_input.json").exists()
+        assert command[:2] == ["python", "-c"]
+        return ExecutionResult(
+            status="passed",
+            command=command,
+            image="python:3.12-slim",
+            exit_code=0,
+            stdout=json.dumps([11.0, 13.0, 15.0]),
+            duration_seconds=0.1,
+        )
+
+    response = TestClient(
+        create_app(execution_runner=runner, metric_runner=metric_runner)
+    ).post(
+        "/reproduce",
+        json={
+            "source_text": "# 移动平均算法\n用于时间序列平滑。",
+            "source_id": "api-sandbox-metrics",
+            "execute": True,
+            "metrics": {
+                "actual": [10.0, 12.0, 14.0, 16.0],
+                "window": 2,
+                "max_mae": 1.0,
+                "max_rmse": 1.0,
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["metric_execution"]["status"] == "passed"
+    assert payload["metric_report"]["sample_count"] == 3
+    assert payload["metric_report"]["overall_status"] == "passed"
+
+
+def test_reproduce_endpoint_requires_execution_for_sandbox_metrics() -> None:
+    response = TestClient(create_app()).post(
+        "/reproduce",
+        json={
+            "source_text": "# moving average\nSmooth a time series.",
+            "source_id": "api-metrics-static",
+            "metrics": {"actual": [1.0, 2.0, 3.0]},
+        },
+    )
+
+    assert response.status_code == 400
+    assert "requires execute=true" in response.json()["detail"]
 
 
 def test_reproduce_endpoint_retrieves_additional_sources() -> None:

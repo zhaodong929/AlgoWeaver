@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from collections.abc import Callable
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -31,6 +32,7 @@ from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRu
 from algo_weaver.services.template_repair import TemplateRepairer
 
 ExecutionRunnerFactory = Callable[[str, Path], ExecutionResult]
+MetricRunnerFactory = Callable[[str, Path, list[str]], ExecutionResult]
 
 
 def _template_repair_callback(
@@ -67,6 +69,7 @@ class ReproduceRequest(ExtractRequest):
     additional_sources: list[AdditionalSourceRequest] = Field(default_factory=list)
     generation_mode: Literal["template", "mock", "llm"] = "template"
     repair_mode: Literal["template", "llm"] = "template"
+    metrics: SandboxMetricsRequest | None = None
 
 
 class MetricsRequest(BaseModel):
@@ -77,9 +80,20 @@ class MetricsRequest(BaseModel):
     max_rmse: float | None = Field(default=None, ge=0)
 
 
+class SandboxMetricsRequest(BaseModel):
+    """Safe inventory metric configuration for a generated moving-average artifact."""
+
+    task: Literal["inventory_demand"] = "inventory_demand"
+    actual: list[float] = Field(min_length=1)
+    window: int = Field(default=3, ge=1)
+    max_mae: float | None = Field(default=None, ge=0)
+    max_rmse: float | None = Field(default=None, ge=0)
+
+
 def create_app(
     settings: Settings | None = None,
     execution_runner: ExecutionRunnerFactory | None = None,
+    metric_runner: MetricRunnerFactory | None = None,
 ):
     """Create the optional API app; importing this module does not require FastAPI."""
     try:
@@ -144,6 +158,16 @@ def create_app(
                     status_code=400,
                     detail="repair_mode='llm' requires mode='litellm'",
                 )
+            if request.metrics is not None and not request.execute:
+                raise HTTPException(
+                    status_code=400,
+                    detail="metrics requires execute=true",
+                )
+            if request.metrics is not None and request.metrics.window > len(request.metrics.actual):
+                raise HTTPException(
+                    status_code=400,
+                    detail="metrics.window cannot exceed the number of actual samples",
+                )
             model_settings = active_settings.model_copy(update={"llm_mode": request.mode})
             extractor = CapabilityExtractor(
                 create_chat_model(model_settings),
@@ -199,6 +223,20 @@ def create_app(
                     policy=ExecutionPolicy(),
                 )
 
+            def run_metric_in_sandbox(workspace: Path, command: list[str]) -> ExecutionResult:
+                if metric_runner is not None:
+                    return metric_runner(request.backend, workspace, command)
+                if execution_runner is not None:
+                    raise ValueError(
+                        "metric_runner is required when an execution_runner is injected"
+                    )
+                runner = (
+                    WslDockerSandboxRunner()
+                    if request.backend == "wsl"
+                    else DockerSandboxRunner()
+                )
+                return runner.run(workspace, command, policy=ExecutionPolicy())
+
             repair_callback = None
             if request.repair:
                 repair_callback = (
@@ -211,6 +249,8 @@ def create_app(
                 generator = MockCodeGenerator()
             elif request.generation_mode == "llm":
                 generator = LLMCodeGenerator(create_chat_model(model_settings))
+            metric_execution: ExecutionResult | None = None
+            metric_report: dict | None = None
             if request.execute:
                 with TemporaryDirectory(prefix="algo-weaver-api-") as workspace:
                     result = build_reproduction_graph(
@@ -220,6 +260,43 @@ def create_app(
                         max_repair_attempts=request.max_repair_attempts,
                         generator=generator,
                     ).invoke(state)
+                    if request.metrics is not None and result.get("execution", {}).get("status") == "passed":
+                        workspace_path = Path(workspace)
+                        (workspace_path / "metric_input.json").write_text(
+                            json.dumps(
+                                {
+                                    "actual": request.metrics.actual,
+                                    "window": request.metrics.window,
+                                }
+                            ),
+                            encoding="utf-8",
+                        )
+                        metric_command = [
+                            "python",
+                            "-c",
+                            (
+                                "import json; "
+                                "from algorithm import moving_average; "
+                                "payload=json.load(open('/workspace/metric_input.json', encoding='utf-8')); "
+                                "print(json.dumps(moving_average(payload['actual'], payload['window'])))"
+                            ),
+                        ]
+                        metric_execution = run_metric_in_sandbox(workspace_path, metric_command)
+                        if metric_execution.status == "passed":
+                            try:
+                                predicted = json.loads(metric_execution.stdout.strip())
+                            except (json.JSONDecodeError, TypeError) as exc:
+                                raise HTTPException(
+                                    status_code=422,
+                                    detail=f"metric sandbox returned invalid JSON: {exc}",
+                                ) from exc
+                            metric_report = RegressionMetricEvaluator().evaluate(
+                                request.metrics.actual[request.metrics.window - 1 :],
+                                predicted,
+                                task=request.metrics.task,
+                                max_mae=request.metrics.max_mae,
+                                max_rmse=request.metrics.max_rmse,
+                            ).model_dump(mode="json")
             else:
                 result = build_reproduction_graph(generator=generator).invoke(state)
 
@@ -263,6 +340,10 @@ def create_app(
                 response["execution"] = result["execution"]
                 if "repair_result" in result:
                     response["repair_result"] = result["repair_result"]
+                if metric_execution is not None:
+                    response["metric_execution"] = metric_execution.model_dump(mode="json")
+                if metric_report is not None:
+                    response["metric_report"] = metric_report
             return response
         except HTTPException:
             raise
