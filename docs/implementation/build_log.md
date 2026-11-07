@@ -121,6 +121,13 @@
 - Added synthetic DOCX/PPTX/XLSX fixtures. Focused ingestion validation: 9 passed; Ruff/Mypy passed.
 - Full validation after the Office fallback commit: `uv run pytest -q` -> 58 passed, 0 skipped; Ruff and Mypy passed.
 
+## 2026-11-07 — basic PDF literal-text fallback
+
+- Added a constrained stdlib PDF fallback for simple `BT ... (text) Tj ... ET` literal text operators when Docling is unavailable.
+- Complex layout, compressed streams, OCR and table extraction remain explicitly outside this fallback.
+- Focused ingestion validation: 10 passed; Ruff and Mypy passed.
+- Full validation after the PDF fallback: `uv run pytest -q` -> 59 passed, 0 skipped.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

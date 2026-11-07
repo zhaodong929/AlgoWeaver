@@ -83,6 +83,21 @@ class SourceIngestor:
             try:
                 content = _decode_with_docling(source_path)
             except ModuleNotFoundError:
+                if source_format == "pdf":
+                    try:
+                        content = _decode_pdf_text(raw)
+                    except ValueError:
+                        content = ""
+                    if content:
+                        return _office_result(
+                            identifier,
+                            source_path,
+                            source_format,
+                            media_type,
+                            digest,
+                            content,
+                            parser="stdlib-pdf-text",
+                        )
                 if source_format in {"docx", "pptx", "xlsx"}:
                     try:
                         content = _decode_with_stdlib_office(source_path, source_format)
@@ -183,6 +198,23 @@ def _decode_with_docling(path: Path) -> str:
 
     result = DocumentConverter().convert(str(path))
     return cast(str, result.document.export_to_markdown())
+
+
+def _decode_pdf_text(raw: bytes) -> str:
+    """Extract simple literal text operators without claiming layout support."""
+    text = raw.decode("latin-1", errors="ignore")
+    blocks = re.findall(r"BT(.*?)ET", text, flags=re.DOTALL)
+    values: list[str] = []
+    for block in blocks:
+        for match in re.finditer(r"\(((?:\\.|[^\\)])*)\)\s*Tj", block):
+            value = match.group(1)
+            value = re.sub(r"\\([\\()\\])", r"\1", value)
+            value = value.replace(r"\n", "\n").replace(r"\r", "\r")
+            if value.strip():
+                values.append(value)
+    if not values:
+        raise ValueError("no literal PDF text operators found")
+    return "\n".join(values)
 
 
 def _decode_with_stdlib_office(path: Path, source_format: SourceFormat) -> str:

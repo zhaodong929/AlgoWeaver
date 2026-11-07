@@ -133,3 +133,19 @@ def test_pptx_stdlib_fallback_extracts_slide_text(tmp_path: Path, monkeypatch) -
     assert result.status == "ingested"
     assert result.content == "Forecast result"
     assert result.metadata["parser"] == "stdlib-office"
+
+
+def test_pdf_stdlib_fallback_extracts_basic_literal_text(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "report.pdf"
+    source.write_bytes(b"%PDF-1.4\nBT\n(Inventory forecast) Tj\nET\n%%EOF")
+    monkeypatch.setattr(
+        ingestion,
+        "_decode_with_docling",
+        lambda _: (_ for _ in ()).throw(ModuleNotFoundError()),
+    )
+
+    result = SourceIngestor().ingest_path(source)
+
+    assert result.status == "ingested"
+    assert result.content == "Inventory forecast"
+    assert result.metadata["parser"] == "stdlib-pdf-text"
