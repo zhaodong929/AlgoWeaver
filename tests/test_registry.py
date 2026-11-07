@@ -65,6 +65,7 @@ def test_registry_requires_passing_report_for_verified_promotion(tmp_path: Path)
     promoted = registry.promote_verified("cap_registry", passing)
     assert promoted.status == "verified"
     assert promoted.version == 2
+    assert registry.search_reusable("Moving")[0].status == "verified"
 
 
 def test_registry_rejects_invalid_queries(tmp_path: Path) -> None:

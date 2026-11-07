@@ -86,23 +86,39 @@ class CapabilityRegistry:
             ).fetchone()
         return _row_to_version(row) if row else None
 
-    def search(self, query: str, *, limit: int = 20) -> list[CapabilityVersion]:
+    def search(
+        self,
+        query: str,
+        *,
+        limit: int = 20,
+        status: str | None = None,
+    ) -> list[CapabilityVersion]:
         if not query.strip():
             raise ValueError("query cannot be empty")
         if limit < 1:
             raise ValueError("limit must be positive")
+        conditions = ["name LIKE ?"]
+        parameters: list[str | int] = [f"%{query.strip()}%"]
+        if status is not None:
+            conditions.append("status = ?")
+            parameters.append(status)
+        parameters.append(limit)
         with self._connect() as connection:
             rows = connection.execute(
-                """
+                f"""
                 SELECT capability_id, version, status, name, created_at, payload_json
                 FROM capabilities
-                WHERE name LIKE ?
+                WHERE {' AND '.join(conditions)}
                 ORDER BY created_at DESC, version DESC
                 LIMIT ?
                 """,
-                (f"%{query.strip()}%", limit),
+                parameters,
             ).fetchall()
         return [_row_to_version(row) for row in rows]
+
+    def search_reusable(self, query: str, *, limit: int = 20) -> list[CapabilityVersion]:
+        """Return only independently verified capabilities eligible for reuse."""
+        return self.search(query, limit=limit, status="verified")
 
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self.database_path)

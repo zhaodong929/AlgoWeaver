@@ -99,6 +99,11 @@
 - Full validation: `uv run pytest -q` -> 54 passed, 0 skipped; Ruff and Mypy passed for 36 source files.
 - This validates the vector-store/provenance contract only; no embedding model or remote vector service was used.
 
+## 2026-11-07 — verified-only reuse search
+
+- Extended `CapabilityRegistry` with `search_reusable()`, which returns only versions whose status is `verified`.
+- Added regression coverage proving draft/partial records are not eligible for reuse until a passing independent report promotes them.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
