@@ -321,6 +321,13 @@
 - Unresolved: a real API WSL metrics run and support for other task types/automatic registry promotion by metrics remain open.
 - Git commit: `5532c16` (`feat: collect metrics in API sandbox`).
 
+## 2026-11-08 — metric-aware capability promotion
+
+- API persistence now requires the runtime report to pass and, when `metrics` is requested, the sandbox metric report to have `overall_status="passed"` before calling `promote_verified()`.
+- Added a regression test proving a failed metric keeps the registry record at `needs_review` even when the test runner itself passes.
+- Validation: API tests -> 16 passed; full Windows suite -> 103 passed, 0 skipped; Linux/Python 3.13 with all CI extras -> 102 passed, 1 Windows-only WSL skip; Ruff and Mypy passed for 41 source files.
+- Git commit: `7523f4b` (`feat: gate registry promotion on metric pass`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
