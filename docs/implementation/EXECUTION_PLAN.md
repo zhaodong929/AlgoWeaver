@@ -4,7 +4,7 @@ Updated: 2026-11-07 (Asia/Shanghai)
 
 ## Current milestone
 
-**Phase 8: sandbox metrics integration.** The reproduction graph, CLI and API support bounded repair, and `/reproduce` can now run a fixed inventory metric command in the same Docker/WSL context and return thresholded MAE/RMSE results. The next executable work is a real provider acceptance run when credentials are available, while automated reuse and broader task metric policies remain independent gaps.
+**Phase 7/8: verified capability reuse.** The reproduction graph, CLI and API support bounded repair, sandbox metrics and explicit verified-only capability reuse. `/reproduce` returns the selected registry version and feeds that persisted card into the same plan/generation/validation path. The next executable work is a real provider acceptance run when credentials are available, while semantic automatic reuse and broader task metric policies remain independent gaps.
 
 ## Milestones
 

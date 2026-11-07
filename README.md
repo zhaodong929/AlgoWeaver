@@ -216,6 +216,8 @@ The current retrieval baseline is intentionally lexical and local. It returns li
 
 Multiple local materials can be supplied with repeated `--additional-input` options. The API equivalent is `additional_sources`; both paths preserve each source's ingestion status and provenance in retrieval hits.
 
+The API can reuse a verified registry capability by adding `reuse_query` to `/reproduce`; it returns the selected version in `reused_record` and skips a new capability extraction.
+
 For a human-reviewed capability card, pass `--capability-file examples/inventory_forecast/reviewed_capability.json`; with `--backend wsl --execute --registry ...`, the runtime report can promote the card to `verified`. The same execution/repair boundary is available from FastAPI `/reproduce` with explicit request flags. These paths are explicitly human-reviewed and do not claim real LLM extraction.
 
 Add `--repair` to enable bounded repair after a failed or timed-out sandbox run. The default restores the reviewed template; `--repair-mode llm` uses a configured provider and still requires `--mode litellm`.
