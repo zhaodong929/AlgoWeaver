@@ -1,5 +1,6 @@
 """Command-line interface for AlgoWeaver."""
 
+import csv
 import json
 from pathlib import Path
 from typing import Annotated
@@ -13,6 +14,7 @@ from algo_weaver.schemas.execution import ExecutionPolicy
 from algo_weaver.services.capability_extractor import CapabilityExtractor
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.ingestion import SourceIngestor
+from algo_weaver.services.metrics import RegressionMetricEvaluator
 from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.repair import BoundedRepairLoop
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
@@ -126,6 +128,8 @@ def reproduce(
         typer.Option("--capability-file", exists=True, readable=True),
     ] = None,
     reuse_query: Annotated[str | None, typer.Option("--reuse-query")] = None,
+    metrics_file: Annotated[Path | None, typer.Option("--metrics-file", exists=True, readable=True)] = None,
+    metrics_window: Annotated[int, typer.Option("--metrics-window", min=1)] = 3,
 ) -> None:
     """Build an evidence-linked reproduction bundle and run safe static checks."""
     if mode not in {"mock", "litellm"}:
@@ -284,6 +288,42 @@ def reproduce(
             )
             verification_status = "verified"
             rprint("Registry promotion: verified")
+        if metrics_file is not None and execution_result.status == "passed":
+            rows = list(csv.DictReader(metrics_file.read_text(encoding="utf-8").splitlines()))
+            actual = [float(row["sales"]) for row in rows]
+            if metrics_window > len(actual):
+                raise typer.BadParameter("metrics-window cannot exceed the number of sales rows")
+            metric_input = output_dir / "metric_input.json"
+            metric_input.write_text(
+                json.dumps({"sales": actual, "window": metrics_window}),
+                encoding="utf-8",
+            )
+            metric_code = (
+                "import json; from algorithm import moving_average; "
+                "p=json.load(open('/workspace/metric_input.json')); "
+                "print(json.dumps(moving_average(p['sales'], p['window'])))"
+            )
+            metric_execution = runner.run(
+                output_dir,
+                ["python", "-c", metric_code],
+                policy=ExecutionPolicy(),
+            )
+            (output_dir / "metric_execution.json").write_text(
+                json.dumps(metric_execution.model_dump(mode="json"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            if metric_execution.status == "passed":
+                predicted = json.loads(metric_execution.stdout.strip())
+                metric_report = RegressionMetricEvaluator().evaluate(
+                    actual[metrics_window - 1 :],
+                    predicted,
+                    task="inventory_demand",
+                )
+                (output_dir / "metric_report.json").write_text(
+                    json.dumps(metric_report.model_dump(mode="json"), ensure_ascii=False, indent=2),
+                    encoding="utf-8",
+                )
+                rprint(f"Metrics: MAE/RMSE computed for {metric_report.sample_count} samples")
     rprint(f"[green]Reproduction bundle saved:[/green] {output_dir}")
     rprint(f"Artifacts: {', '.join(path.name for path in artifact_paths)}")
     rprint(f"Verification status: {verification_status}")

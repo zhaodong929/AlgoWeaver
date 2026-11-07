@@ -190,6 +190,8 @@ For a human-reviewed capability card, pass `--capability-file examples/inventory
 
 Add `--repair` to enable the bounded offline template repair action after a failed or timed-out sandbox run.
 
+Add `--metrics-file examples/inventory_forecast/sales_history.csv` to execute the generated prediction inside WSL Docker and write `metric_report.json` with MAE/RMSE.
+
 Use `uv run algo-weaver reuse "库存需求" --registry data/processed/capabilities.sqlite3` to search only verified capability versions.
 
 For the remaining Windows Docker runtime gate, see `docs/implementation/windows_runtime_setup.md`.

@@ -196,6 +196,11 @@
 - Added a WSL integration test that corrupts `algorithm.py`, observes a failing container unittest, applies `TemplateRepairer` through `BoundedRepairLoop`, and reruns successfully.
 - Integration test passed in the configured WSL Docker environment; full suite reached 69 passed, 0 skipped.
 
+## 2026-11-07 — sandbox metric collection
+
+- Added `--metrics-file` to execute the generated moving-average prediction inside WSL Docker and compute MAE/RMSE from the inventory sales CSV.
+- Verified output: `metric_report.json` with 3 samples, MAE `0.888888...` and RMSE `1.360827...`.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
