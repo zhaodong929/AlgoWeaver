@@ -140,6 +140,11 @@
 - Authoritative checks: `uv run pytest -q` -> 61 passed, 0 skipped; Ruff passed; Mypy passed for 36 source files.
 - Remaining blocker is unchanged: Docker daemon/pipe unavailable; no host execution fallback is permitted.
 
+## 2026-11-07 — CI optional-extra coverage
+
+- Updated GitHub Actions to install API, retrieval and execution extras on both Python 3.12 and 3.13 matrix jobs.
+- CI now runs Ruff, the full pytest suite and Mypy, matching the local reproducible validation scope.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
