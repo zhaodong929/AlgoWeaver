@@ -4,7 +4,7 @@ Updated: 2026-11-07 (Asia/Shanghai)
 
 ## Current milestone
 
-**Phase 5/6: executable reproduction graph.** The graph now supports an optional injected sandbox runner, artifact writing, conditional failure routing and bounded repair while retaining the static default. The next executable work is to expose execution results through the API and connect verified write-back/reuse evidence.
+**Phase 8: API execution integration.** FastAPI `/reproduce` now exposes explicit sandbox execution and bounded repair through the executable graph. The next executable work is to connect registry write-back, request-level metrics and a minimal demonstration surface.
 
 ## Milestones
 
