@@ -318,7 +318,8 @@
 - Added an injectable metric runner for API tests without weakening the production sandbox path.
 - Focused validation: API tests -> 15 passed. Full Windows validation: `uv run pytest -q` -> 102 passed, 0 skipped; Ruff passed; Mypy passed for 41 source files.
 - Linux/Python 3.13 CI-equivalent validation with all extras: 101 passed, 1 Windows-only WSL skip; Ruff and Mypy passed. GitHub Actions #68 passed on Python 3.12 and 3.13.
-- Unresolved: a real API WSL metrics run and support for other task types/automatic registry promotion by metrics remain open.
+- Real API evidence: `/reproduce` on WSL2 returned HTTP 200 with `execution=passed`, `metric_execution=passed`, MAE `1.0`, RMSE `1.0`, and `overall_status="passed"` for four inventory samples with window 2.
+- Unresolved: support for other task types and automatic registry promotion by metrics remain open.
 - Git commit: `5532c16` (`feat: collect metrics in API sandbox`).
 
 ## 2026-11-08 — metric-aware capability promotion

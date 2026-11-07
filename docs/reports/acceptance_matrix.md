@@ -25,10 +25,10 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 - `uv run mypy src`: passed for 41 source files.
 - Mock CLI reproduction run created `algorithm.py`, `test_algorithm.py`, `reproduction_bundle.json`, `dependency_report.json` and `validation_reports.json`.
 - WSL CLI `--backend wsl --execute` recorded `status=passed` for the generated unittest. The reviewed-capability run promoted `cap_inventory_forecast_reviewed` to `verified`, and `--reuse-query` revalidated that verified card; the Mock extraction run remained `needs_review`.
-- FastAPI tests cover `/health`, `/extract`, `/metrics` and `/reproduce`; execution, bounded repair, sandbox metric collection and pending registry persistence are covered with injected fake runners, while production execution remains an explicit Docker/WSL request.
+- FastAPI tests cover `/health`, `/extract`, `/metrics` and `/reproduce`; execution, bounded repair, sandbox metric collection and pending registry persistence are covered with injected fake runners. A real `/reproduce` WSL2 run returned `execution=passed`, `metric_execution=passed`, and thresholded MAE/RMSE `overall_status="passed"` for the inventory moving-average scenario.
 - Git branch `feat/api-metrics-collection` contains the current generation, repair and API metrics boundaries; `main` has not been merged.
 - GitHub Actions run #68 passed on both Python 3.12 and 3.13 after the WSL platform gate, CLI error-boundary, structured repair and API metrics changes.
 
 ## Acceptance conclusion
 
-The current project is a well-tested partial MVP baseline. Real isolated execution is now directly verified through WSL2 Docker; the full MVP gate remains open because real-provider extraction, real LLM repair, API-side runtime metric collection and automated verified capability reuse lack direct evidence.
+The current project is a well-tested partial MVP baseline. Real isolated execution and the inventory API metric path are directly verified through WSL2 Docker; the full MVP gate remains open because real-provider extraction, real LLM repair and automated verified capability reuse lack direct evidence.
