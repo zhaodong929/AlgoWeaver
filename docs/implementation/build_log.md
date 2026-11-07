@@ -147,6 +147,7 @@
 - Ran the inventory forecast demo with `--backend wsl --execute`: the generated unittest ran inside the container and returned `status="passed"` with network disabled and a read-only workspace.
 - The capability stayed `needs_review` because Mock extraction is intentionally not eligible for verified promotion.
 - Full validation after WSL backend changes: `uv run pytest -q` -> 62 passed, 0 skipped; Ruff and Mypy passed.
+- Acceptance status changed from Docker-runtime blocked to runtime verified/Mock-promotion pending.
 
 ## 2026-11-07 — CI optional-extra coverage
 

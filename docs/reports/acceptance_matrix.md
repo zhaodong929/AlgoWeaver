@@ -30,4 +30,4 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 
 ## Acceptance conclusion
 
-The current project is a well-tested partial MVP baseline. The full MVP acceptance gate is not yet satisfied because real isolated execution, runtime validation, automatic repair, real-provider extraction and verified reuse lack direct evidence.
+The current project is a well-tested partial MVP baseline. Real isolated execution is now directly verified through WSL2 Docker; the full MVP gate remains open because real-provider extraction, LLM-driven repair, runtime metric evaluation and verified capability reuse lack direct evidence.
