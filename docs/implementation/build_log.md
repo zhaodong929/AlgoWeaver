@@ -270,6 +270,7 @@
 - Extended the reproduction graph to aggregate chunks from `sources`; FastAPI `/reproduce` accepts `additional_sources`, and CLI `reproduce` accepts repeated `--additional-input` values. Retrieval hits preserve source IDs and locations across the mixed set.
 - Validation: full `uv run pytest` -> 85 passed; `uv run ruff check .` passed; `uv run mypy src` passed for 39 source files. Focused ingestion, graph and API tests cover mixed source success, unsupported/failed isolation and provenance hits.
 - Unresolved: complex document layout, semantic embeddings/reranking and repository-scale ingestion remain open.
+- Git commit: `5db6d94` (`feat: support multi-source reproduction inputs`).
 
 ## Evidence policy
 
