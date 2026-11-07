@@ -22,6 +22,26 @@ jobs:
       - name: Lint
         run: uv run ruff check .
       - name: Test
-        run: uv run pytest
+        shell: bash
+        run: |
+          set +e
+          uv run pytest --junitxml=test-results.xml
+          status=$?
+          if [ "$status" -ne 0 ] && [ -f test-results.xml ]; then
+            uv run python - <<'PY'
+          import xml.etree.ElementTree as ET
+
+          root = ET.parse("test-results.xml").getroot()
+          failures = []
+          for case in root.findall(".//testcase"):
+              failure = case.find("failure") or case.find("error")
+              if failure is not None:
+                  failures.append((case.attrib.get("name", "unknown"), failure))
+          for name, failure in failures[:5]:
+              detail = (failure.text or "").splitlines()[0][:500]
+              print(f"::error title=pytest failure::{name}: {detail}")
+          PY
+          fi
+          exit "$status"
       - name: Type check
         run: uv run mypy src
