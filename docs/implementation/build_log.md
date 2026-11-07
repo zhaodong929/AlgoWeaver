@@ -211,6 +211,14 @@
 - Full pytest exposed GBK decoding warnings from WSL subprocess reader threads on Windows.
 - `WslDockerSandboxRunner` now forces UTF-8 with replacement decoding; WSL integration and full suite pass without the prior thread warnings.
 
+## 2026-11-07 — CI #48 cross-platform sandbox test fix
+
+- Root cause: both Python 3.12 and 3.13 CI jobs failed in `tests/test_sandbox.py::test_wsl_runner_translates_policy_without_host_execution` because Ubuntu's `tmp_path` is POSIX (`/tmp/...`), while `_windows_to_wsl_path` intentionally requires a Windows drive path.
+- The test now verifies Windows-drive translation with `PureWindowsPath` and stubs only the platform boundary when exercising the WSL command policy, preserving the production contract and all CI checks.
+- Validation: `uv sync --group dev --extra api --extra retrieval --extra execution`; `uv run ruff check .`; `uv run pytest` -> 73 passed; `uv run mypy src` -> 39 source files, no issues.
+- Unresolved: GitHub Actions verification requires the post-push run to complete. The public API exposed step statuses, while the logs endpoint required admin authentication; the authenticated browser log for CI #48 confirmed the failure above.
+- Git commit: `3531d55` (`test: make WSL path test platform independent`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
