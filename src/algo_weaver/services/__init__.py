@@ -12,7 +12,7 @@ from algo_weaver.services.retrieval import (
     SourceChunker,
     combine_lexical_and_dense_scores,
 )
-from algo_weaver.services.sandbox import DockerSandboxRunner
+from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
 from algo_weaver.services.validation import ValidationService
 
 __all__ = [
@@ -30,4 +30,5 @@ __all__ = [
     "SourceIngestor",
     "TemplateArtifactWriter",
     "ValidationService",
+    "WslDockerSandboxRunner",
 ]

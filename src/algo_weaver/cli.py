@@ -16,7 +16,7 @@ from algo_weaver.services.ingestion import SourceIngestor
 from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
 from algo_weaver.services.retrieval import LocalLexicalRetriever, SourceChunker
-from algo_weaver.services.sandbox import DockerSandboxRunner
+from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
 from algo_weaver.services.validation import ValidationService
 
 app = typer.Typer(
@@ -104,10 +104,13 @@ def reproduce(
     mode: Annotated[str, typer.Option("--mode", help="mock or litellm")] = "mock",
     execute: Annotated[bool, typer.Option("--execute", help="run pytest inside Docker")] = False,
     registry_path: Annotated[Path | None, typer.Option("--registry")] = None,
+    backend: Annotated[str, typer.Option("--backend", help="docker or wsl")] = "docker",
 ) -> None:
     """Build an evidence-linked reproduction bundle and run safe static checks."""
     if mode not in {"mock", "litellm"}:
         raise typer.BadParameter("mode must be 'mock' or 'litellm'")
+    if backend not in {"docker", "wsl"}:
+        raise typer.BadParameter("backend must be 'docker' or 'wsl'")
 
     settings = get_settings().model_copy(update={"llm_mode": mode})
     ingested = SourceIngestor().ingest_path(
@@ -191,9 +194,10 @@ def reproduce(
         rprint(f"Registry version saved: {saved.version} ({saved.status})")
 
     if execute:
-        execution_result = DockerSandboxRunner().run(
+        runner = WslDockerSandboxRunner() if backend == "wsl" else DockerSandboxRunner()
+        execution_result = runner.run(
             output_dir,
-            ["pytest", "-q"],
+            ["python", "-m", "unittest", "discover", "-v"],
             policy=ExecutionPolicy(),
         )
         (output_dir / "execution_result.json").write_text(

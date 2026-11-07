@@ -1,5 +1,5 @@
 # Isolated execution boundary
 
-`DockerSandboxRunner` is the only execution path for generated code. It lazy-loads the optional Docker SDK and returns an explicit `blocked` result when Docker is unavailable; it never calls `subprocess`, `os.system` or a host Python interpreter as a fallback.
+`DockerSandboxRunner` is the Windows Docker SDK path, and `WslDockerSandboxRunner` is the explicit WSL2 path for a Docker daemon stored inside the D-drive Ubuntu distribution. Both execute generated code only inside Docker; the WSL backend invokes `wsl.exe` to reach Docker and never runs the generated command directly on the host.
 
-Each run applies an `ExecutionPolicy` with an image, timeout, memory limit, CPU quota, PID limit, disabled network by default, read-only workspace by default and bounded output. The result records status, command, image, exit code, logs and duration. The current tests use a fake Docker client to verify policy translation; no real Docker daemon is available in the baseline environment, so real container execution remains unverified.
+Each run applies an `ExecutionPolicy` with an image, timeout, memory limit, CPU quota, PID limit, disabled network by default, read-only workspace by default and bounded output. The result records status, command, image, exit code, logs and duration. The WSL2 runtime has been verified with the inventory forecast bundle; Windows Docker SDK remains an alternative when Docker Desktop exposes its pipe.

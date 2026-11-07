@@ -146,31 +146,39 @@ def run_algorithm(data):
 
 def _test_template(function_name: str) -> str:
     if function_name == "moving_average":
-        return '''from algorithm import moving_average
+        return '''import unittest
+
+from algorithm import moving_average
 
 
-def test_moving_average_example() -> None:
-    assert moving_average([1.0, 2.0, 3.0, 4.0], 2) == [1.5, 2.5, 3.5]
+class MovingAverageTests(unittest.TestCase):
+    def test_example(self) -> None:
+        self.assertEqual(
+            moving_average([1.0, 2.0, 3.0, 4.0], 2),
+            [1.5, 2.5, 3.5],
+        )
+
+    def test_rejects_invalid_window(self) -> None:
+        with self.assertRaises(ValueError):
+            moving_average([1.0], 0)
 
 
-def test_moving_average_rejects_invalid_window() -> None:
-    try:
-        moving_average([1.0], 0)
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("invalid window should fail")
+if __name__ == "__main__":
+    unittest.main()
 '''
-    return '''from algorithm import run_algorithm
+    return '''import unittest
+
+from algorithm import run_algorithm
 
 
-def test_generated_interface_is_explicitly_pending() -> None:
-    try:
-        run_algorithm([])
-    except NotImplementedError:
-        pass
-    else:
-        raise AssertionError("placeholder must remain unverified")
+class PendingAlgorithmTests(unittest.TestCase):
+    def test_generated_interface_is_explicitly_pending(self) -> None:
+        with self.assertRaises(NotImplementedError):
+            run_algorithm([])
+
+
+if __name__ == "__main__":
+    unittest.main()
 '''
 
 

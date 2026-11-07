@@ -80,12 +80,13 @@ uv run algo-weaver reproduce \
   --mode mock
 
 # Optionally persist the draft and request Docker execution.
-# If Docker is unavailable, the command records `blocked` and keeps the result unverified.
+# The WSL backend uses the D-drive Ubuntu Docker daemon and records `blocked` only when that daemon is unavailable.
 uv run algo-weaver reproduce \
   --input examples/moving_average/algorithm.md \
   --output-dir data/processed/reproduction \
   --registry data/processed/capabilities.sqlite3 \
   --execute \
+  --backend wsl \
   --mode mock
 
 # Optional FastAPI surface
@@ -173,8 +174,8 @@ docs/              # Architecture and design documents
 
 ## 8. Current acceptance status
 
-- [ ] `uv sync --group dev` completes (blocked locally because `uv` is not installed).
-- [x] `pytest -q` passes in the current environment: 14 passed, 2 optional LangGraph tests skipped.
+- [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
+- [x] `uv run pytest -q` passes in the current environment: 62 passed, 0 skipped.
 - [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
 - [x] The capability card records source provenance.
 - [x] Mock-generated output is never marked `verified`.

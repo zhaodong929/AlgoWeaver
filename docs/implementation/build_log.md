@@ -140,6 +140,14 @@
 - Authoritative checks: `uv run pytest -q` -> 61 passed, 0 skipped; Ruff passed; Mypy passed for 36 source files.
 - Remaining blocker is unchanged: Docker daemon/pipe unavailable; no host execution fallback is permitted.
 
+## 2026-11-07 — WSL Docker runtime verified
+
+- Located the existing D-drive WSL distribution at `D:\WSL\Ubuntu-24.04` and started its systemd Docker Engine.
+- Installed Ubuntu `docker.io`, added user `zd929` to the `docker` group, pulled `python:3.12-slim`, and added `WslDockerSandboxRunner`.
+- Ran the inventory forecast demo with `--backend wsl --execute`: the generated unittest ran inside the container and returned `status="passed"` with network disabled and a read-only workspace.
+- The capability stayed `needs_review` because Mock extraction is intentionally not eligible for verified promotion.
+- Full validation after WSL backend changes: `uv run pytest -q` -> 62 passed, 0 skipped; Ruff and Mypy passed.
+
 ## 2026-11-07 — CI optional-extra coverage
 
 - Updated GitHub Actions to install API, retrieval and execution extras on both Python 3.12 and 3.13 matrix jobs.

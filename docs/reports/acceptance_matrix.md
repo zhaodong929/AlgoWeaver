@@ -10,21 +10,21 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 | Algorithm knowledge extraction | `CapabilityExtractor`, Mock model, LiteLLM adapter, Pydantic `AlgorithmDraft`/`AlgorithmCapability`, missing-information handling. | PARTIAL | No real provider call has been executed in this environment; extraction remains a draft/review workflow. |
 | Standard capability cards | `AlgorithmCapability`, `EvidenceRef`, explicit `draft`/`needs_review`/`verified` statuses, JSON output and registry payloads. | DONE for schema baseline | Full verified promotion still depends on an independent runtime report. |
 | Evidence-linked RAG retrieval | `SourceChunker`, `EvidenceChunk`, `LocalLexicalRetriever`, `RetrievalEvaluator` and local in-memory `QdrantVectorRetriever` preserve line/path/source metadata; Recall@k, MRR and provenance coverage are tested. | PARTIAL | No embedding model, remote Qdrant service or reranker quality evaluation is configured. |
-| Multi-model reproduction Agent | `ChatModel`/LiteLLM abstraction, `ReproductionPlanner`, `build_reproduction_graph()` and offline fallback. | PARTIAL | LangGraph is absent and real LLM planning/code generation is unverified; the current writer is deterministic template generation. |
+| Multi-model reproduction Agent | `ChatModel`/LiteLLM abstraction, installed LangGraph graph, `ReproductionPlanner`, and offline fallback. | PARTIAL | Real LLM planning/code generation is unverified; the current writer is deterministic template generation. |
 | Code generation and dependency analysis | `TemplateArtifactWriter` produces moving-average Python/pytest artifacts; `PythonDependencyAnalyzer` emits static import reports. | PARTIAL | General algorithm generation, dependency resolution and workspace management are not implemented. |
-| Isolated code execution | `ExecutionPolicy`, `ExecutionResult`, Docker-only `DockerSandboxRunner`; tests verify network, memory, CPU, PID, output and read-only policy translation; Docker SDK import and CLI path are verified. | BLOCKED for runtime | Docker CLI/daemon/pipe is unavailable; no real container execution has been observed. |
-| Automated tests, error analysis and repair | `ValidationService` performs AST/contract/runtime report checks; `BoundedRepairLoop` limits retries and preserves external observations. | PARTIAL | Generated pytest has not run in a sandbox; no LLM edit/repair callback or metric/performance evaluation is integrated. |
+| Isolated code execution | `ExecutionPolicy`, `ExecutionResult`, Docker SDK runner and WSL2 `WslDockerSandboxRunner`; inventory forecast unittest passed inside `python:3.12-slim` with network disabled and read-only workspace. | PARTIAL | Windows Docker pipe is optional; final capability promotion requires a complete draft from a real provider. |
+| Automated tests, error analysis and repair | `ValidationService` performs AST/contract/runtime report checks; generated unittest passed in WSL Docker; `BoundedRepairLoop` limits retries and preserves external observations. | PARTIAL | No LLM edit/repair callback or metric/performance evaluation is integrated. |
 | Capability versioning and persistence | SQLite `CapabilityRegistry`, immutable versions, search and passing-report-only promotion; registry tests pass. | PARTIAL | No verified runtime report has been produced to exercise a real promotion from the CLI. |
 | Historical capability retrieval and reuse | Lexical retrieval and registry name search are independently tested; `search_reusable()` filters to verified versions. | PARTIAL | Retrieval results are not yet fed into a reusable verified-capability selection workflow. |
-| Complete end-to-end demo | `algo-weaver reproduce` writes bundle, dependency report and validation reports; optional FastAPI `/reproduce` returns the same evidence; Mock inventory example succeeds and marks artifacts `unverified`. | PARTIAL | The execution/promotion portion is blocked by unavailable Docker, so the full verified loop is not demonstrated. |
+| Complete end-to-end demo | `algo-weaver reproduce --backend wsl --execute` writes bundle, dependency report, runtime report and a passed sandbox execution for the inventory example. | PARTIAL | Mock capability remains `needs_review`; real-provider extraction and verified promotion are not demonstrated. |
 
 ## Verification evidence
 
-- `uv run pytest -q`: 61 passed, 0 skipped after installing the declared LangGraph, API, retrieval and execution dependencies.
+- `uv run pytest -q`: 62 passed, 0 skipped after installing the declared LangGraph, API, retrieval and execution dependencies.
 - `uv run ruff check src tests`: passed.
 - `uv run mypy src`: passed for 36 source files.
 - Mock CLI reproduction run created `algorithm.py`, `test_algorithm.py`, `reproduction_bundle.json`, `dependency_report.json` and `validation_reports.json`.
-- CLI `--execute` run recorded `status=blocked` because the Docker daemon/pipe was unavailable; no capability was promoted to `verified`.
+- WSL CLI `--backend wsl --execute` recorded `status=passed` for the generated unittest; no capability was promoted because Mock extraction remained `needs_review`.
 - FastAPI tests cover `/health`, `/extract` and `/reproduce`; the API does not execute generated code.
 - Git branch `feat/initial-audit-and-ingestion` is synchronized with `origin`; `main` has not been merged.
 
