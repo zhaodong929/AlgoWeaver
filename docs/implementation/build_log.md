@@ -128,6 +128,12 @@
 - Focused ingestion validation: 10 passed; Ruff and Mypy passed.
 - Full validation after the PDF fallback: `uv run pytest -q` -> 59 passed, 0 skipped.
 
+## 2026-11-07 — runtime validation report and promotion gate
+
+- Added `ValidationService.build_runtime_report()` to combine capability, artifact and Docker execution evidence.
+- `reproduce --execute` now writes the runtime report and can promote a capability only when the report is fully passing; the current Docker-blocked run remained `unverified`.
+- Focused validation: CLI and validation tests passed; Ruff and Mypy passed.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

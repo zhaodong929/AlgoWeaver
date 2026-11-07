@@ -13,14 +13,14 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 | Multi-model reproduction Agent | `ChatModel`/LiteLLM abstraction, `ReproductionPlanner`, `build_reproduction_graph()` and offline fallback. | PARTIAL | LangGraph is absent and real LLM planning/code generation is unverified; the current writer is deterministic template generation. |
 | Code generation and dependency analysis | `TemplateArtifactWriter` produces moving-average Python/pytest artifacts; `PythonDependencyAnalyzer` emits static import reports. | PARTIAL | General algorithm generation, dependency resolution and workspace management are not implemented. |
 | Isolated code execution | `ExecutionPolicy`, `ExecutionResult`, Docker-only `DockerSandboxRunner`; tests verify network, memory, CPU, PID, output and read-only policy translation; Docker SDK import and CLI path are verified. | BLOCKED for runtime | Docker CLI/daemon/pipe is unavailable; no real container execution has been observed. |
-| Automated tests, error analysis and repair | `ValidationService` performs AST/contract checks; `BoundedRepairLoop` limits retries and preserves external observations. | PARTIAL | Generated pytest has not run in a sandbox; no LLM edit/repair callback or metric/performance evaluation is integrated. |
+| Automated tests, error analysis and repair | `ValidationService` performs AST/contract/runtime report checks; `BoundedRepairLoop` limits retries and preserves external observations. | PARTIAL | Generated pytest has not run in a sandbox; no LLM edit/repair callback or metric/performance evaluation is integrated. |
 | Capability versioning and persistence | SQLite `CapabilityRegistry`, immutable versions, search and passing-report-only promotion; registry tests pass. | PARTIAL | No verified runtime report has been produced to exercise a real promotion from the CLI. |
 | Historical capability retrieval and reuse | Lexical retrieval and registry name search are independently tested; `search_reusable()` filters to verified versions. | PARTIAL | Retrieval results are not yet fed into a reusable verified-capability selection workflow. |
 | Complete end-to-end demo | `algo-weaver reproduce` writes bundle, dependency report and validation reports; optional FastAPI `/reproduce` returns the same evidence; Mock inventory example succeeds and marks artifacts `unverified`. | PARTIAL | The execution/promotion portion is blocked by unavailable Docker, so the full verified loop is not demonstrated. |
 
 ## Verification evidence
 
-- `uv run pytest -q`: 59 passed, 0 skipped after installing the declared LangGraph, API, retrieval and execution dependencies.
+- `uv run pytest -q`: 61 passed, 0 skipped after installing the declared LangGraph, API, retrieval and execution dependencies.
 - `uv run ruff check src tests`: passed.
 - `uv run mypy src`: passed for 36 source files.
 - Mock CLI reproduction run created `algorithm.py`, `test_algorithm.py`, `reproduction_bundle.json`, `dependency_report.json` and `validation_reports.json`.

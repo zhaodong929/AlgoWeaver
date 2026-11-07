@@ -6,6 +6,7 @@ import ast
 import hashlib
 
 from algo_weaver.schemas.capability import AlgorithmCapability
+from algo_weaver.schemas.execution import ExecutionResult
 from algo_weaver.schemas.validation import (
     ReportStatus,
     ValidationCheck,
@@ -86,6 +87,49 @@ class ValidationService:
                 )
             )
         return _report("python_source", target_id, checks)
+
+    def build_runtime_report(
+        self,
+        capability: AlgorithmCapability,
+        execution: ExecutionResult,
+        artifact_reports: list[ValidationReport] | None = None,
+    ) -> ValidationReport:
+        """Combine contract, artifact and sandbox evidence for verified promotion."""
+        checks = [
+            self._check_required_fields(capability),
+            self._check_evidence(capability),
+            ValidationCheck(
+                check_id="capability.review_state",
+                name="Review state",
+                status="passed" if capability.status == "draft" else "failed",
+                message=(
+                    "Capability is a complete draft eligible for independent runtime verification."
+                    if capability.status == "draft"
+                    else f"Capability status '{capability.status}' still requires review."
+                ),
+            ),
+            ValidationCheck(
+                check_id="sandbox.execution",
+                name="Sandbox execution",
+                status="passed" if execution.status == "passed" else "failed",
+                message=(
+                    "Sandbox command completed successfully."
+                    if execution.status == "passed"
+                    else f"Sandbox execution status is '{execution.status}'."
+                ),
+                details={"exit_code": execution.exit_code or -1},
+            ),
+        ]
+        for report in artifact_reports or []:
+            checks.append(
+                ValidationCheck(
+                    check_id=f"artifact.{report.target_id}",
+                    name=f"Artifact checks: {report.target_id}",
+                    status="passed" if report.overall_status == "passed" else "failed",
+                    message=f"Artifact report status is '{report.overall_status}'.",
+                )
+            )
+        return _report("capability", capability.capability_id, checks)
 
     @staticmethod
     def _check_required_fields(capability: AlgorithmCapability) -> ValidationCheck:

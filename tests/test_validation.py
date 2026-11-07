@@ -1,4 +1,5 @@
 from algo_weaver.schemas.capability import AlgorithmCapability, EvidenceRef
+from algo_weaver.schemas.execution import ExecutionResult
 from algo_weaver.services.validation import ValidationService
 
 
@@ -61,3 +62,35 @@ def test_invalid_python_and_missing_entrypoint_are_reported() -> None:
 
     assert syntax_report.overall_status == "failed"
     assert entrypoint_report.overall_status == "failed"
+
+
+def test_runtime_report_can_promote_complete_draft_after_sandbox_passes() -> None:
+    capability = _capability()
+    execution = ExecutionResult(
+        status="passed",
+        command=["pytest", "-q"],
+        image="python:3.12-slim",
+        exit_code=0,
+        duration_seconds=0.2,
+    )
+
+    report = ValidationService().build_runtime_report(capability, execution)
+
+    assert report.target_type == "capability"
+    assert report.target_id == capability.capability_id
+    assert report.overall_status == "passed"
+
+
+def test_runtime_report_rejects_review_pending_or_blocked_execution() -> None:
+    capability = _capability(status="needs_review")
+    execution = ExecutionResult(
+        status="blocked",
+        command=["pytest", "-q"],
+        image="python:3.12-slim",
+        duration_seconds=0,
+        error="Docker unavailable",
+    )
+
+    report = ValidationService().build_runtime_report(capability, execution)
+
+    assert report.overall_status == "failed"

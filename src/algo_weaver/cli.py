@@ -180,6 +180,8 @@ def reproduce(
         ),
         encoding="utf-8",
     )
+    saved = None
+    verification_status = "unverified"
     if registry_path is not None:
         saved = CapabilityRegistry(registry_path).save(capability)
         (output_dir / "registry_record.json").write_text(
@@ -201,6 +203,27 @@ def reproduce(
         rprint(f"Sandbox execution: {execution_result.status}")
         if execution_result.status != "passed":
             rprint(f"[yellow]Verification remains unverified:[/yellow] {execution_result.error}")
+        runtime_report = validator.build_runtime_report(
+            capability,
+            execution_result,
+            reports[1:],
+        )
+        reports.append(runtime_report)
+        (output_dir / "validation_reports.json").write_text(
+            json.dumps([report.model_dump(mode="json") for report in reports], ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        if registry_path is not None and saved is not None and runtime_report.overall_status == "passed":
+            promoted = CapabilityRegistry(registry_path).promote_verified(
+                capability.capability_id,
+                runtime_report,
+            )
+            (output_dir / "registry_record.json").write_text(
+                json.dumps(promoted.model_dump(mode="json"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            verification_status = "verified"
+            rprint("Registry promotion: verified")
     rprint(f"[green]Reproduction bundle saved:[/green] {output_dir}")
     rprint(f"Artifacts: {', '.join(path.name for path in artifact_paths)}")
-    rprint("Verification status: unverified (static checks only; sandbox execution pending)")
+    rprint(f"Verification status: {verification_status}")
