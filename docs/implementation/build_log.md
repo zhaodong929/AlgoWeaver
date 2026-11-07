@@ -376,3 +376,4 @@ Every later entry must record the changed module, test command, result, unresolv
 - Completed a real failed-code repair loop: an intentionally broken moving-average artifact failed in the WSL2 Docker sandbox, `deepseek-v4.1-flash-1017` proposed and applied a patch, and the bounded one-attempt loop ended with `final=passed`.
 - Added a Streamlit dashboard with file upload, mode selection, API execution, evidence, plan, artifact, runtime and report panels. `streamlit run src/algo_weaver/ui.py --server.headless true --server.port 8505` started successfully and `/_stcore/health` returned HTTP 200.
 - Added the optional `ui` dependency group and `algo-weaver-ui` entry point. Full validation: 117 passed, Ruff passed, Mypy passed for 46 source files.
+- Git commit: `47d3dfb` (`feat: add hybrid retrieval and Streamlit dashboard`).
