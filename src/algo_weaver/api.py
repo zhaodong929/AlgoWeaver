@@ -324,11 +324,14 @@ def create_app(
                 registry = CapabilityRegistry(active_settings.registry_path)
                 saved = registry.save(capability)
                 registry_record = saved
+                metric_gate_passed = request.metrics is None or (
+                    metric_report is not None and metric_report["overall_status"] == "passed"
+                )
                 if request.execute and result.get("reports"):
                     runtime_report = result["reports"][-1]
                     if runtime_report["target_type"] == "capability" and runtime_report[
                         "overall_status"
-                    ] == "passed":
+                    ] == "passed" and metric_gate_passed:
                         from algo_weaver.schemas.validation import ValidationReport
 
                         registry_record = registry.promote_verified(

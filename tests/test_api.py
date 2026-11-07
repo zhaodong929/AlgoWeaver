@@ -184,6 +184,55 @@ def test_reproduce_endpoint_collects_metrics_inside_sandbox() -> None:
     assert payload["metric_report"]["overall_status"] == "passed"
 
 
+def test_reproduce_endpoint_keeps_metric_failure_unverified(tmp_path) -> None:
+    registry_path = tmp_path / "metric-gate.sqlite3"
+
+    def runner(_backend: str, _workspace) -> ExecutionResult:
+        return ExecutionResult(
+            status="passed",
+            command=["python", "-m", "unittest"],
+            image="python:3.12-slim",
+            exit_code=0,
+            duration_seconds=0.1,
+        )
+
+    def metric_runner(_backend: str, _workspace, command: list[str]) -> ExecutionResult:
+        return ExecutionResult(
+            status="passed",
+            command=command,
+            image="python:3.12-slim",
+            exit_code=0,
+            stdout=json.dumps([12.0, 12.0, 12.0]),
+            duration_seconds=0.1,
+        )
+
+    response = TestClient(
+        create_app(
+            settings=Settings(registry_path=registry_path),
+            execution_runner=runner,
+            metric_runner=metric_runner,
+        )
+    ).post(
+        "/reproduce",
+        json={
+            "source_text": "# 移动平均算法\n用于时间序列平滑。",
+            "source_id": "api-metric-gate",
+            "execute": True,
+            "persist": True,
+            "metrics": {
+                "actual": [10.0, 12.0, 14.0, 16.0],
+                "window": 2,
+                "max_mae": 0.1,
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["metric_report"]["overall_status"] == "failed"
+    assert payload["registry_record"]["status"] == "needs_review"
+
+
 def test_reproduce_endpoint_requires_execution_for_sandbox_metrics() -> None:
     response = TestClient(create_app()).post(
         "/reproduce",
