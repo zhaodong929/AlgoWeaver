@@ -252,6 +252,13 @@
 - Validation command: `uv run python -` with the reviewed capability and `examples/inventory_forecast/algorithm.md`; command completed successfully.
 - Unresolved: metrics collection is still CLI-specific, and real-provider extraction/LLM repair remain unverified.
 
+## 2026-11-07 — API regression metrics
+
+- Added `POST /metrics` with Pydantic input validation, deterministic MAE/RMSE evaluation and optional threshold status. Mismatched sequences return HTTP 400; threshold failures remain explicit `overall_status="failed"`.
+- Validation: API-focused tests -> 9 passed; full `uv run pytest` -> 82 passed; `uv run ruff check .` passed; `uv run mypy src` passed for 39 source files.
+- Unresolved: `/metrics` evaluates supplied predictions; automatic extraction of predictions from sandbox stdout and UI visualization remain future work.
+- Git commit: `118cd92` (`feat: expose regression metrics through API`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
