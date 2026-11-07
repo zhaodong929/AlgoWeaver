@@ -219,6 +219,15 @@
 - Unresolved: GitHub Actions verification requires the post-push run to complete. The public API exposed step statuses, while the logs endpoint required admin authentication; the authenticated browser log for CI #48 confirmed the failure above.
 - Git commit: `3531d55` (`test: make WSL path test platform independent`).
 
+## 2026-11-07 — executable reproduction graph
+
+- Extended `build_reproduction_graph()` with optional artifact writing, injected sandbox execution, conditional failed/timeout routing and bounded repair. The default graph remains static and does not execute generated code.
+- Added graph state for artifact paths, `ExecutionResult`, `RepairLoopResult` and runtime validation reports. The validation path now checks the generated moving-average entrypoint consistently with the CLI.
+- Tests cover execution success, one-attempt repair success and repair-budget exhaustion using fake runners; no host or Docker execution occurs in these tests.
+- Validation: `uv run pytest tests/test_reproduction_graph.py -q` -> 4 passed; full `uv run pytest` -> 76 passed; `uv run ruff check .` passed; `uv run mypy src` passed for 39 source files.
+- Unresolved: real-provider planning/code generation and LLM repair remain unverified; API execution/write-back is the next milestone.
+- Git commit: `0669731` (`feat: integrate execution and repair into reproduction graph`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

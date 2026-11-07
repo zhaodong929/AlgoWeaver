@@ -4,7 +4,7 @@ Updated: 2026-11-07 (Asia/Shanghai)
 
 ## Current milestone
 
-**Phase 4/8/9: retrieval evaluation, optional API and acceptance evidence.** The local provenance-preserving lexical baseline is complete; the next executable work is to add measurable retrieval evaluation, expose the current workflow through a small API, and audit every Must-have against actual evidence.
+**Phase 5/6: executable reproduction graph.** The graph now supports an optional injected sandbox runner, artifact writing, conditional failure routing and bounded repair while retaining the static default. The next executable work is to expose execution results through the API and connect verified write-back/reuse evidence.
 
 ## Milestones
 
