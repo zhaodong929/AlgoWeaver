@@ -119,6 +119,7 @@
 
 - Added dependency-free DOCX/PPTX/XLSX ZIP/XML text fallbacks used only when Docling is unavailable; PDF remains explicitly unsupported without Docling.
 - Added synthetic DOCX/PPTX/XLSX fixtures. Focused ingestion validation: 9 passed; Ruff/Mypy passed.
+- Full validation after the Office fallback commit: `uv run pytest -q` -> 58 passed, 0 skipped; Ruff and Mypy passed.
 
 ## Evidence policy
 
