@@ -43,6 +43,14 @@ class ExtractRequest(BaseModel):
     mode: Literal["mock", "litellm"] = "mock"
 
 
+class AdditionalSourceRequest(BaseModel):
+    source_text: str = Field(min_length=1)
+    source_id: str = Field(min_length=1)
+    source_type: SourceType = "document"
+    source_format: SourceFormat = "markdown"
+    source_location: str | None = None
+
+
 class ReproduceRequest(ExtractRequest):
     source_format: SourceFormat = "markdown"
     execute: bool = False
@@ -50,6 +58,7 @@ class ReproduceRequest(ExtractRequest):
     repair: bool = False
     max_repair_attempts: int = Field(default=2, ge=0, le=5)
     persist: bool = False
+    additional_sources: list[AdditionalSourceRequest] = Field(default_factory=list)
 
 
 class MetricsRequest(BaseModel):
@@ -131,8 +140,25 @@ def create_app(
                 content=request.source_text,
                 content_sha256=hashlib.sha256(request.source_text.encode("utf-8")).hexdigest(),
             )
+            additional_sources = [
+                IngestedSource(
+                    source_id=item.source_id,
+                    path=item.source_location or item.source_id,
+                    source_type=item.source_type,
+                    source_format=item.source_format,
+                    content=item.source_text,
+                    content_sha256=hashlib.sha256(
+                        item.source_text.encode("utf-8")
+                    ).hexdigest(),
+                )
+                for item in request.additional_sources
+            ]
             state = {
                 "source": source.model_dump(mode="json"),
+                "sources": [
+                    source.model_dump(mode="json"),
+                    *(item.model_dump(mode="json") for item in additional_sources),
+                ],
                 "capability": capability.model_dump(mode="json"),
             }
 
@@ -175,6 +201,7 @@ def create_app(
             ]
             response = {
                 "capability": capability.model_dump(mode="json"),
+                "sources": [item.model_dump(mode="json") for item in [source, *additional_sources]],
                 "hits": result.get("hits", []),
                 "plan": result["plan"],
                 "bundle": bundle,

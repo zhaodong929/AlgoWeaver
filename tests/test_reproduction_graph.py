@@ -35,6 +35,26 @@ def test_reproduction_graph_runs_without_executing_artifacts() -> None:
     assert result["reports"]
 
 
+def test_reproduction_graph_retrieves_from_additional_sources() -> None:
+    state = _state()
+    state["sources"] = [
+        state["source"],
+        IngestedSource(
+            source_id="history-code",
+            path="history.py",
+            source_type="code",
+            source_format="python",
+            content="# Moving Average history\ndef moving_average(data):\n    return data\n",
+            content_sha256="c" * 64,
+        ).model_dump(mode="json"),
+    ]
+
+    result = build_reproduction_graph().invoke(state)
+
+    assert "error" not in result
+    assert any(hit["chunk"]["source_id"] == "history-code" for hit in result["hits"])
+
+
 def _state() -> dict:
     source = IngestedSource(
         source_id="doc-graph-execution",

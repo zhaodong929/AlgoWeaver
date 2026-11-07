@@ -37,3 +37,23 @@ class IngestedSource(BaseModel):
     metadata: dict[str, str | int | bool] = Field(default_factory=dict)
     status: IngestionStatus = "ingested"
     error: str | None = None
+
+
+class IngestionBatch(BaseModel):
+    """Results for a multi-source ingestion request."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    sources: list[IngestedSource] = Field(min_length=1)
+
+    @property
+    def ingested_count(self) -> int:
+        return sum(source.status == "ingested" for source in self.sources)
+
+    @property
+    def unsupported_count(self) -> int:
+        return sum(source.status == "unsupported" for source in self.sources)
+
+    @property
+    def failed_count(self) -> int:
+        return sum(source.status == "failed" for source in self.sources)

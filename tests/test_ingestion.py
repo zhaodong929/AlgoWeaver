@@ -47,6 +47,30 @@ def test_ingestor_rejects_missing_paths(tmp_path: Path) -> None:
         SourceIngestor().ingest_path(tmp_path / "missing.md")
 
 
+def test_ingestor_batch_preserves_mixed_source_statuses(tmp_path: Path) -> None:
+    markdown = tmp_path / "algorithm.md"
+    markdown.write_text("# Moving Average", encoding="utf-8")
+    python = tmp_path / "algorithm.py"
+    python.write_text("def moving_average(data):\n    return data\n", encoding="utf-8")
+    opaque = tmp_path / "archive.bin"
+    opaque.write_bytes(b"opaque")
+
+    result = SourceIngestor().ingest_paths(
+        [markdown, python, opaque, tmp_path / "missing.csv"],
+        source_type="document",
+    )
+
+    assert [source.status for source in result.sources] == [
+        "ingested",
+        "ingested",
+        "unsupported",
+        "failed",
+    ]
+    assert result.ingested_count == 2
+    assert result.unsupported_count == 1
+    assert result.failed_count == 1
+
+
 def test_office_formats_use_optional_docling_adapter(tmp_path: Path, monkeypatch) -> None:
     source = tmp_path / "report.pdf"
     source.write_bytes(b"%PDF-placeholder")

@@ -4,7 +4,7 @@ Updated: 2026-11-07 (Asia/Shanghai)
 
 ## Current milestone
 
-**Phase 8: API integration and demonstration surface.** FastAPI now exposes `/metrics` plus `/reproduce` execution, bounded repair and configured SQLite persistence with the existing verified promotion gate. The next executable work is a minimal dashboard/demo and automatic metric collection from sandbox output.
+**Phase 1/4/8: multi-source workflow.** Batch ingestion, multi-source chunk aggregation and API/CLI additional inputs now feed the same evidence-preserving retrieval and reproduction path. The next executable work is a reproducible dashboard/demo and automatic metric collection from sandbox output.
 
 ## Milestones
 

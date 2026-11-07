@@ -60,6 +60,16 @@ uv run algo-weaver extract `
   --input examples/moving_average/algorithm.md `
   --output data/processed/moving_average_capability.json `
   --mode mock
+
+# Windows WSL2 runtime demo (after WSL Docker setup)
+uv run algo-weaver reproduce `
+  --input examples/inventory_forecast/algorithm.md `
+  --output-dir data/processed/reproduction `
+  --capability-file examples/inventory_forecast/reviewed_capability.json `
+  --registry data/processed/capabilities.sqlite3 `
+  --execute `
+  --backend wsl `
+  --mode mock
 ```
 
 ## 4. Install on Linux/macOS
@@ -81,14 +91,11 @@ uv run algo-weaver reproduce \
   --output-dir data/processed/reproduction \
   --mode mock
 
-# Optionally persist the draft and request Docker execution.
-# The WSL backend uses the D-drive Ubuntu Docker daemon and records `blocked` only when that daemon is unavailable.
+# Add historical code or experiment material to the same retrieval context.
 uv run algo-weaver reproduce \
-  --input examples/moving_average/algorithm.md \
+  --input examples/inventory_forecast/algorithm.md \
+  --additional-input examples/inventory_forecast/sales_history.csv \
   --output-dir data/processed/reproduction \
-  --registry data/processed/capabilities.sqlite3 \
-  --execute \
-  --backend wsl \
   --mode mock
 
 # FastAPI surface
@@ -101,6 +108,8 @@ curl -X POST http://127.0.0.1:8000/metrics \
 
 # API reproduction is static by default. Add execute=true for explicit Docker/WSL execution,
 # repair=true for bounded template repair, and persist=true for configured SQLite write-back.
+# `additional_sources` accepts historical code, experiment notes or test reports
+# and their provenance is preserved in the returned retrieval hits.
 ```
 
 ## 5. Enable a real model (LiteLLM)
@@ -184,7 +193,7 @@ docs/              # Architecture and design documents
 ## 8. Current acceptance status
 
 - [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
-- [x] `uv run pytest -q` passes in the current environment: 82 passed, 0 skipped.
+- [x] `uv run pytest -q` passes in the current environment: 86 passed, 0 skipped.
 - [x] GitHub Actions CI passes on Python 3.12 and 3.13 (latest verified run #55).
 - [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
 - [x] The capability card records source provenance.
@@ -195,6 +204,8 @@ docs/              # Architecture and design documents
 The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports a deterministic moving-average reproduction template and a real WSL2 Docker execution path for the reviewed inventory capability. General LLM code generation, LLM repair and semantic embedding/reranking remain explicitly unverified.
 
 The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata; Qdrant, embeddings and reranking remain later adapters. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
+
+Multiple local materials can be supplied with repeated `--additional-input` options. The API equivalent is `additional_sources`; both paths preserve each source's ingestion status and provenance in retrieval hits.
 
 For a human-reviewed capability card, pass `--capability-file examples/inventory_forecast/reviewed_capability.json`; with `--backend wsl --execute --registry ...`, the runtime report can promote the card to `verified`. The same execution/repair boundary is available from FastAPI `/reproduce` with explicit request flags. These paths are explicitly human-reviewed and do not claim real LLM extraction.
 

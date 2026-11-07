@@ -114,6 +114,9 @@ def reuse(
 @app.command()
 def reproduce(
     input_file: Annotated[Path, typer.Option("--input", "-i", exists=True, readable=True)],
+    additional_input: Annotated[
+        list[Path] | None, typer.Option("--additional-input", exists=True, readable=True)
+    ] = None,
     output_dir: Annotated[Path, typer.Option("--output-dir", "-o")] = Path(
         "data/processed/reproduction"
     ),
@@ -134,6 +137,8 @@ def reproduce(
     max_rmse: Annotated[float | None, typer.Option("--max-rmse", min=0)] = None,
 ) -> None:
     """Build an evidence-linked reproduction bundle and run safe static checks."""
+    if additional_input is None:
+        additional_input = []
     if mode not in {"mock", "litellm"}:
         raise typer.BadParameter("mode must be 'mock' or 'litellm'")
     if backend not in {"docker", "wsl"}:
@@ -150,6 +155,18 @@ def reproduce(
     if ingested.status != "ingested":
         rprint(f"[bold red]Ingestion failed:[/bold red] {ingested.error}")
         raise typer.Exit(code=1)
+    additional_batch = (
+        SourceIngestor().ingest_paths(additional_input, source_type="unknown")
+        if additional_input
+        else None
+    )
+    if additional_batch is not None:
+        rprint(
+            "Additional sources: "
+            f"{additional_batch.ingested_count} ingested, "
+            f"{additional_batch.unsupported_count} unsupported, "
+            f"{additional_batch.failed_count} failed"
+        )
 
     from algo_weaver.schemas.capability import AlgorithmCapability
 
@@ -186,6 +203,9 @@ def reproduce(
             raise typer.Exit(code=1)
         capability = AlgorithmCapability.model_validate(result["capability"])
     chunks = SourceChunker().chunk(ingested)
+    if additional_batch is not None:
+        for additional_source in additional_batch.sources:
+            chunks.extend(SourceChunker().chunk(additional_source))
     hits = LocalLexicalRetriever(chunks).search(capability.name, top_k=5)
     plan = ReproductionPlanner().build_plan(capability, hits)
     if plan.status != "ready":
@@ -226,6 +246,11 @@ def reproduce(
         ),
         encoding="utf-8",
     )
+    if additional_batch is not None:
+        (output_dir / "ingestion_batch.json").write_text(
+            json.dumps(additional_batch.model_dump(mode="json"), ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
     saved = None
     verification_status = "verified" if capability.status == "verified" else "unverified"
     if registry_path is not None:

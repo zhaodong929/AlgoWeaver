@@ -8,11 +8,12 @@ import io
 import json
 import re
 import zipfile
+from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Final, cast
 from xml.etree import ElementTree as ET
 
-from algo_weaver.schemas.ingestion import IngestedSource, SourceFormat
+from algo_weaver.schemas.ingestion import IngestedSource, IngestionBatch, SourceFormat
 
 _EXTENSION_MAP: Final[dict[str, tuple[SourceFormat, str]]] = {
     ".txt": ("text", "text/plain"),
@@ -178,6 +179,42 @@ class SourceIngestor:
             content_sha256=digest,
             metadata=metadata,
         )
+
+    def ingest_paths(
+        self,
+        paths: Iterable[str | Path],
+        *,
+        source_ids: Mapping[str, str] | None = None,
+        source_type: str = "unknown",
+    ) -> IngestionBatch:
+        """Ingest multiple paths while preserving per-source failures."""
+        path_list = [Path(path) for path in paths]
+        if not path_list:
+            raise ValueError("paths cannot be empty")
+        results: list[IngestedSource] = []
+        for path in path_list:
+            identifier = (source_ids or {}).get(str(path), path.name)
+            try:
+                results.append(
+                    self.ingest_path(path, source_id=identifier, source_type=source_type)
+                )
+            except (FileNotFoundError, ValueError) as exc:
+                source_format, media_type = _EXTENSION_MAP.get(
+                    path.suffix.lower(), ("unknown", "application/octet-stream")
+                )
+                results.append(
+                    IngestedSource(
+                        source_id=identifier,
+                        path=str(path),
+                        source_type=source_type,
+                        source_format=source_format,
+                        media_type=media_type,
+                        content_sha256=hashlib.sha256(b"").hexdigest(),
+                        status="failed",
+                        error=str(exc),
+                    )
+                )
+        return IngestionBatch(sources=results)
 
 
 def _decode_content(raw: bytes, source_format: SourceFormat) -> str:

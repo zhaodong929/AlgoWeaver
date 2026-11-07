@@ -90,6 +90,32 @@ def test_reproduce_endpoint_returns_unverified_bundle() -> None:
     assert payload["dependency_reports"]
 
 
+def test_reproduce_endpoint_retrieves_additional_sources() -> None:
+    response = TestClient(create_app()).post(
+        "/reproduce",
+        json={
+            "source_text": "# 移动平均算法\n预测库存需求。",
+            "source_id": "api-doc-multi",
+            "additional_sources": [
+                {
+                    "source_text": "# 移动平均算法历史代码\ndef moving_average(data):\n    return data",
+                    "source_id": "api-code-history",
+                    "source_type": "code",
+                    "source_format": "python",
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert {source["source_id"] for source in payload["sources"]} == {
+        "api-doc-multi",
+        "api-code-history",
+    }
+    assert any(hit["chunk"]["source_id"] == "api-code-history" for hit in payload["hits"])
+
+
 def test_reproduce_endpoint_can_execute_with_injected_runner() -> None:
     def runner(backend: str, workspace) -> ExecutionResult:
         assert backend == "docker"

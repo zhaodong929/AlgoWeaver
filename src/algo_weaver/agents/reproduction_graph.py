@@ -34,6 +34,7 @@ except ModuleNotFoundError:  # pragma: no cover - fallback is used in the baseli
 
 class ReproductionState(TypedDict):
     source: dict
+    sources: NotRequired[list[dict]]
     capability: dict
     hits: NotRequired[list[dict]]
     plan: NotRequired[dict]
@@ -74,9 +75,10 @@ def build_reproduction_graph(
     repair_enabled = repair is not None and max_repair_attempts > 0
 
     def retrieve_node(state: ReproductionState) -> dict:
-        source = IngestedSource.model_validate(state["source"])
         capability = AlgorithmCapability.model_validate(state["capability"])
-        chunks = SourceChunker().chunk(source)
+        source_records = state.get("sources") or [state["source"]]
+        sources = [IngestedSource.model_validate(item) for item in source_records]
+        chunks = [chunk for source in sources for chunk in SourceChunker().chunk(source)]
         hits = LocalLexicalRetriever(chunks).search(capability.name, top_k=5)
         return {"hits": [hit.model_dump(mode="json") for hit in hits]}
 

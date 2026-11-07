@@ -264,6 +264,13 @@
 - Updated the Windows/Linux runbook and acceptance checklist to match the current 82-test baseline, CI #55, executable LangGraph/WSL path, API execution/persistence/metrics flags and explicit unverified boundaries.
 - Git commit: `d30f250` (`docs: refresh MVP runbook and acceptance status`).
 
+## 2026-11-07 — multi-source ingestion and retrieval
+
+- Added `IngestionBatch` and `SourceIngestor.ingest_paths()` so mixed Markdown/Python/CSV/unsupported/missing sources retain independent provenance and status.
+- Extended the reproduction graph to aggregate chunks from `sources`; FastAPI `/reproduce` accepts `additional_sources`, and CLI `reproduce` accepts repeated `--additional-input` values. Retrieval hits preserve source IDs and locations across the mixed set.
+- Validation: full `uv run pytest` -> 85 passed; `uv run ruff check .` passed; `uv run mypy src` passed for 39 source files. Focused ingestion, graph and API tests cover mixed source success, unsupported/failed isolation and provenance hits.
+- Unresolved: complex document layout, semantic embeddings/reranking and repository-scale ingestion remain open.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

@@ -38,6 +38,36 @@ def test_reproduce_command_writes_unverified_bundle(tmp_path) -> None:
     assert (output_dir / "validation_reports.json").exists()
 
 
+def test_reproduce_command_accepts_additional_input(tmp_path) -> None:
+    source = tmp_path / "algorithm.md"
+    source.write_text("# 移动平均算法\n用于时间序列平滑。", encoding="utf-8")
+    history = tmp_path / "history.py"
+    history.write_text(
+        "# 移动平均算法历史代码\ndef moving_average(data):\n    return data",
+        encoding="utf-8",
+    )
+    output_dir = tmp_path / "bundle"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "reproduce",
+            "--input",
+            str(source),
+            "--additional-input",
+            str(history),
+            "--output-dir",
+            str(output_dir),
+            "--mode",
+            "mock",
+        ],
+    )
+
+    assert result.exit_code == 0, result.stdout
+    assert "1 ingested" in result.stdout
+    assert (output_dir / "ingestion_batch.json").exists()
+
+
 def test_reproduce_accepts_an_explicit_reviewed_capability_file(tmp_path) -> None:
     source = tmp_path / "algorithm.md"
     source.write_text("# Moving Average\nSmooth a time series.", encoding="utf-8")
