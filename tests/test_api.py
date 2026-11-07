@@ -156,6 +156,37 @@ def test_reproduce_endpoint_reuses_only_verified_capability(tmp_path) -> None:
     assert payload["reused_record"]["version"] == 1
 
 
+def test_reproduce_endpoint_auto_reuses_verified_name_match(tmp_path) -> None:
+    registry_path = tmp_path / "auto-reuse.sqlite3"
+    capability = AlgorithmCapability(
+        capability_id="api_auto_reuse_capability",
+        name="移动平均算法",
+        problem_definition="Smooth a time series.",
+        inputs=["data"],
+        outputs=["averages"],
+        algorithm_steps=["Slide a window."],
+        evidence=[EvidenceRef(source_id="reviewed-doc", excerpt="移动平均算法")],
+        status="verified",
+    )
+    CapabilityRegistry(registry_path).save(capability)
+
+    response = TestClient(
+        create_app(settings=Settings(registry_path=registry_path))
+    ).post(
+        "/reproduce",
+        json={
+            "source_text": "# 移动平均算法\n用于时间序列平滑。",
+            "source_id": "api-auto-reuse-source",
+            "auto_reuse": True,
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["capability"]["capability_id"] == "api_auto_reuse_capability"
+    assert payload["reused_record"]["status"] == "verified"
+
+
 def test_reproduce_endpoint_rejects_missing_verified_reuse(tmp_path) -> None:
     response = TestClient(
         create_app(settings=Settings(registry_path=tmp_path / "empty.sqlite3"))

@@ -71,6 +71,7 @@ class ReproduceRequest(ExtractRequest):
     repair_mode: Literal["template", "llm"] = "template"
     metrics: SandboxMetricsRequest | None = None
     reuse_query: str | None = Field(default=None, min_length=1)
+    auto_reuse: bool = False
 
 
 class MetricsRequest(BaseModel):
@@ -169,6 +170,11 @@ def create_app(
                     status_code=400,
                     detail="metrics.window cannot exceed the number of actual samples",
                 )
+            if request.reuse_query is not None and request.auto_reuse:
+                raise HTTPException(
+                    status_code=400,
+                    detail="use either reuse_query or auto_reuse, not both",
+                )
             model_settings = active_settings.model_copy(update={"llm_mode": request.mode})
             reused_record = None
             if request.reuse_query is not None:
@@ -194,6 +200,14 @@ def create_app(
                     source_type=request.source_type,
                     source_location=request.source_location,
                 )
+                if request.auto_reuse:
+                    matches = CapabilityRegistry(active_settings.registry_path).search_reusable(
+                        capability.name,
+                        limit=1,
+                    )
+                    if matches:
+                        reused_record = matches[0]
+                        capability = AlgorithmCapability.model_validate(reused_record.capability)
             source = IngestedSource(
                 source_id=request.source_id,
                 path=request.source_location or request.source_id,
