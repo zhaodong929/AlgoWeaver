@@ -317,7 +317,8 @@
 - The endpoint writes a JSON input inside the temporary workspace and runs a fixed `python -c` moving-average evaluation command through the same Docker/WSL boundary. It returns `metric_execution` plus a thresholded `metric_report`; arbitrary user commands are not accepted.
 - Added an injectable metric runner for API tests without weakening the production sandbox path.
 - Focused validation: API tests -> 15 passed. Full Windows validation: `uv run pytest -q` -> 102 passed, 0 skipped; Ruff passed; Mypy passed for 41 source files.
-- Unresolved: Linux CI-equivalent validation and a real API WSL metrics run are pending; support for other task types and automatic registry promotion by metrics remains open.
+- Linux/Python 3.13 CI-equivalent validation with all extras: 101 passed, 1 Windows-only WSL skip; Ruff and Mypy passed. GitHub Actions #68 passed on Python 3.12 and 3.13.
+- Unresolved: a real API WSL metrics run and support for other task types/automatic registry promotion by metrics remain open.
 - Git commit: `5532c16` (`feat: collect metrics in API sandbox`).
 
 ## Evidence policy

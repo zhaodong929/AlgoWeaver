@@ -22,12 +22,12 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 
 - `uv run pytest -q`: 102 passed, 0 skipped after installing the declared LangGraph, API, retrieval and execution dependencies.
 - `uv run ruff check src tests`: passed.
-- `uv run mypy src`: passed for 40 source files.
+- `uv run mypy src`: passed for 41 source files.
 - Mock CLI reproduction run created `algorithm.py`, `test_algorithm.py`, `reproduction_bundle.json`, `dependency_report.json` and `validation_reports.json`.
 - WSL CLI `--backend wsl --execute` recorded `status=passed` for the generated unittest. The reviewed-capability run promoted `cap_inventory_forecast_reviewed` to `verified`, and `--reuse-query` revalidated that verified card; the Mock extraction run remained `needs_review`.
 - FastAPI tests cover `/health`, `/extract`, `/metrics` and `/reproduce`; execution, bounded repair, sandbox metric collection and pending registry persistence are covered with injected fake runners, while production execution remains an explicit Docker/WSL request.
-- Git branch `feat/model-code-generation` contains the current generation boundary; `main` has not been merged.
-- GitHub Actions run #65 passed on both Python 3.12 and 3.13 after the WSL platform gate and CLI error-boundary fixes.
+- Git branch `feat/api-metrics-collection` contains the current generation, repair and API metrics boundaries; `main` has not been merged.
+- GitHub Actions run #68 passed on both Python 3.12 and 3.13 after the WSL platform gate, CLI error-boundary, structured repair and API metrics changes.
 
 ## Acceptance conclusion
 
