@@ -291,6 +291,16 @@
 - No tests were deleted, and no quality check was disabled. The next GitHub Actions run is the acceptance gate for this fix.
 - Git commit: `a7fb5c7` (`fix: gate WSL integration by host platform`).
 
+## 2026-11-07 — CI #59–#65 CLI output parity and final verification
+
+- CI #59–#64 exposed a second cross-platform failure after the WSL gate: `test_reproduce_command_requires_litellm_for_llm_generation` depended on Click's rendered output stream and ANSI layout. Linux and Windows runners reported the same command error through different captured streams.
+- Added failure annotations to `.github/workflows/ci.yml` so the first failing pytest case is visible through the public Checks API even when job logs require authentication. The workflow still runs the same full pytest command and preserves its exit status.
+- The CLI test now verifies the Typer boundary with a direct `BadParameter` assertion and treats the rendered invocation as an exit-code check. No production validation was weakened.
+- Focused validation: `uv run pytest tests/test_cli.py -q` -> 8 passed in both Windows and Linux/Python 3.13 isolated environments.
+- Final local validation: Windows isolated environment `uv run pytest -q` -> 94 passed; Ruff passed; Mypy passed for 40 source files. Linux/Python 3.13 with all CI extras -> 93 passed, 1 Windows-only WSL skip.
+- GitHub Actions run #65 passed on Python 3.12 and 3.13.
+- Git commits: `7967c2c`, `6a69261`, `7ce30f3`, `fdedf02`, `057078b`, `9ed4af0`.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

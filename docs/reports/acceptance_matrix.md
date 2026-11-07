@@ -27,6 +27,7 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 - WSL CLI `--backend wsl --execute` recorded `status=passed` for the generated unittest. The reviewed-capability run promoted `cap_inventory_forecast_reviewed` to `verified`, and `--reuse-query` revalidated that verified card; the Mock extraction run remained `needs_review`.
 - FastAPI tests cover `/health`, `/extract`, `/metrics` and `/reproduce`; execution, bounded repair and pending registry persistence are covered with injected fake runners, while production execution remains an explicit Docker/WSL request.
 - Git branch `feat/model-code-generation` contains the current generation boundary; `main` has not been merged.
+- GitHub Actions run #65 passed on both Python 3.12 and 3.13 after the WSL platform gate and CLI error-boundary fixes.
 
 ## Acceptance conclusion
 
