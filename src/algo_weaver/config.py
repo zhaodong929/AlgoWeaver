@@ -1,6 +1,7 @@
 """Application configuration loaded from environment variables and .env."""
 
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
 from pydantic import Field, SecretStr
@@ -26,6 +27,7 @@ class Settings(BaseSettings):
     llm_temperature: float = Field(default=0.0, ge=0.0, le=2.0)
     llm_timeout_seconds: float = Field(default=60.0, gt=0.0, le=600.0)
     max_input_chars: int = Field(default=40_000, ge=1_000, le=500_000)
+    registry_path: Path = Path("data/processed/capabilities.sqlite3")
 
 
 @lru_cache(maxsize=1)

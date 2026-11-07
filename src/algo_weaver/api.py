@@ -19,6 +19,7 @@ from algo_weaver.schemas.ingestion import IngestedSource, SourceFormat
 from algo_weaver.schemas.reproduction import ReproductionBundle
 from algo_weaver.services.capability_extractor import CapabilityExtractor
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
+from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
 from algo_weaver.services.template_repair import TemplateRepairer
 
@@ -47,6 +48,7 @@ class ReproduceRequest(ExtractRequest):
     backend: Literal["docker", "wsl"] = "docker"
     repair: bool = False
     max_repair_attempts: int = Field(default=2, ge=0, le=5)
+    persist: bool = False
 
 
 def create_app(
@@ -156,6 +158,22 @@ def create_app(
                 "reports": result.get("reports", []),
                 "dependency_reports": dependency_reports,
             }
+            if request.persist:
+                registry = CapabilityRegistry(active_settings.registry_path)
+                saved = registry.save(capability)
+                registry_record = saved
+                if request.execute and result.get("reports"):
+                    runtime_report = result["reports"][-1]
+                    if runtime_report["target_type"] == "capability" and runtime_report[
+                        "overall_status"
+                    ] == "passed":
+                        from algo_weaver.schemas.validation import ValidationReport
+
+                        registry_record = registry.promote_verified(
+                            capability.capability_id,
+                            ValidationReport.model_validate(runtime_report),
+                        )
+                response["registry_record"] = registry_record.model_dump(mode="json")
             if request.execute:
                 response["execution"] = result["execution"]
                 if "repair_result" in result:

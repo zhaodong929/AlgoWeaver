@@ -5,7 +5,9 @@ pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient
 
 from algo_weaver.api import create_app
+from algo_weaver.config import Settings
 from algo_weaver.schemas.execution import ExecutionResult
+from algo_weaver.services.registry import CapabilityRegistry
 
 
 def test_health_endpoint() -> None:
@@ -112,3 +114,27 @@ def test_reproduce_endpoint_can_repair_with_injected_runner() -> None:
     payload = response.json()
     assert payload["execution"]["status"] == "passed"
     assert payload["repair_result"]["final_status"] == "passed"
+
+
+def test_reproduce_endpoint_persists_pending_capability_without_promotion(
+    tmp_path,
+) -> None:
+    registry_path = tmp_path / "capabilities.sqlite3"
+    response = TestClient(
+        create_app(settings=Settings(registry_path=registry_path))
+    ).post(
+        "/reproduce",
+        json={
+            "source_text": "# 移动平均算法\n用于时间序列平滑。",
+            "source_id": "api-doc-persist",
+            "persist": True,
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["registry_record"]["version"] == 1
+    assert payload["registry_record"]["status"] == "needs_review"
+    latest = CapabilityRegistry(registry_path).latest(payload["capability"]["capability_id"])
+    assert latest is not None
+    assert latest.status == "needs_review"
