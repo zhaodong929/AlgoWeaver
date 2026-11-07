@@ -185,6 +185,11 @@
 - Extended both Docker execution backends with read-only root filesystems, dropped capabilities, `no-new-privileges` and a bounded noexec `/tmp` tmpfs.
 - Re-ran the reviewed inventory capability through WSL Docker after the hardening change; execution passed and registry promotion remained verified.
 
+## 2026-11-07 — WSL repair integration evidence
+
+- Added a WSL integration test that corrupts `algorithm.py`, observes a failing container unittest, applies `TemplateRepairer` through `BoundedRepairLoop`, and reruns successfully.
+- Integration test passed in the configured WSL Docker environment; full suite reached 69 passed, 0 skipped.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
