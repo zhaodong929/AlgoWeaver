@@ -349,7 +349,7 @@
 
 - Windows and WSL2 report an NVIDIA GeForce RTX 5070 Laptop GPU with 8,151 MiB VRAM, driver 573.22 and CUDA 12.8; WSL Docker Engine 29.1.3 is available.
 - A CUDA container smoke test was not completed because the image pull ended with a registry network EOF; no model weights or CUDA/PyTorch wheels were downloaded.
-- GitHub Actions run #76 passed on Python 3.12 and 3.13 after the documentation-only audit.
+- Linux/Python 3.13 with all CI extras: 105 passed, 1 Windows-only WSL skip; Ruff and Mypy passed. GitHub Actions run #77 passed on Python 3.12 and 3.13 after the documentation-only audit.
 - Git commit: `23b5470` (`docs: record GPU and Docker runtime audit`).
 
 ## Evidence policy
