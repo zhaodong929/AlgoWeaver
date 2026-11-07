@@ -17,6 +17,49 @@ def test_health_endpoint() -> None:
     assert response.json()["status"] == "ok"
 
 
+def test_metrics_endpoint_returns_thresholded_report() -> None:
+    response = TestClient(create_app()).post(
+        "/metrics",
+        json={
+            "task": "inventory_demand",
+            "actual": [10, 12, 14],
+            "predicted": [11, 11, 15],
+            "max_mae": 1.0,
+            "max_rmse": 1.0,
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["sample_count"] == 3
+    assert payload["overall_status"] == "passed"
+    assert payload["metrics"][0]["name"] == "mae"
+
+
+def test_metrics_endpoint_reports_threshold_failure() -> None:
+    response = TestClient(create_app()).post(
+        "/metrics",
+        json={
+            "actual": [0, 0],
+            "predicted": [2, 0],
+            "max_mae": 0.5,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["overall_status"] == "failed"
+
+
+def test_metrics_endpoint_rejects_mismatched_lengths() -> None:
+    response = TestClient(create_app()).post(
+        "/metrics",
+        json={"actual": [1], "predicted": [1, 2]},
+    )
+
+    assert response.status_code == 400
+    assert "equal length" in response.json()["detail"]
+
+
 def test_extract_endpoint_uses_mock_by_default() -> None:
     response = TestClient(create_app()).post(
         "/extract",

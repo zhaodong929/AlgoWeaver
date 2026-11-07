@@ -19,6 +19,7 @@ from algo_weaver.schemas.ingestion import IngestedSource, SourceFormat
 from algo_weaver.schemas.reproduction import ReproductionBundle
 from algo_weaver.services.capability_extractor import CapabilityExtractor
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
+from algo_weaver.services.metrics import RegressionMetricEvaluator
 from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
 from algo_weaver.services.template_repair import TemplateRepairer
@@ -49,6 +50,14 @@ class ReproduceRequest(ExtractRequest):
     repair: bool = False
     max_repair_attempts: int = Field(default=2, ge=0, le=5)
     persist: bool = False
+
+
+class MetricsRequest(BaseModel):
+    task: str = Field(default="regression", min_length=1)
+    actual: list[float] = Field(min_length=1)
+    predicted: list[float] = Field(min_length=1)
+    max_mae: float | None = Field(default=None, ge=0)
+    max_rmse: float | None = Field(default=None, ge=0)
 
 
 def create_app(
@@ -83,6 +92,20 @@ def create_app(
                 source_location=request.source_location,
             )
             return capability.model_dump(mode="json")
+        except (ValueError, TypeError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/metrics")
+    def metrics(request: MetricsRequest) -> dict:
+        try:
+            report = RegressionMetricEvaluator().evaluate(
+                request.actual,
+                request.predicted,
+                task=request.task,
+                max_mae=request.max_mae,
+                max_rmse=request.max_rmse,
+            )
+            return report.model_dump(mode="json")
         except (ValueError, TypeError) as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
