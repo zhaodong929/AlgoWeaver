@@ -175,6 +175,11 @@
 - Updated GitHub Actions to install API, retrieval and execution extras on both Python 3.12 and 3.13 matrix jobs.
 - CI now runs Ruff, the full pytest suite and Mypy, matching the local reproducible validation scope.
 
+## 2026-11-07 — deterministic domain metrics
+
+- Added `RegressionMetricEvaluator` with MAE/RMSE and explicit threshold status for inventory demand evaluation.
+- Added schema, service, tests and architecture documentation; automatic collection from sandbox prediction files remains future integration work.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

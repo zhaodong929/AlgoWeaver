@@ -2,6 +2,7 @@
 from algo_weaver.services.code_parser import PythonCodeParser
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.ingestion import SourceIngestor
+from algo_weaver.services.metrics import RegressionMetricEvaluator
 from algo_weaver.services.qdrant_retrieval import QdrantVectorRetriever
 from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.repair import BoundedRepairLoop
@@ -29,6 +30,7 @@ __all__ = [
     "SourceChunker",
     "combine_lexical_and_dense_scores",
     "SourceIngestor",
+    "RegressionMetricEvaluator",
     "TemplateArtifactWriter",
     "TemplateRepairer",
     "ValidationService",
