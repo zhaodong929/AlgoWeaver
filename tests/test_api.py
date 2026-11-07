@@ -5,6 +5,7 @@ pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient
 
 from algo_weaver.api import create_app
+from algo_weaver.schemas.execution import ExecutionResult
 
 
 def test_health_endpoint() -> None:
@@ -42,3 +43,72 @@ def test_reproduce_endpoint_returns_unverified_bundle() -> None:
     assert payload["plan"]["status"] == "ready"
     assert payload["bundle"]["artifacts"][0]["verification_status"] == "unverified"
     assert payload["dependency_reports"]
+
+
+def test_reproduce_endpoint_can_execute_with_injected_runner() -> None:
+    def runner(backend: str, workspace) -> ExecutionResult:
+        assert backend == "docker"
+        assert (workspace / "algorithm.py").exists()
+        return ExecutionResult(
+            status="passed",
+            command=["python", "-m", "unittest"],
+            image="python:3.12-slim",
+            exit_code=0,
+            duration_seconds=0.1,
+        )
+
+    response = TestClient(create_app(execution_runner=runner)).post(
+        "/reproduce",
+        json={
+            "source_text": "# 移动平均算法\n用于时间序列平滑。",
+            "source_id": "api-doc-execution",
+            "execute": True,
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["execution"]["status"] == "passed"
+    assert payload["reports"][-1]["target_type"] == "capability"
+    assert payload["reports"][-1]["overall_status"] == "failed"
+
+
+def test_reproduce_endpoint_can_repair_with_injected_runner() -> None:
+    executions = iter(
+        [
+            ExecutionResult(
+                status="failed",
+                command=["python", "-m", "unittest"],
+                image="python:3.12-slim",
+                exit_code=1,
+                duration_seconds=0.1,
+                error="assertion failed",
+            ),
+            ExecutionResult(
+                status="passed",
+                command=["python", "-m", "unittest"],
+                image="python:3.12-slim",
+                exit_code=0,
+                duration_seconds=0.1,
+            ),
+        ]
+    )
+
+    def runner(_backend: str, _workspace) -> ExecutionResult:
+        return next(executions)
+
+    response = TestClient(create_app(execution_runner=runner)).post(
+        "/reproduce",
+        json={
+            "source_text": "# 移动平均算法\n用于时间序列平滑。",
+            "source_id": "api-doc-repair",
+            "execute": True,
+            "repair": True,
+            "max_repair_attempts": 1,
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["execution"]["status"] == "passed"
+    assert payload["repair_result"]["final_status"] == "passed"

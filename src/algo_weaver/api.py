@@ -3,19 +3,34 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Callable
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from algo_weaver.agents.reproduction_graph import build_reproduction_graph
 from algo_weaver.config import Settings, get_settings
 from algo_weaver.llm.factory import create_chat_model
 from algo_weaver.schemas.capability import SourceType
+from algo_weaver.schemas.execution import ExecutionPolicy, ExecutionResult
 from algo_weaver.schemas.ingestion import IngestedSource, SourceFormat
+from algo_weaver.schemas.reproduction import ReproductionBundle
 from algo_weaver.services.capability_extractor import CapabilityExtractor
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
-from algo_weaver.services.reproduction import TemplateArtifactWriter
-from algo_weaver.services.retrieval import LocalLexicalRetriever, SourceChunker
-from algo_weaver.services.validation import ValidationService
+from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
+from algo_weaver.services.template_repair import TemplateRepairer
+
+ExecutionRunnerFactory = Callable[[str, Path], ExecutionResult]
+
+
+def _template_repair_callback(
+    bundle: ReproductionBundle,
+    workspace: Path,
+    observation: ExecutionResult,
+) -> bool:
+    return TemplateRepairer().repair(bundle, workspace, observation)
 
 
 class ExtractRequest(BaseModel):
@@ -28,9 +43,16 @@ class ExtractRequest(BaseModel):
 
 class ReproduceRequest(ExtractRequest):
     source_format: SourceFormat = "markdown"
+    execute: bool = False
+    backend: Literal["docker", "wsl"] = "docker"
+    repair: bool = False
+    max_repair_attempts: int = Field(default=2, ge=0, le=5)
 
 
-def create_app(settings: Settings | None = None):
+def create_app(
+    settings: Settings | None = None,
+    execution_runner: ExecutionRunnerFactory | None = None,
+):
     """Create the optional API app; importing this module does not require FastAPI."""
     try:
         from fastapi import FastAPI, HTTPException
@@ -84,31 +106,61 @@ def create_app(settings: Settings | None = None):
                 content=request.source_text,
                 content_sha256=hashlib.sha256(request.source_text.encode("utf-8")).hexdigest(),
             )
-            chunks = SourceChunker().chunk(source)
-            hits = LocalLexicalRetriever(chunks).search(capability.name, top_k=5)
-            from algo_weaver.services.reproduction import ReproductionPlanner
-
-            plan = ReproductionPlanner().build_plan(capability, hits)
-            if plan.status != "ready":
-                raise HTTPException(status_code=422, detail=plan.blocking_reasons)
-            bundle = TemplateArtifactWriter().generate(plan)
-            validator = ValidationService()
-            reports = [validator.validate_capability(capability)]
-            dependency_reports = []
-            for artifact in bundle.artifacts:
-                if artifact.kind == "python_source":
-                    dependency_reports.append(
-                        PythonDependencyAnalyzer().analyze(artifact.content, source_id=artifact.path)
-                    )
-                    reports.append(validator.validate_python_source(artifact.content, source_id=artifact.path))
-            return {
+            state = {
+                "source": source.model_dump(mode="json"),
                 "capability": capability.model_dump(mode="json"),
-                "hits": [hit.model_dump(mode="json") for hit in hits],
-                "plan": plan.model_dump(mode="json"),
-                "bundle": bundle.model_dump(mode="json"),
-                "reports": [report.model_dump(mode="json") for report in reports],
-                "dependency_reports": [report.model_dump(mode="json") for report in dependency_reports],
             }
+
+            def run_in_sandbox(workspace: Path) -> ExecutionResult:
+                if execution_runner is not None:
+                    return execution_runner(request.backend, workspace)
+                runner = (
+                    WslDockerSandboxRunner()
+                    if request.backend == "wsl"
+                    else DockerSandboxRunner()
+                )
+                return runner.run(
+                    workspace,
+                    ["python", "-m", "unittest", "discover", "-v"],
+                    policy=ExecutionPolicy(),
+                )
+
+            repair_callback = _template_repair_callback if request.repair else None
+            if request.execute:
+                with TemporaryDirectory(prefix="algo-weaver-api-") as workspace:
+                    result = build_reproduction_graph(
+                        workspace=workspace,
+                        runner=run_in_sandbox,
+                        repair=repair_callback,
+                        max_repair_attempts=request.max_repair_attempts,
+                    ).invoke(state)
+            else:
+                result = build_reproduction_graph().invoke(state)
+
+            if "error" in result:
+                raise HTTPException(status_code=422, detail=result["error"])
+
+            bundle = result["bundle"]
+            dependency_reports = [
+                PythonDependencyAnalyzer().analyze(
+                    artifact["content"], source_id=artifact["path"]
+                ).model_dump(mode="json")
+                for artifact in bundle["artifacts"]
+                if artifact["kind"] == "python_source"
+            ]
+            response = {
+                "capability": capability.model_dump(mode="json"),
+                "hits": result.get("hits", []),
+                "plan": result["plan"],
+                "bundle": bundle,
+                "reports": result.get("reports", []),
+                "dependency_reports": dependency_reports,
+            }
+            if request.execute:
+                response["execution"] = result["execution"]
+                if "repair_result" in result:
+                    response["repair_result"] = result["repair_result"]
+            return response
         except HTTPException:
             raise
         except (ValueError, TypeError) as exc:
