@@ -366,3 +366,4 @@ Every later entry must record the changed module, test command, result, unresolv
 - Live evidence: qwen JSON smoke test passed; DeepSeek JSON smoke test passed; CLI live extraction passed; CLI routed reproduction produced `algorithm.py` and `test_algorithm.py`; FastAPI `/reproduce` returned 200 with a ready plan and two LLM artifacts for a complete inventory description.
 - Validation: `uv run --no-sync pytest -q` -> 114 passed; Ruff passed; Mypy passed for 44 source files. Retrieval provider focus -> 13 passed.
 - Security: the API key was supplied in chat and must be revoked and regenerated before deployment. The local `.env` is ignored and must never be committed.
+- Git commit: `974c528` (`feat: connect Bailian model and retrieval providers`).
