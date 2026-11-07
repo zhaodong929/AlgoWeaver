@@ -40,7 +40,7 @@ jobs:
               if failure is not None:
                   failures.append((case.attrib.get("name", "unknown"), failure))
           for name, failure in failures[:5]:
-              detail = (failure.text or "").splitlines()[0][:500]
+              detail = " | ".join((failure.text or "").splitlines()[-8:])[:1500]
               print(f"::error title=pytest failure::{name}: {detail}")
           PY
           fi
