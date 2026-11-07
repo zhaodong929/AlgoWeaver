@@ -4,7 +4,7 @@ Updated: 2026-11-07 (Asia/Shanghai)
 
 ## Current milestone
 
-**Phase 5/9: structured code generation and CI parity.** The reproduction graph, CLI and API now select deterministic template, offline Mock or provider-backed LLM generation. Model JSON is validated by Pydantic and generated dependencies are retained in the plan. Cross-platform WSL and CLI error-boundary tests now pass in GitHub Actions; the next executable work is a real provider acceptance run when credentials are available, while independent LLM repair and metric integration continue in parallel.
+**Phase 6: bounded structured repair.** The reproduction graph, CLI and API now support deterministic template repair or a Pydantic-validated `LLMRepairer` callback. Patches are restricted to existing artifacts, hashes are refreshed, execution remains sandbox-bound and retry counts remain finite. The next executable work is a real provider acceptance run when credentials are available, while API-side metric collection continues independently.
 
 ## Milestones
 

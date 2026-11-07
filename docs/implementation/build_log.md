@@ -301,6 +301,16 @@
 - GitHub Actions run #65 passed on Python 3.12 and 3.13.
 - Git commits: `7967c2c`, `6a69261`, `7ce30f3`, `fdedf02`, `057078b`, `9ed4af0`.
 
+## 2026-11-08 — structured LLM repair boundary
+
+- Added `RepairPatch` with strict Pydantic fields for an existing artifact path, replacement source and rationale.
+- Added `LLMRepairer`, which sends the plan, artifact contents and external `ExecutionResult` to `ChatModel.complete_json`, rejects unknown/path-escaping targets, writes only inside the sandbox workspace, refreshes the artifact SHA-256 and never executes source on the host.
+- Integrated `repair_mode=template|llm` into the reproduction graph, CLI and FastAPI. LLM repair requires `repair=true` and `mode=litellm`; template repair remains the offline default. The graph returns the mutated bundle so validation observes the applied patch.
+- Focused validation: `uv run pytest tests/test_llm_repair.py tests/test_reproduction_graph.py tests/test_api.py tests/test_cli.py -q` -> 32 passed; Ruff passed; Mypy passed for 41 source files.
+- Full Windows validation: `uv run pytest -q` -> 100 passed, 0 skipped; Ruff passed; Mypy passed for 41 source files. Linux/Python 3.13 with all CI extras -> 99 passed, 1 Windows-only WSL skip; Ruff and Mypy passed.
+- Unresolved: no live provider repair call was made without credentials; API-side automatic metric collection remains a separate milestone.
+- Git commit: `1c20d1c` (`feat: add structured LLM repair boundary`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

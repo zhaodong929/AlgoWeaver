@@ -23,6 +23,7 @@ An agentic system for algorithm knowledge extraction, code reproduction, automat
 - Docker-only execution boundary with explicit `blocked` behavior when the daemon or SDK is unavailable.
 - LangGraph reproduction flow with optional artifact writing, sandbox execution, conditional bounded repair and runtime reports.
 - Provider-neutral code generation boundary with deterministic `template`, offline `mock` and structured `llm` modes; model output is Pydantic-validated before artifacts are written.
+- Bounded repair boundary with reviewed template repair and optional structured LLM patches that can target existing artifacts only.
 - CLI and FastAPI surfaces for extraction, reproduction, sandbox execution, repair, registry persistence and MAE/RMSE threshold evaluation.
 - WSL2 Docker runtime acceptance for the reviewed inventory forecasting capability.
 - Pytest coverage for schema validation, extraction, graph execution, API behavior and safety boundaries.
@@ -201,7 +202,7 @@ docs/              # Architecture and design documents
 ## 8. Current acceptance status
 
 - [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
-- [x] `uv run pytest -q` passes in the current environment: 94 passed, 0 skipped.
+- [x] `uv run pytest -q` passes in the current environment: 100 passed, 0 skipped.
 - [x] GitHub Actions CI passes on Python 3.12 and 3.13 (latest verified run #65 on `feat/model-code-generation`).
 - [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
 - [x] The capability card records source provenance.
@@ -209,7 +210,7 @@ docs/              # Architecture and design documents
 - [x] Real provider configuration is loaded from environment variables, not source code.
 - [x] Supported text-like sources are normalized and hashed by `SourceIngestor`.
 
-The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports deterministic moving-average template generation, an offline Mock generation label, a Pydantic-validated LLM generation boundary and a real WSL2 Docker execution path for the reviewed inventory capability. Real-provider generation, LLM repair and semantic embedding/reranking remain explicitly unverified. Use `--generation-mode llm --mode litellm` only with a configured provider; tests do not claim a live provider call.
+The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports deterministic moving-average template generation, an offline Mock generation label, Pydantic-validated LLM generation and repair boundaries, and a real WSL2 Docker execution path for the reviewed inventory capability. Real-provider generation/repair and semantic embedding/reranking remain explicitly unverified. Use `--generation-mode llm --mode litellm` or `--repair --repair-mode llm --mode litellm` only with a configured provider; tests do not claim a live provider call.
 
 The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata; Qdrant, embeddings and reranking remain later adapters. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
 
@@ -217,7 +218,7 @@ Multiple local materials can be supplied with repeated `--additional-input` opti
 
 For a human-reviewed capability card, pass `--capability-file examples/inventory_forecast/reviewed_capability.json`; with `--backend wsl --execute --registry ...`, the runtime report can promote the card to `verified`. The same execution/repair boundary is available from FastAPI `/reproduce` with explicit request flags. These paths are explicitly human-reviewed and do not claim real LLM extraction.
 
-Add `--repair` to enable the bounded offline template repair action after a failed or timed-out sandbox run.
+Add `--repair` to enable bounded repair after a failed or timed-out sandbox run. The default restores the reviewed template; `--repair-mode llm` uses a configured provider and still requires `--mode litellm`.
 
 Add `--metrics-file examples/inventory_forecast/sales_history.csv` to execute the generated prediction inside WSL Docker and write `metric_report.json` with MAE/RMSE.
 Use `--max-mae` and `--max-rmse` to turn those metrics into an explicit pass/fail report.
