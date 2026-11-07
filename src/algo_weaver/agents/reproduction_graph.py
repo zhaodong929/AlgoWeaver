@@ -142,6 +142,7 @@ def build_reproduction_graph(
             execute=execute_again,
         )
         return {
+            "bundle": bundle.model_dump(mode="json"),
             "execution": latest.model_dump(mode="json"),
             "repair_result": loop_result.model_dump(mode="json"),
         }

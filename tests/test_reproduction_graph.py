@@ -163,3 +163,22 @@ def test_reproduction_graph_stops_after_repair_budget(tmp_path: Path) -> None:
     assert result["repair_result"]["final_status"] == "exhausted"
     assert len(result["repair_result"]["attempts"]) == 2
     assert result["execution"]["status"] == "failed"
+
+
+def test_reproduction_graph_returns_mutated_bundle_after_repair(tmp_path: Path) -> None:
+    def runner(_workspace: Path) -> ExecutionResult:
+        return _execution("failed", "assertion failed")
+
+    def repair(bundle, _workspace: Path, _observation: ExecutionResult) -> bool:
+        artifact = bundle.artifacts[0]
+        bundle.artifacts[0] = artifact.model_copy(update={"content": "patched"})
+        return True
+
+    result = build_reproduction_graph(
+        workspace=tmp_path,
+        runner=runner,
+        repair=repair,
+        max_repair_attempts=1,
+    ).invoke(_state())
+
+    assert result["bundle"]["artifacts"][0]["content"] == "patched"

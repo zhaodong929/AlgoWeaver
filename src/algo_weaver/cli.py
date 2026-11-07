@@ -15,6 +15,7 @@ from algo_weaver.services.capability_extractor import CapabilityExtractor
 from algo_weaver.services.code_generation import LLMCodeGenerator, MockCodeGenerator
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.ingestion import SourceIngestor
+from algo_weaver.services.llm_repair import LLMRepairer
 from algo_weaver.services.metrics import RegressionMetricEvaluator
 from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.repair import BoundedRepairLoop
@@ -130,6 +131,9 @@ def reproduce(
     registry_path: Annotated[Path | None, typer.Option("--registry")] = None,
     backend: Annotated[str, typer.Option("--backend", help="docker or wsl")] = "docker",
     repair: Annotated[bool, typer.Option("--repair", help="attempt bounded template repair")] = False,
+    repair_mode: Annotated[
+        str, typer.Option("--repair-mode", help="template or llm; requires --repair")
+    ] = "template",
     capability_file: Annotated[
         Path | None,
         typer.Option("--capability-file", exists=True, readable=True),
@@ -149,6 +153,12 @@ def reproduce(
         raise typer.BadParameter("generation-mode must be 'template', 'mock' or 'llm'")
     if generation_mode == "llm" and mode != "litellm":
         raise typer.BadParameter("generation-mode 'llm' requires --mode litellm")
+    if repair_mode not in {"template", "llm"}:
+        raise typer.BadParameter("repair-mode must be 'template' or 'llm'")
+    if repair_mode == "llm" and not repair:
+        raise typer.BadParameter("repair-mode 'llm' requires --repair")
+    if repair_mode == "llm" and mode != "litellm":
+        raise typer.BadParameter("repair-mode 'llm' requires --mode litellm")
     if backend not in {"docker", "wsl"}:
         raise typer.BadParameter("backend must be 'docker' or 'wsl'")
     if capability_file is not None and reuse_query is not None:
@@ -282,9 +292,14 @@ def reproduce(
             policy=ExecutionPolicy(),
         )
         if repair and execution_result.status in {"failed", "timeout"}:
+            repairer = (
+                LLMRepairer(create_chat_model(settings))
+                if repair_mode == "llm"
+                else TemplateRepairer()
+            )
             repair_result = BoundedRepairLoop(max_attempts=2).run(
                 execution_result,
-                repair=lambda observation, _attempt: TemplateRepairer().repair(
+                repair=lambda observation, _attempt: repairer.repair(
                     bundle, output_dir, observation
                 ),
                 execute=lambda: runner.run(
@@ -300,6 +315,10 @@ def reproduce(
                     ["python", "-m", "unittest", "discover", "-v"],
                     policy=ExecutionPolicy(),
                 )
+            (output_dir / "reproduction_bundle.json").write_text(
+                json.dumps(bundle.model_dump(mode="json"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
         (output_dir / "execution_result.json").write_text(
             json.dumps(execution_result.model_dump(mode="json"), ensure_ascii=False, indent=2),
             encoding="utf-8",

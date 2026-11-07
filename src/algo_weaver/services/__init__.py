@@ -3,6 +3,7 @@ from algo_weaver.services.code_generation import LLMCodeGenerator, MockCodeGener
 from algo_weaver.services.code_parser import PythonCodeParser
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.ingestion import SourceIngestor
+from algo_weaver.services.llm_repair import LLMRepairer
 from algo_weaver.services.metrics import RegressionMetricEvaluator
 from algo_weaver.services.qdrant_retrieval import QdrantVectorRetriever
 from algo_weaver.services.registry import CapabilityRegistry
@@ -33,6 +34,7 @@ __all__ = [
     "SourceChunker",
     "combine_lexical_and_dense_scores",
     "SourceIngestor",
+    "LLMRepairer",
     "RegressionMetricEvaluator",
     "TemplateArtifactWriter",
     "TemplateRepairer",

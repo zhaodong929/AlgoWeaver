@@ -115,6 +115,27 @@ def test_reproduce_command_requires_litellm_for_llm_generation(tmp_path) -> None
         reproduce(input_file=source, generation_mode="llm")
 
 
+def test_reproduce_command_requires_litellm_for_llm_repair(tmp_path) -> None:
+    source = tmp_path / "algorithm.md"
+    source.write_text("# Moving Average\nSmooth a time series.", encoding="utf-8")
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "reproduce",
+            "--input",
+            str(source),
+            "--repair",
+            "--repair-mode",
+            "llm",
+        ],
+    )
+
+    assert result.exit_code == 2
+    with pytest.raises(typer.BadParameter, match="requires --mode litellm"):
+        reproduce(input_file=source, repair=True, repair_mode="llm")
+
+
 def test_reproduce_accepts_an_explicit_reviewed_capability_file(tmp_path) -> None:
     source = tmp_path / "algorithm.md"
     source.write_text("# Moving Average\nSmooth a time series.", encoding="utf-8")

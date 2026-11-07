@@ -24,6 +24,7 @@ from algo_weaver.services.code_generation import (
     MockCodeGenerator,
 )
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
+from algo_weaver.services.llm_repair import LLMRepairer
 from algo_weaver.services.metrics import RegressionMetricEvaluator
 from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
@@ -65,6 +66,7 @@ class ReproduceRequest(ExtractRequest):
     persist: bool = False
     additional_sources: list[AdditionalSourceRequest] = Field(default_factory=list)
     generation_mode: Literal["template", "mock", "llm"] = "template"
+    repair_mode: Literal["template", "llm"] = "template"
 
 
 class MetricsRequest(BaseModel):
@@ -132,6 +134,16 @@ def create_app(
                     status_code=400,
                     detail="generation_mode='llm' requires mode='litellm'",
                 )
+            if request.repair_mode == "llm" and not request.repair:
+                raise HTTPException(
+                    status_code=400,
+                    detail="repair_mode='llm' requires repair=true",
+                )
+            if request.repair_mode == "llm" and request.mode != "litellm":
+                raise HTTPException(
+                    status_code=400,
+                    detail="repair_mode='llm' requires mode='litellm'",
+                )
             model_settings = active_settings.model_copy(update={"llm_mode": request.mode})
             extractor = CapabilityExtractor(
                 create_chat_model(model_settings),
@@ -187,7 +199,13 @@ def create_app(
                     policy=ExecutionPolicy(),
                 )
 
-            repair_callback = _template_repair_callback if request.repair else None
+            repair_callback = None
+            if request.repair:
+                repair_callback = (
+                    LLMRepairer(create_chat_model(model_settings)).repair
+                    if request.repair_mode == "llm"
+                    else _template_repair_callback
+                )
             generator: ArtifactGenerator | None = None
             if request.generation_mode == "mock":
                 generator = MockCodeGenerator()

@@ -5,7 +5,7 @@ from algo_weaver.schemas.execution import ExecutionPolicy, ExecutionResult
 from algo_weaver.schemas.ingestion import IngestedSource, IngestionBatch
 from algo_weaver.schemas.metrics import MetricReport, MetricResult
 from algo_weaver.schemas.registry import CapabilityVersion
-from algo_weaver.schemas.repair import RepairAttempt, RepairLoopResult
+from algo_weaver.schemas.repair import RepairAttempt, RepairLoopResult, RepairPatch
 from algo_weaver.schemas.reproduction import GeneratedArtifact, ReproductionPlan
 from algo_weaver.schemas.retrieval import (
     EvidenceChunk,
@@ -29,6 +29,7 @@ __all__ = [
     "PythonSourceFile",
     "RepairAttempt",
     "RepairLoopResult",
+    "RepairPatch",
     "GeneratedArtifact",
     "ReproductionPlan",
     "RetrievalHit",

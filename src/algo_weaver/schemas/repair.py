@@ -28,3 +28,13 @@ class RepairLoopResult(BaseModel):
     final_status: RepairFinalStatus
     attempts: list[RepairAttempt] = Field(default_factory=list)
     max_attempts: int = Field(ge=0)
+
+
+class RepairPatch(BaseModel):
+    """One model-proposed replacement for an existing generated artifact."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    target_path: str = Field(min_length=1)
+    replacement_source: str = Field(min_length=1)
+    rationale: str = Field(min_length=1)

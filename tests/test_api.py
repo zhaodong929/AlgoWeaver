@@ -120,6 +120,22 @@ def test_reproduce_endpoint_requires_litellm_for_llm_generation() -> None:
     assert "requires mode='litellm'" in response.json()["detail"]
 
 
+def test_reproduce_endpoint_requires_litellm_for_llm_repair() -> None:
+    response = TestClient(create_app()).post(
+        "/reproduce",
+        json={
+            "source_text": "# moving average\nSmooth a time series.",
+            "source_id": "api-llm-repair-mode",
+            "execute": True,
+            "repair": True,
+            "repair_mode": "llm",
+        },
+    )
+
+    assert response.status_code == 400
+    assert "requires mode='litellm'" in response.json()["detail"]
+
+
 def test_reproduce_endpoint_retrieves_additional_sources() -> None:
     response = TestClient(create_app()).post(
         "/reproduce",
