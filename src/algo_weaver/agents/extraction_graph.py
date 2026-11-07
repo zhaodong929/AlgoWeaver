@@ -1,15 +1,24 @@
 """LangGraph workflow for the first vertical slice: capability extraction."""
 
-from typing import NotRequired, TypedDict
-
-try:
-    from langgraph.graph import END, START, StateGraph
-except ModuleNotFoundError:  # pragma: no cover - exercised through the CLI smoke path
-    END = START = None
-    StateGraph = None
+from typing import Any, NotRequired, TypedDict
 
 from algo_weaver.schemas.capability import SourceType
 from algo_weaver.services.capability_extractor import CapabilityExtractor
+
+END: Any = None
+START: Any = None
+StateGraph: Any = None
+
+try:
+    from langgraph.graph import END as _END
+    from langgraph.graph import START as _START
+    from langgraph.graph import StateGraph as _StateGraph
+
+    END = _END
+    START = _START
+    StateGraph = _StateGraph
+except ModuleNotFoundError:  # pragma: no cover - exercised through the CLI smoke path
+    pass
 
 
 class ExtractionState(TypedDict):

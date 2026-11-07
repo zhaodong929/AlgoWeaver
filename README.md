@@ -86,6 +86,10 @@ uv run algo-weaver reproduce \
   --registry data/processed/capabilities.sqlite3 \
   --execute \
   --mode mock
+
+# Optional FastAPI surface
+uv sync --group dev --extra api
+uv run uvicorn algo_weaver.api:create_app --factory --host 127.0.0.1 --port 8000
 ```
 
 ## 5. Enable a real model (LiteLLM)
@@ -178,7 +182,7 @@ docs/              # Architecture and design documents
 
 The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports a deterministic moving-average reproduction template, but does not yet claim general code reproduction, sandbox execution, automatic repair or semantic retrieval completion.
 
-The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata; Qdrant, embeddings and reranking remain later adapters. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
+The current retrieval baseline is intentionally lexical and local. It returns line-addressable evidence chunks with source IDs, paths and metadata; Qdrant, embeddings and reranking remain later adapters. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
 
 ## 9. Engineering principles
 

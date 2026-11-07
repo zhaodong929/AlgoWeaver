@@ -1,10 +1,10 @@
 # AlgoWeaver Execution Plan
 
-Updated: 2026-11-06 (Asia/Shanghai)
+Updated: 2026-11-07 (Asia/Shanghai)
 
 ## Current milestone
 
-**Phase 4: retrieval expansion.** The local provenance-preserving lexical baseline is complete; the next executable work is to evaluate a hybrid/vector adapter without changing the chunk/hit contract.
+**Phase 4/8/9: retrieval evaluation, optional API and acceptance evidence.** The local provenance-preserving lexical baseline is complete; the next executable work is to add measurable retrieval evaluation, expose the current workflow through a small API, and audit every Must-have against actual evidence.
 
 ## Milestones
 

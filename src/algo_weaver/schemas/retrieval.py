@@ -35,3 +35,37 @@ class RetrievalHit(BaseModel):
     score: float = Field(ge=0)
     matched_terms: list[str] = Field(default_factory=list)
     chunk: EvidenceChunk
+
+
+class RetrievalCase(BaseModel):
+    """One deterministic retrieval evaluation query."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    query: str = Field(min_length=1)
+    relevant_chunk_ids: list[str] = Field(min_length=1)
+    top_k: int = Field(default=5, ge=1)
+
+
+class RetrievalCaseResult(BaseModel):
+    """Metrics and provenance coverage for one evaluation query."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    query: str = Field(min_length=1)
+    retrieved_chunk_ids: list[str] = Field(default_factory=list)
+    recall_at_k: float = Field(ge=0, le=1)
+    reciprocal_rank: float = Field(ge=0, le=1)
+    evidence_coverage: float = Field(ge=0, le=1)
+
+
+class RetrievalEvaluation(BaseModel):
+    """Aggregate deterministic retrieval metrics."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    cases: list[RetrievalCaseResult] = Field(min_length=1)
+    mean_recall_at_k: float = Field(ge=0, le=1)
+    mean_reciprocal_rank: float = Field(ge=0, le=1)
+    mean_evidence_coverage: float = Field(ge=0, le=1)
+    score_fusion_used: bool = False

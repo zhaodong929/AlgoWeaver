@@ -2,13 +2,7 @@
 
 from __future__ import annotations
 
-from typing import NotRequired, TypedDict, cast
-
-try:
-    from langgraph.graph import END, START, StateGraph
-except ModuleNotFoundError:  # pragma: no cover - fallback is used in the baseline environment
-    END = START = None
-    StateGraph = None
+from typing import Any, NotRequired, TypedDict, cast
 
 from algo_weaver.schemas.capability import AlgorithmCapability
 from algo_weaver.schemas.ingestion import IngestedSource
@@ -17,6 +11,21 @@ from algo_weaver.schemas.retrieval import RetrievalHit
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
 from algo_weaver.services.retrieval import LocalLexicalRetriever, SourceChunker
 from algo_weaver.services.validation import ValidationService
+
+END: Any = None
+START: Any = None
+StateGraph: Any = None
+
+try:
+    from langgraph.graph import END as _END
+    from langgraph.graph import START as _START
+    from langgraph.graph import StateGraph as _StateGraph
+
+    END = _END
+    START = _START
+    StateGraph = _StateGraph
+except ModuleNotFoundError:  # pragma: no cover - fallback is used in the baseline environment
+    pass
 
 
 class ReproductionState(TypedDict):

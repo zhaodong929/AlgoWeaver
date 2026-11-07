@@ -5,10 +5,16 @@ from __future__ import annotations
 import hashlib
 import re
 from collections import Counter
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 
 from algo_weaver.schemas.ingestion import IngestedSource
-from algo_weaver.schemas.retrieval import EvidenceChunk, RetrievalHit
+from algo_weaver.schemas.retrieval import (
+    EvidenceChunk,
+    RetrievalCase,
+    RetrievalCaseResult,
+    RetrievalEvaluation,
+    RetrievalHit,
+)
 
 _TOKEN_PATTERN = re.compile(r"[A-Za-z0-9_]+|[\u4e00-\u9fff]")
 
@@ -115,6 +121,68 @@ class LocalLexicalRetriever:
             RetrievalHit(rank=index, score=score, matched_terms=matched, chunk=chunk)
             for index, (score, matched, chunk) in enumerate(candidates[:top_k], start=1)
         ]
+
+
+class RetrievalEvaluator:
+    """Evaluate a retriever with deterministic Recall@k, MRR and provenance coverage."""
+
+    def evaluate(
+        self,
+        retriever: LocalLexicalRetriever,
+        cases: Sequence[RetrievalCase],
+    ) -> RetrievalEvaluation:
+        if not cases:
+            raise ValueError("cases cannot be empty")
+        results: list[RetrievalCaseResult] = []
+        for case in cases:
+            hits = retriever.search(case.query, top_k=case.top_k)
+            retrieved_ids = [hit.chunk.chunk_id for hit in hits]
+            relevant = set(case.relevant_chunk_ids)
+            found = relevant.intersection(retrieved_ids)
+            recall = len(found) / len(relevant)
+            reciprocal_rank = next(
+                (1 / index for index, chunk_id in enumerate(retrieved_ids, start=1) if chunk_id in relevant),
+                0.0,
+            )
+            evidence_coverage = (
+                sum(bool(hit.chunk.source_id and hit.chunk.path and hit.chunk.location) for hit in hits)
+                / len(hits)
+                if hits
+                else 0.0
+            )
+            results.append(
+                RetrievalCaseResult(
+                    query=case.query,
+                    retrieved_chunk_ids=retrieved_ids,
+                    recall_at_k=recall,
+                    reciprocal_rank=reciprocal_rank,
+                    evidence_coverage=evidence_coverage,
+                )
+            )
+        return RetrievalEvaluation(
+            cases=results,
+            mean_recall_at_k=sum(item.recall_at_k for item in results) / len(results),
+            mean_reciprocal_rank=sum(item.reciprocal_rank for item in results) / len(results),
+            mean_evidence_coverage=sum(item.evidence_coverage for item in results) / len(results),
+        )
+
+
+def combine_lexical_and_dense_scores(
+    hits: Iterable[RetrievalHit],
+    dense_scores: Mapping[str, float],
+    *,
+    lexical_weight: float = 0.7,
+) -> list[RetrievalHit]:
+    """Fuse externally supplied scores without claiming an embedding implementation."""
+    if not 0 <= lexical_weight <= 1:
+        raise ValueError("lexical_weight must be between 0 and 1")
+    combined: list[RetrievalHit] = []
+    for hit in hits:
+        dense_score = min(1.0, max(0.0, dense_scores.get(hit.chunk.chunk_id, 0.0)))
+        score = lexical_weight * hit.score + (1 - lexical_weight) * dense_score
+        combined.append(hit.model_copy(update={"score": score}))
+    combined.sort(key=lambda hit: (-hit.score, hit.chunk.chunk_id))
+    return [hit.model_copy(update={"rank": rank}) for rank, hit in enumerate(combined, start=1)]
 
 
 def _tokenize(text: str) -> list[str]:

@@ -1,7 +1,13 @@
 import pytest
 
 from algo_weaver.schemas.ingestion import IngestedSource
-from algo_weaver.services.retrieval import LocalLexicalRetriever, SourceChunker
+from algo_weaver.schemas.retrieval import RetrievalCase
+from algo_weaver.services.retrieval import (
+    LocalLexicalRetriever,
+    RetrievalEvaluator,
+    SourceChunker,
+    combine_lexical_and_dense_scores,
+)
 
 
 def _source(source_id: str, content: str, source_type: str = "document") -> IngestedSource:
@@ -61,3 +67,28 @@ def test_retriever_rejects_empty_query_and_bad_limits() -> None:
         retriever.search(" ")
     with pytest.raises(ValueError, match="top_k must be positive"):
         retriever.search("algorithm", top_k=0)
+
+
+def test_retrieval_evaluator_reports_recall_mrr_and_provenance() -> None:
+    chunks = SourceChunker().chunk(_source("doc-001", "moving average validation"))
+    evaluation = RetrievalEvaluator().evaluate(
+        LocalLexicalRetriever(chunks),
+        [RetrievalCase(query="moving average", relevant_chunk_ids=[chunks[0].chunk_id], top_k=1)],
+    )
+
+    assert evaluation.mean_recall_at_k == 1
+    assert evaluation.mean_reciprocal_rank == 1
+    assert evaluation.mean_evidence_coverage == 1
+
+
+def test_score_fusion_is_explicit_and_deterministic() -> None:
+    chunks = SourceChunker().chunk(_source("doc-001", "moving average validation"))
+    hits = LocalLexicalRetriever(chunks).search("moving", top_k=1)
+    fused = combine_lexical_and_dense_scores(
+        hits,
+        {hits[0].chunk.chunk_id: 1.0},
+        lexical_weight=0.5,
+    )
+
+    assert fused[0].rank == 1
+    assert fused[0].score == 1.0

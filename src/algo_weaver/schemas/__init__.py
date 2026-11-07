@@ -6,7 +6,13 @@ from algo_weaver.schemas.ingestion import IngestedSource
 from algo_weaver.schemas.registry import CapabilityVersion
 from algo_weaver.schemas.repair import RepairAttempt, RepairLoopResult
 from algo_weaver.schemas.reproduction import GeneratedArtifact, ReproductionPlan
-from algo_weaver.schemas.retrieval import EvidenceChunk, RetrievalHit
+from algo_weaver.schemas.retrieval import (
+    EvidenceChunk,
+    RetrievalCase,
+    RetrievalCaseResult,
+    RetrievalEvaluation,
+    RetrievalHit,
+)
 from algo_weaver.schemas.validation import ValidationCheck, ValidationReport
 
 __all__ = [
@@ -22,6 +28,9 @@ __all__ = [
     "GeneratedArtifact",
     "ReproductionPlan",
     "RetrievalHit",
+    "RetrievalCase",
+    "RetrievalCaseResult",
+    "RetrievalEvaluation",
     "ValidationCheck",
     "ValidationReport",
 ]

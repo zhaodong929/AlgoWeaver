@@ -77,6 +77,21 @@
 - Full validation after workflow/dependency changes: `pytest -q` -> 46 passed, 2 skipped; Ruff and Mypy passed.
 - Committed and pushed workflow/dependency analysis as `3356695`; feature branch remains synchronized with origin.
 
+## 2026-11-07 — API, retrieval evaluation and acceptance audit
+
+- Added optional FastAPI endpoints `/health`, `/extract` and `/reproduce`; they reuse existing services, default to Mock and never execute generated code.
+- Added deterministic retrieval `Recall@k`, MRR and provenance coverage evaluation plus explicit score fusion for externally supplied dense scores. No embedding model is claimed as verified.
+- Added an inventory demand forecasting example and a Must-have acceptance audit at `docs/reports/acceptance_matrix.md`.
+- Full validation after these changes: `pytest -q` -> 51 passed, 2 skipped; Ruff and Mypy passed for 35 source files.
+
+## 2026-11-07 — uv lock and optional dependency verification
+
+- Installed lightweight engineering dependencies `uv`, LangGraph, Docker SDK and Qdrant client; no model weights were downloaded.
+- Generated `uv.lock` with `uv lock` and created the project environment with `uv sync --group dev`.
+- Installed the API extra with `uv sync --group dev --extra api`.
+- Re-ran the authoritative commands: `uv run pytest -q` -> 53 passed, 0 skipped; `uv run ruff check src tests` passed; `uv run mypy src` passed for 35 source files.
+- The Docker CLI/daemon and Docling remain unavailable, so real sandbox and office-document integration are still unverified.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
