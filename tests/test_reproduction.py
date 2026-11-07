@@ -68,3 +68,12 @@ def test_blocked_plan_cannot_generate_code() -> None:
     assert plan.status == "blocked"
     with pytest.raises(ValueError, match="blocked reproduction plan"):
         TemplateArtifactWriter().generate(plan)
+
+
+def test_chinese_inventory_forecast_name_selects_moving_average_template() -> None:
+    capability = _capability().model_copy(update={"name": "库存需求移动平均预测"})
+    plan = ReproductionPlanner().build_plan(capability)
+
+    bundle = TemplateArtifactWriter().generate(plan)
+
+    assert "def moving_average" in bundle.artifacts[0].content

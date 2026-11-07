@@ -104,6 +104,12 @@
 - Extended `CapabilityRegistry` with `search_reusable()`, which returns only versions whose status is `verified`.
 - Added regression coverage proving draft/partial records are not eligible for reuse until a passing independent report promotes them.
 
+## 2026-11-07 — inventory scenario routing fix
+
+- The first inventory forecast Demo exposed that the Chinese `移动平均` title selected the generic placeholder template.
+- Updated deterministic template routing to recognize the Chinese algorithm name and added a regression test; the domain demo now generates the moving-average implementation.
+- Full validation after the routing fix: `uv run pytest -q` -> 55 passed, 0 skipped.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.

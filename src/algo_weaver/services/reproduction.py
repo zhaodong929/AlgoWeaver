@@ -112,7 +112,7 @@ class TemplateArtifactWriter:
 
 def _function_name(name: str, family: str) -> str:
     normalized = f"{name} {family}".lower()
-    if "moving average" in normalized or "time_series" in normalized:
+    if "moving average" in normalized or "移动平均" in normalized or "time_series" in normalized:
         return "moving_average"
     return "run_algorithm"
 
