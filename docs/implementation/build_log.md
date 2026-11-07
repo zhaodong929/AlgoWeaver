@@ -333,7 +333,7 @@
 
 - Added `reuse_query` to `/reproduce`. The endpoint searches the configured SQLite registry with `search_reusable()`, refuses missing matches with HTTP 404, skips fresh extraction and returns the selected `reused_record` version.
 - Added API tests for verified reuse and missing-match rejection; unverified records remain ineligible by the existing registry query contract.
-- Validation: API tests -> 18 passed; full Windows validation -> 105 passed, 0 skipped; Ruff and Mypy passed for 41 source files.
+- Validation: API tests -> 18 passed; full Windows validation -> 105 passed, 0 skipped; Linux/Python 3.13 with all CI extras -> 104 passed, 1 Windows-only WSL skip; Ruff and Mypy passed for 41 source files. GitHub Actions #72 passed on Python 3.12 and 3.13.
 - Unresolved: semantic retrieval-driven reuse without an explicit query remains open.
 - Git commit: `152dce4` (`feat: reuse verified capabilities in API`).
 
