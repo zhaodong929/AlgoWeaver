@@ -85,3 +85,5 @@ def test_wsl_runner_translates_policy_without_host_execution(tmp_path: Path) -> 
     assert "none" in calls["command"]
     assert "--read-only" in calls["command"]
     assert "--cap-drop=ALL" in calls["command"]
+    assert calls["kwargs"]["encoding"] == "utf-8"
+    assert calls["kwargs"]["errors"] == "replace"

@@ -206,6 +206,11 @@
 
 - Added a mocked provider-call test for `LiteLLMChatModel`, verifying model name, API base, temperature, timeout and JSON extraction without network access.
 
+## 2026-11-07 — Windows WSL subprocess encoding fix
+
+- Full pytest exposed GBK decoding warnings from WSL subprocess reader threads on Windows.
+- `WslDockerSandboxRunner` now forces UTF-8 with replacement decoding; WSL integration and full suite pass without the prior thread warnings.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
