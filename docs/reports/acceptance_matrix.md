@@ -16,16 +16,16 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 | Automated tests, error analysis and repair | `ValidationService` performs AST/contract/runtime report checks; generated unittest passed in WSL Docker; WSL integration test demonstrates fail → bounded template repair → pass; LangGraph conditional routing now returns execution and repair loop state; `--metrics-file` collects container predictions and writes thresholded MAE/RMSE. | PARTIAL | No LLM edit/repair callback or multi-metric domain policy is integrated. |
 | Capability versioning and persistence | SQLite `CapabilityRegistry`, immutable versions, search and passing-report-only promotion; WSL CLI run promoted the human-reviewed inventory card to `verified`. | PARTIAL | Real-provider extraction and automated reuse workflow remain open. |
 | Historical capability retrieval and reuse | Lexical retrieval and registry name search are independently tested; `search_reusable()` and CLI `reuse` filter to verified versions; `reproduce --reuse-query` selects a verified card and revalidates it in WSL Docker. | PARTIAL | Retrieval hits are not yet automatically selected into a new reproduction plan. |
-| Complete end-to-end demo | `algo-weaver reproduce --capability-file ... --backend wsl --execute` promoted a card to `verified`; `--reuse-query` then selected and revalidated that verified card in WSL Docker. | PARTIAL | The verified path is human-reviewed; real-provider extraction and LLM repair are not demonstrated. |
+| Complete end-to-end demo | `algo-weaver reproduce --capability-file ... --backend wsl --execute` promoted a card to `verified`; `--reuse-query` then selected and revalidated that verified card in WSL Docker; FastAPI `/reproduce?execute=true` now exposes the same sandbox boundary and bounded repair result. | PARTIAL | The verified path is human-reviewed; real-provider extraction, API registry write-back and LLM repair are not demonstrated. |
 
 ## Verification evidence
 
-- `uv run pytest -q`: 76 passed, 0 skipped after installing the declared LangGraph, API, retrieval and execution dependencies.
+- `uv run pytest -q`: 78 passed, 0 skipped after installing the declared LangGraph, API, retrieval and execution dependencies.
 - `uv run ruff check src tests`: passed.
 - `uv run mypy src`: passed for 39 source files.
 - Mock CLI reproduction run created `algorithm.py`, `test_algorithm.py`, `reproduction_bundle.json`, `dependency_report.json` and `validation_reports.json`.
 - WSL CLI `--backend wsl --execute` recorded `status=passed` for the generated unittest. The reviewed-capability run promoted `cap_inventory_forecast_reviewed` to `verified`, and `--reuse-query` revalidated that verified card; the Mock extraction run remained `needs_review`.
-- FastAPI tests cover `/health`, `/extract` and `/reproduce`; the API still does not execute generated code, while the LangGraph execution boundary is covered with injected fake runners.
+- FastAPI tests cover `/health`, `/extract` and `/reproduce`; execution and bounded repair are covered with injected fake runners, while production execution remains an explicit Docker/WSL request.
 - Git branch `feat/initial-audit-and-ingestion` is synchronized with `origin`; `main` has not been merged.
 
 ## Acceptance conclusion

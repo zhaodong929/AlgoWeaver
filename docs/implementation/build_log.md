@@ -228,6 +228,14 @@
 - Unresolved: real-provider planning/code generation and LLM repair remain unverified; API execution/write-back is the next milestone.
 - Git commit: `0669731` (`feat: integrate execution and repair into reproduction graph`).
 
+## 2026-11-07 — API sandbox execution integration
+
+- Extended `POST /reproduce` with explicit `execute`, `backend`, `repair` and bounded `max_repair_attempts` fields. The endpoint now delegates to the executable reproduction graph and returns sandbox/repair observations without promoting a capability.
+- Production requests use the existing Docker or WSL runner; tests inject a runner so CI never executes generated code or requires a daemon. Default requests remain static and return unverified artifacts.
+- Validation: API-focused tests -> 5 passed; full `uv run pytest` -> 78 passed; `uv run ruff check .` passed; `uv run mypy src` passed for 39 source files.
+- Unresolved: API registry write-back, metrics request handling and UI remain future work; real-provider and LLM repair paths are still unverified.
+- Git commit: `cbc503b` (`feat: expose sandbox execution through API`).
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
