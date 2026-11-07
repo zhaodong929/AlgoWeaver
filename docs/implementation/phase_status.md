@@ -11,13 +11,13 @@
 | Phase 4 RAG、混合检索、检索评估 | IN_PROGRESS | lexical retrieval、Recall@k/MRR/provenance coverage、score fusion 和 Qdrant in-memory vector adapter 已测试；embedding/reranker 未验证 | 接入真实 embedding/vector adapter并建立评估集 |
 | Phase 5 LangGraph 算法复刻 Agent | IN_PROGRESS | `ReproductionPlanner`、`TemplateArtifactWriter` 已生成 evidence-linked、unverified artifacts；尚无 LangGraph 复刻图 | 接入检索上下文、计划节点和 artifact state |
 | Phase 6 Docker 沙箱、自动测试、错误修复 | IN_PROGRESS | WSL2 Docker runner 已真实执行 inventory unittest；runtime report 和 `BoundedRepairLoop` 已测试，LLM repair/metrics 未验证 | 接入真实 provider repair 和性能指标 |
-| Phase 7 持久化、版本管理、复用 | IN_PROGRESS | `CapabilityRegistry` 已提供 SQLite 版本追加、name search、passing-report promotion 和 verified-only reuse search；`reproduce --registry` 可写入 draft | 连接检索结果、版本比较和 verified reuse workflow |
+| Phase 7 持久化、版本管理、复用 | IN_PROGRESS | `CapabilityRegistry` 已提供 SQLite 版本追加、name search、passing-report promotion 和 verified-only reuse search；reviewed capability 已由 WSL runtime 晋升 verified | 连接检索结果、版本比较和 verified reuse workflow |
 | Phase 8 API、展示界面、端到端集成 | IN_PROGRESS | CLI `reproduce` 和可选 FastAPI `/health`, `/extract`, `/reproduce` 已测试；UI 未实现 | 接入 sandbox result、registry write-back 和可视化输出 |
-| Phase 9 最终验收、性能、文档、Demo | IN_PROGRESS | WSL sandbox runtime 已有真实 passed 证据；`docs/reports/acceptance_matrix.md` 已逐项审计当前 Must-have | 补齐真实 provider、verified promotion 和性能指标 |
+| Phase 9 最终验收、性能、文档、Demo | IN_PROGRESS | WSL sandbox runtime 和 reviewed capability verified promotion 已有真实证据；`docs/reports/acceptance_matrix.md` 已逐项审计当前 Must-have | 补齐真实 provider、LLM repair 和性能指标 |
 
 ## 当前 Git 证据
 
 - Branch: `feat/initial-audit-and-ingestion`
 - Remote tracking: `origin/feat/initial-audit-and-ingestion`
-- Baseline commit: `04d74ac`; latest code milestone: `9b5b4cf`
+- Baseline commit: `04d74ac`; latest code milestone: `8aeaecc`
 - Latest feature commits: `f0c794e` (AST parser), `474dcb0` (document adapter boundaries/validation), `594e587` (retrieval), `0063c4c` (evidence/reproduction), `7a28841` (registry/sandbox), `aefb424` (repair), `19de267` (CLI demo), `3356695` (workflow/dependency analysis), `e7d061a` (API/lock/retrieval evaluation), `ebd8cbd` (Qdrant contract), `d81f30c` (verified-only reuse), `07394dc` (stdlib Office fallback), `2414981` (PDF fallback), `3bf54f2` (runtime promotion gate), `8ca8bf3` (runtime status update), `acf4329` (CI optional extras), `9b5b4cf` (WSL Docker runtime)

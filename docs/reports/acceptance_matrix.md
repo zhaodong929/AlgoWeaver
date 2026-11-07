@@ -8,7 +8,7 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 |---|---|---|---|
 | Multi-source documents and historical code | `SourceIngestor` handles text/Markdown/Python/CSV/JSON/YAML; lazy Docling paths cover PDF/DOCX/PPTX/XLSX; stdlib ZIP/XML and basic PDF literal-text fallbacks cover simple office/PDF text; `PythonCodeParser` indexes imports/classes/functions. | PARTIAL | Complex PDF/Office layout remains unverified without Docling; no repository-scale Tree-sitter path. |
 | Algorithm knowledge extraction | `CapabilityExtractor`, Mock model, LiteLLM adapter, Pydantic `AlgorithmDraft`/`AlgorithmCapability`, missing-information handling. | PARTIAL | No real provider call has been executed in this environment; extraction remains a draft/review workflow. |
-| Standard capability cards | `AlgorithmCapability`, `EvidenceRef`, explicit `draft`/`needs_review`/`verified` statuses, JSON output and registry payloads. | DONE for schema baseline | Full verified promotion still depends on an independent runtime report. |
+| Standard capability cards | `AlgorithmCapability`, `EvidenceRef`, explicit `draft`/`needs_review`/`verified` statuses, JSON output and registry payloads. | DONE for schema baseline | Real LLM extraction remains unverified; reviewed-card promotion is demonstrated. |
 | Evidence-linked RAG retrieval | `SourceChunker`, `EvidenceChunk`, `LocalLexicalRetriever`, `RetrievalEvaluator` and local in-memory `QdrantVectorRetriever` preserve line/path/source metadata; Recall@k, MRR and provenance coverage are tested. | PARTIAL | No embedding model, remote Qdrant service or reranker quality evaluation is configured. |
 | Multi-model reproduction Agent | `ChatModel`/LiteLLM abstraction, installed LangGraph graph, `ReproductionPlanner`, and offline fallback. | PARTIAL | Real LLM planning/code generation is unverified; the current writer is deterministic template generation. |
 | Code generation and dependency analysis | `TemplateArtifactWriter` produces moving-average Python/pytest artifacts; `PythonDependencyAnalyzer` emits static import reports. | PARTIAL | General algorithm generation, dependency resolution and workspace management are not implemented. |
@@ -20,7 +20,7 @@ This is an evidence audit of the current worktree. `DONE` means the stated scope
 
 ## Verification evidence
 
-- `uv run pytest -q`: 62 passed, 0 skipped after installing the declared LangGraph, API, retrieval and execution dependencies.
+- `uv run pytest -q`: 63 passed, 0 skipped after installing the declared LangGraph, API, retrieval and execution dependencies.
 - `uv run ruff check src tests`: passed.
 - `uv run mypy src`: passed for 36 source files.
 - Mock CLI reproduction run created `algorithm.py`, `test_algorithm.py`, `reproduction_bundle.json`, `dependency_report.json` and `validation_reports.json`.
