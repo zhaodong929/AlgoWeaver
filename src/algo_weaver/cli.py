@@ -14,9 +14,11 @@ from algo_weaver.services.capability_extractor import CapabilityExtractor
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.ingestion import SourceIngestor
 from algo_weaver.services.registry import CapabilityRegistry
+from algo_weaver.services.repair import BoundedRepairLoop
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
 from algo_weaver.services.retrieval import LocalLexicalRetriever, SourceChunker
 from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
+from algo_weaver.services.template_repair import TemplateRepairer
 from algo_weaver.services.validation import ValidationService
 
 app = typer.Typer(
@@ -118,6 +120,7 @@ def reproduce(
     execute: Annotated[bool, typer.Option("--execute", help="run pytest inside Docker")] = False,
     registry_path: Annotated[Path | None, typer.Option("--registry")] = None,
     backend: Annotated[str, typer.Option("--backend", help="docker or wsl")] = "docker",
+    repair: Annotated[bool, typer.Option("--repair", help="attempt bounded template repair")] = False,
     capability_file: Annotated[
         Path | None,
         typer.Option("--capability-file", exists=True, readable=True),
@@ -222,6 +225,25 @@ def reproduce(
             ["python", "-m", "unittest", "discover", "-v"],
             policy=ExecutionPolicy(),
         )
+        if repair and execution_result.status in {"failed", "timeout"}:
+            repair_result = BoundedRepairLoop(max_attempts=2).run(
+                execution_result,
+                repair=lambda observation, _attempt: TemplateRepairer().repair(
+                    bundle, output_dir, observation
+                ),
+                execute=lambda: runner.run(
+                    output_dir,
+                    ["python", "-m", "unittest", "discover", "-v"],
+                    policy=ExecutionPolicy(),
+                ),
+            )
+            rprint(f"Repair loop: {repair_result.final_status}")
+            if repair_result.attempts:
+                execution_result = runner.run(
+                    output_dir,
+                    ["python", "-m", "unittest", "discover", "-v"],
+                    policy=ExecutionPolicy(),
+                )
         (output_dir / "execution_result.json").write_text(
             json.dumps(execution_result.model_dump(mode="json"), ensure_ascii=False, indent=2),
             encoding="utf-8",

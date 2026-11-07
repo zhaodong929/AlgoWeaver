@@ -164,6 +164,12 @@
 - CLI reuse regression proves draft records are excluded and promoted records are returned.
 - Full validation after this change: `uv run pytest -q` -> 64 passed, 0 skipped; Ruff and Mypy passed.
 
+## 2026-11-07 — bounded offline repair path
+
+- Added `TemplateRepairer`, which restores only reviewed bundle artifacts after a failed or timed-out execution and rejects path escapes.
+- Wired `--repair` into the CLI's bounded repair loop; blocked execution remains unrepaired.
+- Added repair regression tests; full validation: `uv run pytest -q` -> 66 passed, 0 skipped; Ruff and Mypy passed.
+
 ## 2026-11-07 — CI optional-extra coverage
 
 - Updated GitHub Actions to install API, retrieval and execution extras on both Python 3.12 and 3.13 matrix jobs.

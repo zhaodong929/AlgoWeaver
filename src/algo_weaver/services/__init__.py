@@ -13,6 +13,7 @@ from algo_weaver.services.retrieval import (
     combine_lexical_and_dense_scores,
 )
 from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
+from algo_weaver.services.template_repair import TemplateRepairer
 from algo_weaver.services.validation import ValidationService
 
 __all__ = [
@@ -29,6 +30,7 @@ __all__ = [
     "combine_lexical_and_dense_scores",
     "SourceIngestor",
     "TemplateArtifactWriter",
+    "TemplateRepairer",
     "ValidationService",
     "WslDockerSandboxRunner",
 ]
