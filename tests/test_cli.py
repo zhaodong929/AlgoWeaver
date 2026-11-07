@@ -109,7 +109,15 @@ def test_reproduce_command_requires_litellm_for_llm_generation(tmp_path) -> None
     )
 
     assert result.exit_code != 0
-    assert "requires --mode litellm" in result.stdout + result.stderr
+    captured = []
+    for stream_name in ("output", "stdout", "stderr"):
+        try:
+            stream = getattr(result, stream_name, "")
+        except ValueError:
+            stream = ""
+        if isinstance(stream, str):
+            captured.append(stream)
+    assert "requires --mode litellm" in "\n".join(captured)
 
 
 def test_reproduce_accepts_an_explicit_reviewed_capability_file(tmp_path) -> None:
