@@ -244,6 +244,14 @@
 - Unresolved: API metrics request handling and UI remain future work; real-provider and LLM repair paths are still unverified.
 - Git commit: `ac79669` (`feat: persist API capabilities through registry gate`).
 
+## 2026-11-07 — LangGraph WSL runtime acceptance
+
+- Ran the reviewed inventory capability through the new executable graph with `WslDockerSandboxRunner`, a temporary workspace, `python -m unittest discover -v`, `TemplateRepairer`, and one repair attempt budget.
+- Observed `execution=passed`, `runtime_report=passed`, no repair required, and both generated artifact paths recorded in graph state. This is real WSL2 Docker execution, not a fake runner test.
+- The graph itself does not promote registry state; promotion remains behind the existing independent `CapabilityRegistry` gate in CLI/API workflows.
+- Validation command: `uv run python -` with the reviewed capability and `examples/inventory_forecast/algorithm.md`; command completed successfully.
+- Unresolved: metrics collection is still CLI-specific, and real-provider extraction/LLM repair remain unverified.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
