@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 
 from algo_weaver.api import create_app
 from algo_weaver.config import Settings
+from algo_weaver.schemas.capability import AlgorithmCapability, EvidenceRef
 from algo_weaver.schemas.execution import ExecutionResult
 from algo_weaver.services.registry import CapabilityRegistry
 
@@ -120,6 +121,55 @@ def test_reproduce_endpoint_requires_litellm_for_llm_generation() -> None:
 
     assert response.status_code == 400
     assert "requires mode='litellm'" in response.json()["detail"]
+
+
+def test_reproduce_endpoint_reuses_only_verified_capability(tmp_path) -> None:
+    registry_path = tmp_path / "reuse.sqlite3"
+    capability = AlgorithmCapability(
+        capability_id="api_reuse_capability",
+        name="Moving Average",
+        problem_definition="Smooth a time series.",
+        inputs=["data"],
+        outputs=["averages"],
+        algorithm_steps=["Slide a window."],
+        evidence=[EvidenceRef(source_id="reviewed-doc", excerpt="moving average")],
+        status="verified",
+    )
+    CapabilityRegistry(registry_path).save(capability)
+
+    response = TestClient(
+        create_app(settings=Settings(registry_path=registry_path))
+    ).post(
+        "/reproduce",
+        json={
+            "source_text": "# ignored input",
+            "source_id": "api-reuse-source",
+            "reuse_query": "Moving Average",
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["capability"]["capability_id"] == "api_reuse_capability"
+    assert payload["capability"]["status"] == "verified"
+    assert payload["reused_record"]["status"] == "verified"
+    assert payload["reused_record"]["version"] == 1
+
+
+def test_reproduce_endpoint_rejects_missing_verified_reuse(tmp_path) -> None:
+    response = TestClient(
+        create_app(settings=Settings(registry_path=tmp_path / "empty.sqlite3"))
+    ).post(
+        "/reproduce",
+        json={
+            "source_text": "# ignored input",
+            "source_id": "api-reuse-missing",
+            "reuse_query": "Unknown capability",
+        },
+    )
+
+    assert response.status_code == 404
+    assert "no verified capability matched" in response.json()["detail"]
 
 
 def test_reproduce_endpoint_requires_litellm_for_llm_repair() -> None:

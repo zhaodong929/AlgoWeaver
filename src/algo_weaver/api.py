@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 from algo_weaver.agents.reproduction_graph import build_reproduction_graph
 from algo_weaver.config import Settings, get_settings
 from algo_weaver.llm.factory import create_chat_model
-from algo_weaver.schemas.capability import SourceType
+from algo_weaver.schemas.capability import AlgorithmCapability, SourceType
 from algo_weaver.schemas.execution import ExecutionPolicy, ExecutionResult
 from algo_weaver.schemas.ingestion import IngestedSource, SourceFormat
 from algo_weaver.schemas.reproduction import ReproductionBundle
@@ -70,6 +70,7 @@ class ReproduceRequest(ExtractRequest):
     generation_mode: Literal["template", "mock", "llm"] = "template"
     repair_mode: Literal["template", "llm"] = "template"
     metrics: SandboxMetricsRequest | None = None
+    reuse_query: str | None = Field(default=None, min_length=1)
 
 
 class MetricsRequest(BaseModel):
@@ -169,16 +170,30 @@ def create_app(
                     detail="metrics.window cannot exceed the number of actual samples",
                 )
             model_settings = active_settings.model_copy(update={"llm_mode": request.mode})
-            extractor = CapabilityExtractor(
-                create_chat_model(model_settings),
-                max_input_chars=active_settings.max_input_chars,
-            )
-            capability = extractor.extract(
-                source_text=request.source_text,
-                source_id=request.source_id,
-                source_type=request.source_type,
-                source_location=request.source_location,
-            )
+            reused_record = None
+            if request.reuse_query is not None:
+                matches = CapabilityRegistry(active_settings.registry_path).search_reusable(
+                    request.reuse_query,
+                    limit=1,
+                )
+                if not matches:
+                    raise HTTPException(
+                        status_code=404,
+                        detail=f"no verified capability matched: {request.reuse_query}",
+                    )
+                reused_record = matches[0]
+                capability = AlgorithmCapability.model_validate(reused_record.capability)
+            else:
+                extractor = CapabilityExtractor(
+                    create_chat_model(model_settings),
+                    max_input_chars=active_settings.max_input_chars,
+                )
+                capability = extractor.extract(
+                    source_text=request.source_text,
+                    source_id=request.source_id,
+                    source_type=request.source_type,
+                    source_location=request.source_location,
+                )
             source = IngestedSource(
                 source_id=request.source_id,
                 path=request.source_location or request.source_id,
@@ -320,6 +335,8 @@ def create_app(
                 "reports": result.get("reports", []),
                 "dependency_reports": dependency_reports,
             }
+            if reused_record is not None:
+                response["reused_record"] = reused_record.model_dump(mode="json")
             if request.persist:
                 registry = CapabilityRegistry(active_settings.registry_path)
                 saved = registry.save(capability)
