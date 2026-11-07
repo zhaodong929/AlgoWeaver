@@ -202,6 +202,10 @@
 - Verified output: `metric_report.json` with 3 samples, MAE `0.888888...` and RMSE `1.360827...`.
 - With `--max-mae 1.0 --max-rmse 1.5`, the same report returned `overall_status="passed"`.
 
+## 2026-11-07 — LiteLLM provider contract test
+
+- Added a mocked provider-call test for `LiteLLMChatModel`, verifying model name, API base, temperature, timeout and JSON extraction without network access.
+
 ## Evidence policy
 
 Every later entry must record the changed module, test command, result, unresolved issue, and Git commit. Claims remain `NOT_STARTED`, `IN_PROGRESS` or `BLOCKED` until those fields have evidence.
