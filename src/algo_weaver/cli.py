@@ -130,6 +130,8 @@ def reproduce(
     reuse_query: Annotated[str | None, typer.Option("--reuse-query")] = None,
     metrics_file: Annotated[Path | None, typer.Option("--metrics-file", exists=True, readable=True)] = None,
     metrics_window: Annotated[int, typer.Option("--metrics-window", min=1)] = 3,
+    max_mae: Annotated[float | None, typer.Option("--max-mae", min=0)] = None,
+    max_rmse: Annotated[float | None, typer.Option("--max-rmse", min=0)] = None,
 ) -> None:
     """Build an evidence-linked reproduction bundle and run safe static checks."""
     if mode not in {"mock", "litellm"}:
@@ -318,6 +320,8 @@ def reproduce(
                     actual[metrics_window - 1 :],
                     predicted,
                     task="inventory_demand",
+                    max_mae=max_mae,
+                    max_rmse=max_rmse,
                 )
                 (output_dir / "metric_report.json").write_text(
                     json.dumps(metric_report.model_dump(mode="json"), ensure_ascii=False, indent=2),

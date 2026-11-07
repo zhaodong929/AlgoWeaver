@@ -200,6 +200,7 @@
 
 - Added `--metrics-file` to execute the generated moving-average prediction inside WSL Docker and compute MAE/RMSE from the inventory sales CSV.
 - Verified output: `metric_report.json` with 3 samples, MAE `0.888888...` and RMSE `1.360827...`.
+- With `--max-mae 1.0 --max-rmse 1.5`, the same report returned `overall_status="passed"`.
 
 ## Evidence policy
 
