@@ -1,4 +1,5 @@
 import shutil
+import sys
 from pathlib import Path
 
 import pytest
@@ -9,7 +10,10 @@ from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtif
 from algo_weaver.services.sandbox import WslDockerSandboxRunner
 from algo_weaver.services.template_repair import TemplateRepairer
 
-pytestmark = pytest.mark.skipif(shutil.which("wsl.exe") is None, reason="WSL runtime unavailable")
+pytestmark = pytest.mark.skipif(
+    sys.platform != "win32" or shutil.which("wsl.exe") is None,
+    reason="Windows WSL runtime unavailable",
+)
 
 
 def test_wsl_runtime_repair_loop_recovers_from_controlled_failure(tmp_path: Path) -> None:
