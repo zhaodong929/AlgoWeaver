@@ -19,5 +19,5 @@
 
 - Branch: `feat/initial-audit-and-ingestion`
 - Remote tracking: `origin/feat/initial-audit-and-ingestion`
-- Baseline commit: `04d74ac`; latest code milestone: `3bf54f2`
-- Latest feature commits: `f0c794e` (AST parser), `474dcb0` (document adapter boundaries/validation), `594e587` (retrieval), `0063c4c` (evidence/reproduction), `7a28841` (registry/sandbox), `aefb424` (repair), `19de267` (CLI demo), `3356695` (workflow/dependency analysis), `e7d061a` (API/lock/retrieval evaluation), `ebd8cbd` (Qdrant contract), `d81f30c` (verified-only reuse), `07394dc` (stdlib Office fallback), `2414981` (PDF fallback), `3bf54f2` (runtime promotion gate)
+- Baseline commit: `04d74ac`; latest code milestone: `8ca8bf3`
+- Latest feature commits: `f0c794e` (AST parser), `474dcb0` (document adapter boundaries/validation), `594e587` (retrieval), `0063c4c` (evidence/reproduction), `7a28841` (registry/sandbox), `aefb424` (repair), `19de267` (CLI demo), `3356695` (workflow/dependency analysis), `e7d061a` (API/lock/retrieval evaluation), `ebd8cbd` (Qdrant contract), `d81f30c` (verified-only reuse), `07394dc` (stdlib Office fallback), `2414981` (PDF fallback), `3bf54f2` (runtime promotion gate), `8ca8bf3` (runtime status update)
