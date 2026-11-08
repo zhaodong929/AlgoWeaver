@@ -440,3 +440,13 @@ Every later entry must record the changed module, test command, result, unresolv
 - GitHub Actions CI runs #89 (`a466b89`) and #90 (`ec24374`) both completed
   successfully on Python 3.12 and 3.13. The only annotations are upstream runner
   deprecation/migration notices.
+
+## 2026-11-08 — live repair coverage for three failure classes
+
+- Ran `LLMRepairer` with the configured `deepseek-v4.1-flash-1017` model against
+  intentionally broken artifacts in temporary WSL2 Docker workspaces.
+- Import error (`missing_helpers`), missing dependency (`pandas`) and timeout
+  (infinite loop) each entered the bounded one-attempt loop and ended with a passing
+  generated unittest suite.
+- Full evidence, hashes and the execution boundary are recorded in
+  `docs/reports/test_reports/2026-11-08-live-repair-scenarios.md`.

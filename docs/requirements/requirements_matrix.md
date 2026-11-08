@@ -41,7 +41,7 @@
 | REQ-009 | `ReproductionPlanner` 和 LangGraph 条件路由 | PARTIAL | 真实 LLM 规划质量与候选比较 |
 | REQ-010 | 结构化代码/测试生成、依赖 AST 分析、hash | PARTIAL | 依赖安装策略和覆盖率门禁 |
 | REQ-011 | Docker/WSL 执行、日志、MAE/RMSE、超时状态 | PARTIAL | 多任务指标和资源消耗报告 |
-| REQ-012 | BoundedRepairLoop 覆盖导入/依赖/超时受控测试，LLMRepairer 已接入 | PARTIAL | 三类真实 DeepSeek repair 日志 |
+| REQ-012 | BoundedRepairLoop 覆盖导入/依赖/超时；三类真实 DeepSeek repair 各有一次通过记录 | PARTIAL | 多轮修复、失败经验回写和更多依赖类别 |
 | REQ-013 | SQLite 版本、verified gate、CLI/API reuse | PARTIAL | 语义相似复用、版本 diff、失败经验回写 |
 | REQ-014 | Git 分支、README、研究笔记、ADR、实现日志 | PARTIAL | 发布清单和最终 Windows/Docker 复现记录 |
 | REQ-015 | 示例、抽取结果、工作流、报告、依赖和测试文件；已有库存和 UCI AI4I 预测性维护材料 | PARTIAL | 完整打包验收和通用 Agent/API 第二场景运行记录 |
