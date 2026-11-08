@@ -18,6 +18,6 @@
 ## 当前 Git 证据
 
 - Branch: `feat/api-capability-reuse`
-- Remote tracking: clean and synchronized after `a466b89`
+- Remote tracking: clean and synchronized after `ec24374`
 - Baseline commit: `04d74ac`; latest code milestone: `23b5470` (GPU/Docker audit; CI #79 verified)
 - Latest feature commits include `dcb64da` (open-license second scenario), `fa17dea` (delivery audit evidence), `16919d0` (provider-default test isolation), `b17206f` (production boundaries), `3705a66`/`47d3dfb` (hybrid retrieval and Streamlit), plus the earlier implementation milestones listed above.

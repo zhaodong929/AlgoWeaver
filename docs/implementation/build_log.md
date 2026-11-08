@@ -437,3 +437,6 @@ Every later entry must record the changed module, test command, result, unresolv
   exercises the default form and request-result panels.
 - The full project suite after the AI4I scenario and CLI metric gate is **128 passed**;
   Ruff and Mypy remain clean.
+- GitHub Actions CI runs #89 (`a466b89`) and #90 (`ec24374`) both completed
+  successfully on Python 3.12 and 3.13. The only annotations are upstream runner
+  deprecation/migration notices.
