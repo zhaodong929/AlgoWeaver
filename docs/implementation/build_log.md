@@ -549,3 +549,16 @@ Every later entry must record the changed module, test command, result, unresolv
 - This validates the TLS termination path used by the production bundle. Public DNS,
   ACME issuance and external ingress remain deployment-specific.
 - Evidence: `docs/reports/test_reports/2026-11-08-https-runtime.md`.
+
+## 2026-11-08 — advisor-facing Streamlit workspace and GitHub deployment guide
+
+- Reworked `src/algo_weaver/ui.py` into a Claude-inspired workspace while keeping the
+  existing `/reproduce` payload and API-key header contract. The page now has sidebar
+  navigation, a six-stage workflow indicator, evidence/result tabs, source tracing,
+  recent-task history and capability/runtime panels.
+- Added `docs/deployment/github_mentor_guide.md` with branch/CI publishing steps,
+  Cloudflare Quick Tunnel and Streamlit Cloud options, production Docker/Qdrant/Caddy
+  DNS/ACME instructions, secret boundaries and a five-minute advisor acceptance script.
+- Validation after the change: `uv run --no-sync pytest -q` -> **131 passed**;
+  `uv run --no-sync ruff check src tests` passed; `uv run --no-sync mypy src` passed;
+  Streamlit `/_stcore/health` and root HTTP smoke both returned `200` on port 8512.

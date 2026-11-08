@@ -232,7 +232,7 @@ docs/              # Architecture and design documents
 ## 8. Current acceptance status
 
 - [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
-- [x] `uv run pytest -q` passes in the current environment: 117 passed, 0 skipped.
+- [x] `uv run pytest -q` passes in the current environment: 131 passed, 0 skipped.
 - [x] GitHub Actions CI passes on Python 3.12 and 3.13 (latest verified run #79 on `feat/api-capability-reuse`).
 - [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
 - [x] The capability card records source provenance.
@@ -269,6 +269,10 @@ For a short advisor demonstration without buying a domain, see
 [`docs/architecture/deployment.md`](docs/architecture/deployment.md) for the
 Cloudflare Quick Tunnel/ngrok HTTPS options. A permanent public service should use
 the production Caddy deployment with DNS and ACME.
+
+For a step-by-step GitHub release, Streamlit Cloud option, temporary HTTPS demo,
+production Qdrant/Caddy deployment, Secrets, ports and the advisor acceptance
+script, see [`docs/deployment/github_mentor_guide.md`](docs/deployment/github_mentor_guide.md).
 
 ## 9. Delivery scope and remaining work
 

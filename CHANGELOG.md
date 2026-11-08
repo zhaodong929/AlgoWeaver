@@ -17,3 +17,14 @@
   real embedding/reranker hybrid retrieval.
 - Added JSON-LD capability graph export, UCI AI4I attribution, live DeepSeek repair
   evidence, Streamlit interaction evidence and retrieval/performance benchmark reports.
+- Redesigned the Streamlit workspace with Claude-inspired navigation, workflow progress,
+  evidence/result tabs, capability history and runtime configuration panels. Added a
+  GitHub/mentor deployment guide covering CI, temporary HTTPS and production Caddy/Qdrant.
+
+## 2026-11-08 — advisor-facing UI and deployment guide
+
+- Streamlit AppTest and the full local suite pass with **131 tests**, with Ruff and Mypy
+  passing after the visual redesign.
+- Added `docs/deployment/github_mentor_guide.md` with GitHub branch/CI instructions,
+  Cloudflare Quick Tunnel, Streamlit Cloud boundaries, production DNS/ACME steps,
+  secret handling and a five-minute advisor acceptance script.

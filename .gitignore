@@ -12,6 +12,8 @@ htmlcov/
 .venv/
 venv/
 .env
+.env.production
+deploy/production/.env.production
 
 # Local data and model caches
 .data/
