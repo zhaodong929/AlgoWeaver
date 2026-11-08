@@ -47,4 +47,4 @@
 | REQ-015 | 示例、抽取结果、工作流、报告、依赖和测试文件；已有库存和 UCI AI4I 预测性维护材料 | PARTIAL | 完整打包验收和通用 Agent/API 第二场景运行记录 |
 | REQ-016 | 多轮修复基础、Streamlit、可配置指标入口 | PARTIAL | 候选比较、图谱可视化、插件注册 |
 | REQ-017 | AST、沙箱、失败反馈、WSL Docker | PARTIAL | 图搜索、多 Agent、仓库级抽取、性能分析 |
-| REQ-018 | 本地 129 passed、Ruff/Mypy、CI、功能分支、库存/修复/Qdrant/性能报告 | PARTIAL | 公网 HTTPS、浏览器人工记录和更广泛评估 |
+| REQ-018 | 本地 130 passed、Ruff/Mypy、CI、功能分支、库存/修复/Qdrant/性能报告 | PARTIAL | 公网 HTTPS、浏览器人工记录和更广泛评估 |

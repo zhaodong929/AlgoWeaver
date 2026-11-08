@@ -18,7 +18,7 @@
 - Docker/WSL 隔离执行、指标报告、有限修复和 SQLite 能力版本库；
 - 第二个开放许可场景：UCI AI4I 2020 预测性维护，位于
   `examples/predictive_maintenance/`，包含归属说明、10,000 行 CSV、算法、测试和能力卡片；
-- `uv run pytest -q` 当前 129 passed，Ruff 和 Mypy 的 CI 检查已配置。
+- `uv run pytest -q` 当前 130 passed，Ruff 和 Mypy 的 CI 检查已配置。
 
 ## 需求到实现对照
 

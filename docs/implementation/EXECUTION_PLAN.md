@@ -26,7 +26,7 @@ the main scenario report, browser acceptance and production boundary checks.
 | M8 | API/demo integration | CLI `reproduce` writes plan, artifacts and static validation reports | IN_PROGRESS |
 | M9 | Final acceptance | Requirement matrix audit, security/performance checks, final demo | NOT_STARTED |
 | M10 | Delivery gap audit | Updated matrix, primary scenario evidence and actionable backlog | IN_PROGRESS |
-| M11 | Production retrieval and UI acceptance | Persistent Qdrant smoke test, browser interaction record, HTTPS/auth/rate-limit check | NOT_STARTED |
+| M11 | Production retrieval and UI acceptance | Persistent Qdrant smoke test, automated UI interaction, HTTPS/auth/rate-limit check | IN_PROGRESS |
 | M12 | Extended failure repair and cross-scenario validation | Live import/dependency/timeout repair evidence and second public dataset | NOT_STARTED |
 
 ## Working rules
