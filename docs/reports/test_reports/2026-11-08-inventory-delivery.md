@@ -61,8 +61,6 @@ version. This demonstrates persistence and reuse of the reviewed capability card
 ## Scope and remaining evidence
 
 This report is a real WSL2 sandbox and SQLite registry acceptance run. Generation is
-the reviewed deterministic template path; it does not claim a live LLM-generated
-artifact. Persistent Qdrant service validation remains pending because the WSL Docker
-Engine is available but the Qdrant image pull timed out against Docker Hub in the
-current network. The repository still contains the server-mode configuration and
-volume-backed Compose definition.
+the reviewed deterministic template path; the separate live LLM generation/repair
+evidence is recorded in `2026-11-08-live-llm-reproduction.md`. Persistent Qdrant
+service validation is recorded separately in `2026-11-08-qdrant-persistence.md`.

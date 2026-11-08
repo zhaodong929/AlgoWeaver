@@ -16,7 +16,7 @@ If Docker Compose is unavailable, the equivalent WSL Docker command is:
 ```bash
 docker volume create qdrant_qdrant_storage
 docker run -d --name algo-weaver-qdrant -p 127.0.0.1:6333:6333 \
-  -v qdrant_qdrant_storage:/qdrant/storage qdrant/qdrant:v1.15.5
+  -v qdrant_qdrant_storage:/qdrant/storage qdrant/qdrant:v1.20.0
 ```
 
 Then configure the application environment:
@@ -25,6 +25,11 @@ Then configure the application environment:
 $env:ALGOWEAVER_QDRANT_MODE = "server"
 $env:ALGOWEAVER_QDRANT_URL = "http://127.0.0.1:6333"
 ```
+
+When Windows localhost forwarding is unavailable, obtain the WSL address with
+`wsl.exe -e sh -lc "hostname -I"` and use
+`http://<wsl-ip>:6333` instead. The service must publish port 6333 on
+`0.0.0.0` inside WSL, as shown by the smoke report.
 
 For the local persistent mode:
 

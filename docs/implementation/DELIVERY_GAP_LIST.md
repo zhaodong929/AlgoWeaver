@@ -31,7 +31,7 @@
 | G-05 | 统一功能/指标/稳定性/接口验证 | PARTIAL | 现有静态、运行、MAE/RMSE；补充性能预算、接口契约和安全扫描报告 |
 | G-06 | CLI/API/UI | PARTIAL | 三入口、AppTest 和 HTTP smoke 已实现；补充浏览器人工验收记录和线上部署演示 |
 | G-07a | 理解用户输入 | DONE（边界） | 增加缺失字段、冲突证据和低置信度抽取样本 |
-| G-07b | 检索文档/代码/图谱 | PARTIAL | local 持久化已验证；运行 Docker server smoke test 并记录 Recall@k/MRR |
+| G-07b | 检索文档/代码/图谱 | PARTIAL | Docker server persistence and real hybrid retrieval smoke 已通过；继续补充 Recall@k/MRR 评估集 |
 | G-07c | 规划方案 | PARTIAL | 规则规划稳定；补充真实 LLM 规划质量评估和候选方案比较 |
 | G-07d | 生成代码和测试 | PARTIAL | 补充依赖安装策略、生成测试覆盖率和失败产物归档 |
 | G-07e | 自动执行和指标 | PARTIAL | 主场景已通过；补充超时、资源限制、网络策略和第二指标任务 |
@@ -43,9 +43,9 @@
 
 ## 下一步执行顺序
 
-1. **P0-1 持久化检索验收**：Windows local mode 已通过跨客户端持久化测试；仍需在
-   Docker Hub 可访问时启动 `deploy/qdrant/docker-compose.yml`，运行 `/readyz`、API/CLI
-   server-mode smoke test，并记录真实 service collection 重启后仍可检索。
+1. **P0-1 持久化检索验收**：已完成 WSL Docker Qdrant 1.20.0、命名卷、`/readyz`、
+   Windows server-mode 写入/重启/检索，以及真实 embedding+reranker hybrid smoke；
+   后续只需扩充 Recall@k/MRR 评估集。
 2. **P0-2 主场景交付报告**：已完成 `sales_history.csv` 从材料接入到 verified
    复用的报告；后续只补充现场截图和发布打包记录。
 3. **P0-3 Streamlit 浏览器验收**：启动 FastAPI+Streamlit，执行上传、运行、查看证据、

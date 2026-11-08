@@ -487,3 +487,14 @@ Every later entry must record the changed module, test command, result, unresolv
   is explicitly documented.
 - Git commits: `ad58fbc` (live LLM reproduction/repair evidence) and `084894f`
   (scenario performance report).
+
+## 2026-11-08 — P0-1 Qdrant service and persistent hybrid retrieval
+
+- Started WSL Docker Qdrant `v1.20.0` with named volume
+  `qdrant_qdrant_storage`, published on `0.0.0.0:6333`; `/readyz` returned
+  `all shards are ready`.
+- AlgoWeaver server mode wrote two provenance chunks, restarted the container, and
+  retrieved `p0-1-inventory` with count 2 after restart.
+- The real hybrid path using `qwen3.7-text-embedding-flash`, persistent Qdrant and
+  `qwen3-rerank` returned `hybrid-inventory` first with score `0.8839408239352218`.
+- Full evidence is in `docs/reports/test_reports/2026-11-08-qdrant-persistence.md`.

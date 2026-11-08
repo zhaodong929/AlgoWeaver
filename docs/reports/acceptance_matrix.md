@@ -11,7 +11,7 @@ means a usable path exists but the full requested scope still needs evidence.
 | Multi-source documents and historical code | `SourceIngestor` handles text/Markdown/Python/CSV/JSON/YAML; Docling and stdlib fallbacks cover office/PDF boundaries; `PythonCodeParser` indexes imports/classes/functions. | PARTIAL | Complex PDF/Office layout and repository-scale parsing remain unverified. |
 | Algorithm knowledge extraction | `CapabilityExtractor`, Mock and LiteLLM adapters, Pydantic capability cards, missing-information handling and source evidence. Live Qwen extraction was run through the configured Bailian endpoint. | PARTIAL | More real business documents and conflict/uncertainty evaluation. |
 | Standard capability cards | `AlgorithmCapability`, `EvidenceRef`, draft/needs_review/verified states and SQLite registry payloads. | DONE for schema and reviewed-card promotion | Automated confidence scoring remains open. |
-| Evidence-linked RAG retrieval | Lexical retrieval plus real `qwen3.7-text-embedding-flash` vectors, Qdrant memory/local/server adapters and `qwen3-rerank`; provenance fields survive fusion. Local persistence was reopened across client instances. | PARTIAL | Docker Qdrant server smoke test and Recall@k/MRR report; Docker Hub image pull currently times out. |
+| Evidence-linked RAG retrieval | Lexical retrieval plus real `qwen3.7-text-embedding-flash` vectors, Qdrant memory/local/server adapters and `qwen3-rerank`; Qdrant 1.20.0 named-volume service survived restart and real server hybrid retrieval ranked the inventory chunk first. | PARTIAL | Expand the Recall@k/MRR evaluation set and complex-document coverage. |
 | Multi-model reproduction Agent | LangGraph retrieve→plan→generate→validate graph; Qwen primary model and DeepSeek code model generated a live bundle, exposed a real `pytest` dependency failure, repaired it and reran 8 tests successfully. | PARTIAL | Independent promotion with live-generated metrics and registry policy. |
 | Code generation and dependency analysis | Template, Mock and Pydantic-validated LLM generators produce hashed Python/pytest artifacts; AST dependency reports are emitted. | PARTIAL | Dependency installation policy and generated-test coverage gate. |
 | Isolated code execution | WSL2 Docker `python:3.12-slim`, network disabled, read-only workspace, resource limits and runtime reports. Inventory tests and metrics passed. | DONE for reviewed inventory path | Production runner deployment remains separate from the public API container. |
@@ -32,8 +32,8 @@ means a usable path exists but the full requested scope still needs evidence.
   `1.3608276348795427`, verified promotion and verified reuse.
 - Live LLM generation/repair report: `docs/reports/test_reports/2026-11-08-live-llm-reproduction.md`.
 - Live repair report: `docs/reports/test_reports/2026-11-08-live-repair-scenarios.md`.
-- Local Qdrant persistence test: collection reopened in a second client and the
-  provenance chunk remained searchable.
+- Qdrant service report: `docs/reports/test_reports/2026-11-08-qdrant-persistence.md`;
+  collection survived a container restart and real hybrid retrieval used the server.
 - Streamlit runtime: `/_stcore/health` HTTP 200 and root page HTTP 200; AppTest
   exercises the form and result panels.
 - GitHub Actions runs #89 and #90 passed on Python 3.12 and 3.13. The latest
@@ -42,7 +42,7 @@ means a usable path exists but the full requested scope still needs evidence.
 ## Acceptance conclusion
 
 The reviewed inventory scenario is a runnable, reproducible MVP demonstration with
-isolated execution, metrics, verified persistence and reuse. The remaining MVP gate is
-the Docker Qdrant service smoke test and actual hosted HTTPS deployment; both have
-configuration and evidence procedures, but are not claimed as completed while the
-current registry network and deployment DNS are unavailable.
+isolated execution, metrics, Qdrant service persistence and verified reuse. The
+remaining MVP gate is actual hosted HTTPS/DNS deployment and broader retrieval
+evaluation; the local production bundle and security boundary are implemented but
+have not been deployed to a public domain.
