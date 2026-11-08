@@ -25,7 +25,7 @@ means a usable path exists but the full requested scope still needs evidence.
 
 ## Verification evidence
 
-- `uv run --no-sync pytest -q`: **130 passed**.
+- `uv run --no-sync pytest -q`: **131 passed**.
 - `uv run --no-sync ruff check src tests examples`: passed.
 - `uv run --no-sync mypy src`: passed for 46 source files.
 - Inventory WSL2 report: execution passed, MAE `0.8888888888888881`, RMSE

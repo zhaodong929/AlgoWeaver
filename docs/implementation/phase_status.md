@@ -13,7 +13,7 @@
 | Phase 6 Docker 沙箱、自动测试、错误修复 | DONE for controlled and representative live coverage; PARTIAL for breadth | 图工作流可将 failed/timeout execution 条件路由到有界 `BoundedRepairLoop`；真实 DeepSeek 已分别修复导入错误、缺少 pandas 依赖和超时循环 | 增加多轮修复、失败经验回写和更多依赖类别 |
 | Phase 7 持久化、版本管理、复用 | IN_PROGRESS | `CapabilityRegistry` + CLI `reuse` + `reproduce --reuse-query` + API `reuse_query`/`auto_reuse` 只选择 verified capability 并返回版本信息；API `persist=true` 使用 configured SQLite 并复用 runtime/metric promotion gate；reviewed capability 已由 WSL runtime 晋升 verified | 连接语义检索结果、版本比较和相似度复用 workflow |
 | Phase 8 API、展示界面、端到端集成 | IN_PROGRESS | FastAPI `/metrics`/`/reproduce` 已覆盖阈值评估、显式 sandbox、repair/repair_mode、persist、additional_sources、generation_mode、受限 sandbox metrics、verified reuse；FastAPI runtime smoke 返回 200；Streamlit 已通过 AppTest、HTTP smoke 和用户人工视觉确认；API 已增加 API-key、进程级限流和 HTTPS 反向代理部署说明 | 完成 HTTPS 公网实例和多副本网关限流配置 |
-| Phase 9 最终验收、性能、文档、Demo | IN_PROGRESS | WSL sandbox runtime、MAE/RMSE 指标、reviewed capability verified promotion 和 verified reuse 已有真实证据；库存报告保存于 `docs/reports/test_reports/2026-11-08-inventory-delivery.md`；AI4I 第二场景、Qdrant service、Caddy TLS smoke、JSON-LD 图谱导出和 Streamlit 自动交互报告已加入；本轮全量本地测试 130 passed | 完成真实 DNS/ACME 部署、浏览器人工记录和更广泛评估 |
+| Phase 9 最终验收、性能、文档、Demo | IN_PROGRESS | WSL sandbox runtime、MAE/RMSE 指标、reviewed capability verified promotion 和 verified reuse 已有真实证据；库存报告保存于 `docs/reports/test_reports/2026-11-08-inventory-delivery.md`；AI4I 第二场景、Qdrant service、Caddy TLS smoke、JSON-LD 图谱导出、Streamlit 自动/人工交互报告和 API-key UI 输入已加入；本轮全量本地测试 131 passed | 完成真实 DNS/ACME 部署和更广泛评估 |
 
 ## 当前 Git 证据
 
