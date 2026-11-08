@@ -31,7 +31,8 @@ git push origin feat/api-capability-reuse
 `.github/workflows/ci.yml` 在每次 push 和 pull request 上运行 Python 3.12、3.13
 矩阵，步骤顺序为：
 
-1. `uv sync --group dev --extra api --extra retrieval --extra execution --extra ui`
+1. Pinned `astral-sh/setup-uv` v10.3.2 with `latest-known`, then
+   `uv sync --group dev --extra api --extra retrieval --extra execution --extra ui`
 2. `uv run ruff check .`
 3. `uv run pytest --junitxml=test-results.xml`
 4. `uv run mypy src`

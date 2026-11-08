@@ -562,3 +562,13 @@ Every later entry must record the changed module, test command, result, unresolv
 - Validation after the change: `uv run --no-sync pytest -q` -> **131 passed**;
   `uv run --no-sync ruff check src tests` passed; `uv run --no-sync mypy src` passed;
   Streamlit `/_stcore/health` and root HTTP smoke both returned `200` on port 8512.
+
+## 2026-11-08 — CI setup-uv transient failure diagnosis
+
+- The first CI run for commit `a7a215f` failed before dependency installation in both
+  Python matrix jobs. The GitHub job page reports `Unexpected HTTP response: 504` for
+  `astral-sh/setup-uv@v5`; Install dependencies, Ruff, pytest and Mypy were skipped.
+- Updated `.github/workflows/ci.yml` to the immutable setup-uv v10.3.2 commit and
+  `version: latest-known`, which avoids the old action's transient manifest-resolution
+  path while keeping the same dependency and quality gates. No tests were deleted or
+  skipped and no application code was changed for this CI-only repair.
