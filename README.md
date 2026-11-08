@@ -265,6 +265,11 @@ Export the capability registry as a JSON-LD knowledge graph with
 
 For the remaining Windows Docker runtime gate, see `docs/implementation/windows_runtime_setup.md`.
 
+For a short advisor demonstration without buying a domain, see
+[`docs/architecture/deployment.md`](docs/architecture/deployment.md) for the
+Cloudflare Quick Tunnel/ngrok HTTPS options. A permanent public service should use
+the production Caddy deployment with DNS and ACME.
+
 ## 9. Delivery scope and remaining work
 
 The reproducible primary scenario is inventory demand forecasting with a moving-average

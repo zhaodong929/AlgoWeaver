@@ -48,6 +48,39 @@ For a managed platform, map the same environment variables to its secret and
 configuration settings, enable HTTPS-only ingress, and set a gateway-level
 rate limit in addition to the application limit.
 
+## Is a domain and ACME certificate required?
+
+No. It depends on the audience:
+
+| Use case | Recommended route | DNS/ACME required |
+|---|---|---:|
+| Same Windows machine or lab LAN | Run FastAPI + Streamlit locally; share the machine or private LAN address | No |
+| One-time advisor demonstration | Cloudflare Quick Tunnel or ngrok forwarding to Streamlit | No; temporary HTTPS URL |
+| Stable public service | Production Compose + Caddy with a domain pointed at the server | Yes |
+| Streamlit-only public demo | Streamlit Community Cloud, with the API moved to a reachable service | No custom domain required |
+
+For the fastest demonstration, start FastAPI on port 8000 and Streamlit on port
+8501, then expose only Streamlit:
+
+```powershell
+cloudflared tunnel --url http://127.0.0.1:8501
+```
+
+The command returns a temporary `trycloudflare.com` HTTPS URL. The Streamlit
+process still calls the local FastAPI service, so API credentials remain on the
+machine. This route is suitable for a short demo and should not be treated as a
+permanent production endpoint. If the API itself must be reachable externally,
+expose it through a separate authenticated tunnel and keep
+`ALGOWEAVER_API_AUTH_MODE=api_key` enabled.
+
+An equivalent ngrok demo is:
+
+```powershell
+ngrok http 8501
+```
+
+Both tunnel processes must remain running while the advisor tests the system.
+
 ## Reproducible production compose
 
 `deploy/production/docker-compose.yml` provides an API container, a persistent

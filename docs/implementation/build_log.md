@@ -508,6 +508,12 @@ Every later entry must record the changed module, test command, result, unresolv
 - Git commits: `f453df9` (Qdrant service acceptance) and `948c4c0` (Qdrant/security
   runtime evidence).
 
+## 2026-11-08 — deployment alternatives documented
+
+- Documented that DNS/ACME is required only for a stable public hostname. Local LAN,
+  Cloudflare Quick Tunnel and ngrok are valid short-demo alternatives; Streamlit
+  Community Cloud is an option for a UI-only deployment with a separately hosted API.
+
 ## 2026-11-08 — Streamlit interaction acceptance
 
 - Added a formal report for the Streamlit `AppTest` interaction path and live page
