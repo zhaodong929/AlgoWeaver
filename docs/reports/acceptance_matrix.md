@@ -36,6 +36,8 @@ means a usable path exists but the full requested scope still needs evidence.
   collection survived a container restart and real hybrid retrieval used the server.
 - Streamlit runtime: `/_stcore/health` HTTP 200 and root page HTTP 200; AppTest
   exercises the form and result panels.
+- Security runtime report: API-key mode returned `401` without a key, `200` with a
+  valid key, and `429` after the configured limit.
 - GitHub Actions runs #89 and #90 passed on Python 3.12 and 3.13. The latest
   documentation/repair/Qdrant commits are pushed to `feat/api-capability-reuse`.
 

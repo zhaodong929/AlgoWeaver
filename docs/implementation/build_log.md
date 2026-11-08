@@ -498,3 +498,10 @@ Every later entry must record the changed module, test command, result, unresolv
 - The real hybrid path using `qwen3.7-text-embedding-flash`, persistent Qdrant and
   `qwen3-rerank` returned `hybrid-inventory` first with score `0.8839408239352218`.
 - Full evidence is in `docs/reports/test_reports/2026-11-08-qdrant-persistence.md`.
+
+## 2026-11-08 — API security runtime smoke
+
+- Started Uvicorn with API-key authentication and a one-request rolling limit.
+- Observed `/health=200`, unauthenticated `/metrics=401`, authenticated `/metrics=200`,
+  and the next authenticated request=`429`.
+- Saved the evidence in `docs/reports/test_reports/2026-11-08-security-runtime.md`.
