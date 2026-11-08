@@ -143,6 +143,26 @@ def export_graph(
     rprint(f"[green]Capability graph saved:[/green] {output_file}")
 
 
+@app.command("diff")
+def diff_versions(
+    capability_id: Annotated[str, typer.Option("--capability-id")],
+    from_version: Annotated[int, typer.Option("--from-version", min=1)],
+    to_version: Annotated[int, typer.Option("--to-version", min=1)],
+    registry_path: Annotated[Path, typer.Option("--registry")] = Path(
+        "data/processed/capabilities.sqlite3"
+    ),
+) -> None:
+    """Compare two immutable capability versions."""
+
+    try:
+        result = CapabilityRegistry(registry_path).diff_versions(
+            capability_id, from_version, to_version
+        )
+    except (KeyError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    rprint(json.dumps(result, ensure_ascii=False, indent=2))
+
+
 @app.command()
 def reproduce(
     input_file: Annotated[Path, typer.Option("--input", "-i", exists=True, readable=True)],

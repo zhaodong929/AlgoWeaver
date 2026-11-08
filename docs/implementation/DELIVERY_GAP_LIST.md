@@ -26,7 +26,7 @@
 |---|---|---|---|
 | G-01 | LLM 理解、抽取、生成或修复 | PARTIAL | 真实模型抽取/生成已验收；补充多份真实业务资料和真实多轮修复报告 |
 | G-02 | 具体行业场景及数据 | DONE | 库存预测主场景和 UCI AI4I 预测性维护均有数据、能力卡片、测试和 API 指标报告 |
-| G-03 | 能力知识库/知识图谱 schema | PARTIAL | Pydantic+SQLite 和 JSON-LD 导出已实现；补充图谱可视化和版本 diff |
+| G-03 | 能力知识库/知识图谱 schema | PARTIAL | Pydantic+SQLite、JSON-LD 导出和 `diff` 版本比较已实现；补充图谱可视化 |
 | G-04 | 自然语言到可运行代码 | PARTIAL | 真实 LLM bundle 已在隔离环境执行；首次 pytest 依赖失败后由 DeepSeek 修复并通过 8 个测试；继续完成 live bundle 的指标门禁和 verified promotion |
 | G-05 | 统一功能/指标/稳定性/接口验证 | PARTIAL | 现有静态、运行、MAE/RMSE；补充性能预算、接口契约和安全扫描报告 |
 | G-06 | CLI/API/UI | PARTIAL | 三入口、AppTest、HTTP smoke 和当前浏览器交互均已实现；仍缺正式公网部署演示 |
@@ -36,7 +36,7 @@
 | G-07d | 生成代码和测试 | PARTIAL | 补充依赖安装策略、生成测试覆盖率和失败产物归档 |
 | G-07e | 自动执行和指标 | PARTIAL | 主场景已通过；`/metrics/classification` 已接入 AI4I 10,000 行数据并真实返回 precision/recall/F1；仍需更多任务指标 |
 | G-07f | 错误分析和有限修复 | PARTIAL | 三类真实 DeepSeek repair 各完成一次；继续补充多轮修复和失败经验回写 |
-| G-07g | 验证结果回写和复用 | PARTIAL | SQLite verified gate 已有；补充语义相似复用、版本 diff 和失败经验回写 |
+| G-07g | 验证结果回写和复用 | PARTIAL | SQLite verified gate、CLI/API 复用和版本 diff 已有；补充语义相似复用和失败经验回写 |
 | G-08 | Git、文档、依赖、测试和示例 | PARTIAL | feature 分支、默认分支快进、README、操作指南、视觉素材和多场景指标报告已具备；仍需最终打包归档 |
 | G-09 | 进阶：多轮修复/比较/可视化/插件 | PARTIAL | 多轮修复和 UI 有基础；候选比较、图谱可视化、插件注册尚未完成 |
 | G-10 | 加分：图搜索、多 Agent、仓库抽取、安全和性能 | PARTIAL | AST、沙箱、失败反馈已有；图搜索、多 Agent、仓库级抽取、性能分析待做 |

@@ -74,6 +74,28 @@ def test_registry_rejects_invalid_queries(tmp_path: Path) -> None:
         registry.search(" ")
 
 
+def test_registry_diff_versions_reports_changed_fields(tmp_path: Path) -> None:
+    registry = CapabilityRegistry(tmp_path / "diff.sqlite3")
+    registry.save(_capability())
+    registry.save(
+        _capability().model_copy(
+            update={"problem_definition": "Smooth noisy data.", "metrics": ["mae"]}
+        )
+    )
+
+    diff = registry.diff_versions("cap_registry", 1, 2)
+
+    assert diff["capability_id"] == "cap_registry"
+    assert diff["changes"]["problem_definition"] == {
+        "from": "Smooth a time series.",
+        "to": "Smooth noisy data.",
+    }
+    assert diff["changes"]["metrics"] == {"from": [], "to": ["mae"]}
+
+    with pytest.raises(KeyError):
+        registry.diff_versions("cap_registry", 1, 3)
+
+
 def test_registry_exports_jsonld_capability_and_evidence(tmp_path: Path) -> None:
     registry = CapabilityRegistry(tmp_path / "graph.sqlite3")
     registry.save(_capability())

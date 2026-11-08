@@ -86,6 +86,47 @@ class CapabilityRegistry:
             ).fetchone()
         return _row_to_version(row) if row else None
 
+    def get_version(self, capability_id: str, version: int) -> CapabilityVersion | None:
+        """Return one immutable capability version."""
+
+        if version < 1:
+            raise ValueError("version must be positive")
+        with self._connect() as connection:
+            row = connection.execute(
+                """
+                SELECT capability_id, version, status, name, created_at, payload_json
+                FROM capabilities
+                WHERE capability_id = ? AND version = ?
+                """,
+                (capability_id, version),
+            ).fetchone()
+        return _row_to_version(row) if row else None
+
+    def diff_versions(
+        self,
+        capability_id: str,
+        from_version: int,
+        to_version: int,
+    ) -> dict[str, object]:
+        """Compare two persisted capability payloads without mutating the registry."""
+
+        before = self.get_version(capability_id, from_version)
+        after = self.get_version(capability_id, to_version)
+        if before is None or after is None:
+            raise KeyError(f"capability version not found: {capability_id}")
+        fields = sorted(set(before.capability) | set(after.capability))
+        changes = {
+            field: {"from": before.capability.get(field), "to": after.capability.get(field)}
+            for field in fields
+            if before.capability.get(field) != after.capability.get(field)
+        }
+        return {
+            "capability_id": capability_id,
+            "from_version": from_version,
+            "to_version": to_version,
+            "changes": changes,
+        }
+
     def search(
         self,
         query: str,

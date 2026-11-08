@@ -117,6 +117,39 @@ def test_classification_metrics_endpoint_supports_predictive_maintenance() -> No
     }
 
 
+def test_capability_diff_endpoint_returns_version_changes(tmp_path) -> None:
+    registry_path = tmp_path / "diff-api.sqlite3"
+    registry = CapabilityRegistry(registry_path)
+    registry.save(
+        AlgorithmCapability(
+            capability_id="api_diff_capability",
+            name="Inventory",
+            problem_definition="Smooth demand.",
+            inputs=["sales"],
+            outputs=["forecast"],
+            algorithm_steps=["Average a window."],
+            evidence=[EvidenceRef(source_id="diff-doc", excerpt="average")],
+        )
+    )
+    registry.save(
+        AlgorithmCapability(
+            capability_id="api_diff_capability",
+            name="Inventory",
+            problem_definition="Smooth noisy demand.",
+            inputs=["sales"],
+            outputs=["forecast"],
+            algorithm_steps=["Average a window."],
+            evidence=[EvidenceRef(source_id="diff-doc", excerpt="average")],
+        )
+    )
+
+    client = TestClient(create_app(settings=Settings(registry_path=registry_path)))
+    response = client.get("/capabilities/api_diff_capability/diff")
+
+    assert response.status_code == 200
+    assert response.json()["changes"]["problem_definition"]["to"] == "Smooth noisy demand."
+
+
 def test_metrics_endpoint_rejects_mismatched_lengths() -> None:
     response = TestClient(create_app()).post(
         "/metrics",

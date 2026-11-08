@@ -226,6 +226,19 @@ def create_app(
         except (ValueError, TypeError) as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.get("/capabilities/{capability_id}/diff")
+    def capability_diff(
+        capability_id: str,
+        from_version: int = 1,
+        to_version: int = 2,
+    ) -> dict:
+        try:
+            return CapabilityRegistry(active_settings.registry_path).diff_versions(
+                capability_id, from_version, to_version
+            )
+        except (KeyError, ValueError) as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
     @app.post("/reproduce")
     def reproduce(request: ReproduceRequest) -> dict:
         try:

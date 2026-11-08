@@ -641,3 +641,11 @@ Every later entry must record the changed module, test command, result, unresolv
   This preserves the real limitation instead of marking the rule baseline as production-ready.
 - Focused validation: 26 tests passed, Ruff passed and Mypy passed. Evidence is in
   `docs/reports/test_reports/2026-11-08-ai4i-api-metrics.md`.
+
+## 2026-11-08 — capability version diff
+
+- Added immutable `CapabilityRegistry.diff_versions`, CLI `algo-weaver diff` and
+  `GET /capabilities/{capability_id}/diff`. The result reports changed payload fields
+  without mutating or exposing unverified versions as reusable assets.
+- Added registry and API tests covering changed fields and missing versions; the focused
+  registry/API/CLI set passed 38 tests with Ruff and Mypy clean.

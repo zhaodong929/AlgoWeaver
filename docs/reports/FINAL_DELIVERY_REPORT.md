@@ -82,6 +82,7 @@ AlgoWeaver 已形成一个可运行的算法能力工厂原型，主场景为库
 - Hybrid retrieval：四条 smoke query 的 Recall@2 与 MRR 均为 1.0。
 - 失败修复：导入错误、缺少 pandas 依赖、超时循环各有一次真实 DeepSeek 修复记录。
 - 第二场景指标：`POST /metrics/classification` 已对 AI4I 10,000 行数据返回 accuracy、precision、recall、F1，并保留 recall 门禁失败证据。
+- 能力版本：`algo-weaver diff` 和 `GET /capabilities/{capability_id}/diff` 已提供字段级版本差异。
 
 真实 provider 依赖网络、TLS、额度和 provider 状态；离线验收使用 Mock，不把 Mock 结果标记为真实模型结果。
 
@@ -90,7 +91,7 @@ AlgoWeaver 已形成一个可运行的算法能力工厂原型，主场景为库
 本地 Windows：
 
 ```text
-uv run --no-sync pytest -q       134 passed
+uv run --no-sync pytest -q       137 passed
 uv run --no-sync ruff check src tests   passed
 uv run --no-sync mypy src             passed
 ```
@@ -126,7 +127,6 @@ GitHub Actions：
 - [2026-11-08-live-llm-reproduction.md](test_reports/2026-11-08-live-llm-reproduction.md)：真实 LLM 生成报告。
 - [2026-11-08-live-repair-scenarios.md](test_reports/2026-11-08-live-repair-scenarios.md)：失败修复报告。
 - [2026-11-08-real-bailian-multiscenario.md](test_reports/2026-11-08-real-bailian-multiscenario.md)：真实百炼多场景、失败和修复记录。
-- [2026-11-08-ai4i-api-metrics.md](test_reports/2026-11-08-ai4i-api-metrics.md)：AI4I 10,000 行数据的分类指标 API 报告。
 - [2026-11-08-ai4i-api-metrics.md](test_reports/2026-11-08-ai4i-api-metrics.md)：10,000 行 AI4I 数据的通用 API 指标验收。
 - [2026-11-08-qdrant-persistence.md](test_reports/2026-11-08-qdrant-persistence.md)：持久化 Qdrant 报告。
 - [2026-11-08-hybrid-retrieval.md](../benchmark_reports/2026-11-08-hybrid-retrieval.md)：检索评估报告。
