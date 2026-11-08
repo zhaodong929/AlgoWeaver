@@ -47,3 +47,23 @@ uv run uvicorn algo_weaver.api:create_app --factory --host 127.0.0.1 --port 8000
 For a managed platform, map the same environment variables to its secret and
 configuration settings, enable HTTPS-only ingress, and set a gateway-level
 rate limit in addition to the application limit.
+
+## Reproducible production compose
+
+`deploy/production/docker-compose.yml` provides an API container, a persistent
+Qdrant service and Caddy TLS termination. Copy
+`deploy/production/.env.production.example` to `.env.production`, replace every
+placeholder through the deployment secret manager, point DNS at the server, and
+run:
+
+```bash
+cd deploy/production
+cp .env.production.example .env.production
+docker compose up -d --build
+docker compose ps
+```
+
+Caddy obtains the certificate after ports 80 and 443 are reachable. The API
+container does not mount the host Docker socket; generated-code execution should
+be delegated to the separately controlled WSL/Docker runner. This keeps the
+public API container from receiving host-daemon privileges.
