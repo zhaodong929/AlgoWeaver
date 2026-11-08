@@ -48,8 +48,8 @@
    后续只需扩充 Recall@k/MRR 评估集。
 2. **P0-2 主场景交付报告**：已完成 `sales_history.csv` 从材料接入到 verified
    复用的报告；后续只补充现场截图和发布打包记录。
-3. **P0-3 Streamlit 浏览器验收**：启动 FastAPI+Streamlit，执行上传、运行、查看证据、
-   查看代码/报告、失败修复和复用操作；自动 AppTest 和 HTTP smoke 已完成，仍需浏览器人工记录。
+3. **P0-3 Streamlit 浏览器验收**：已完成 FastAPI+Streamlit 上传、运行、查看证据、
+   查看代码/报告流程；自动 AppTest、HTTP smoke 和用户人工视觉确认均已通过。
 4. **P0-4 安全部署验收**：API key、应用限流、401/429 和 `/health` 已完成真实
    Uvicorn smoke；Caddy internal TLS 已完成本地 HTTPS smoke；仍需真实 DNS/ACME 证书和多副本网关验收。
 5. **P1-1 真实失败修复扩展**：导入错误、缺少依赖、超时各已完成一次真实修复；

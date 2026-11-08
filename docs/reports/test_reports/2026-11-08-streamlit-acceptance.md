@@ -25,8 +25,10 @@ The Streamlit health endpoint returned HTTP 200 (`ok`) and the root page returne
 HTTP 200 with 7,863 bytes of HTML. This confirms the deployed page process and HTTP
 surface are reachable.
 
-## Boundary
+## Manual visual confirmation
 
-This report is automated interaction evidence. A human browser session with file
-upload and visual inspection is still recommended before public deployment; no such
-manual session is claimed here.
+On 2026-11-08, the user inspected the opened Streamlit page in the Codex browser
+panel and confirmed that the page, run button, upload flow and result panels all
+passed. This confirms the local manual visual acceptance for the current UI build.
+
+Public deployment still requires a separate hosted-domain check.

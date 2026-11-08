@@ -522,6 +522,13 @@ Every later entry must record the changed module, test command, result, unresolv
   capability/evidence/plan/report panels. It intentionally labels the API response
   as mocked and keeps manual browser acceptance open.
 
+## 2026-11-08 — manual Streamlit visual acceptance
+
+- The user inspected the Streamlit page in the Codex browser panel and confirmed the
+  page, run button, file upload and result panels all passed.
+- Local visual acceptance is therefore complete; only a later hosted-HTTPS recheck
+  remains deployment-specific.
+
 ## 2026-11-08 — capability graph export
 
 - Added `CapabilityRegistry.export_jsonld()` and the `algo-weaver export-graph` CLI

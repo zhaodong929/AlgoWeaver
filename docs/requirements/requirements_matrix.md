@@ -35,7 +35,7 @@
 | REQ-003 | `AlgorithmCapability`、SQLite registry、证据/验证字段 | PARTIAL | GraphML/JSON-LD 导出和图谱可视化 |
 | REQ-004 | LangGraph + template/Mock/LLM generator + Docker/WSL workspace；真实 LLM 生成失败后经 DeepSeek 修复并通过 8 个隔离测试 | PARTIAL | live bundle 的指标门禁和 verified promotion |
 | REQ-005 | Pydantic/AST/runtime/MAE/RMSE 报告 | PARTIAL | 性能预算、接口契约、安全扫描报告 |
-| REQ-006 | Typer、FastAPI、Streamlit 及 AppTest | PARTIAL | 浏览器人工验收和部署演示 |
+| REQ-006 | Typer、FastAPI、Streamlit、AppTest 和用户确认的本地浏览器交互 | PARTIAL | 公网 HTTPS 部署演示 |
 | REQ-007 | Mock/LLM 能力抽取，应用侧证据定位 | DONE（边界） | 冲突证据和置信度评估 |
 | REQ-008 | lexical + qwen embedding + Qdrant memory/local/server + rerank；Qdrant 1.20.0 命名卷重启后仍可检索，真实 hybrid server smoke 已通过 | PARTIAL | 扩充 Recall@k/MRR 评估集 |
 | REQ-009 | `ReproductionPlanner` 和 LangGraph 条件路由 | PARTIAL | 真实 LLM 规划质量与候选比较 |
