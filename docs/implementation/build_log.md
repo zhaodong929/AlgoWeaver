@@ -572,3 +572,5 @@ Every later entry must record the changed module, test command, result, unresolv
   `version: latest-known`, which avoids the old action's transient manifest-resolution
   path while keeping the same dependency and quality gates. No tests were deleted or
   skipped and no application code was changed for this CI-only repair.
+- GitHub Actions run **#117** (`42471501325`) for commit `f62e7a5` then passed on both
+  Python 3.12 and 3.13; dependency installation, Ruff, pytest and Mypy all completed.
