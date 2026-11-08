@@ -1,0 +1,50 @@
+{
+  "capability_id": "cap_sensor_anomaly_zscore_demo",
+  "schema_version": "1.0",
+  "name": "设备传感器 Z-score 异常检测",
+  "problem_definition": "标记明显偏离传感器历史分布的温度或压力读数。",
+  "algorithm_family": "anomaly_detection",
+  "inputs": ["ordered sensor values", "threshold"],
+  "outputs": ["index", "value", "z_score", "is_anomaly"],
+  "preprocessing": ["按时间升序排列传感器读数"],
+  "algorithm_steps": [
+    "计算均值和总体标准差",
+    "计算每个样本的绝对 z-score",
+    "将 z-score 大于阈值的样本标记为异常"
+  ],
+  "parameters": [
+    {
+      "name": "threshold",
+      "description": "异常 z-score 阈值",
+      "data_type": "positive float",
+      "default": 2.0,
+      "constraints": ["必须大于 0"]
+    }
+  ],
+  "constraints": ["输入序列不能为空", "常数序列不产生异常"],
+  "metrics": ["异常样本识别准确率", "异常数量", "运行时间"],
+  "failure_cases": ["空序列", "单样本", "常数序列", "非法阈值"],
+  "implementation_notes": [
+    "项目内 fixture 用于可复现演示；生产使用需确认数据授权和阈值。"
+  ],
+  "missing_information": [],
+  "evidence": [
+    {
+      "source_id": "sensor-anomaly-doc",
+      "source_type": "document",
+      "location": "examples/anomaly_detection/algorithm.md",
+      "line_start": 1,
+      "line_end": 25,
+      "excerpt": "对生产设备的温度或压力时间序列进行快速巡检，标记明显偏离历史分布的读数。"
+    },
+    {
+      "source_id": "sensor-anomaly-code",
+      "source_type": "code",
+      "location": "examples/anomaly_detection/algorithm.py",
+      "line_start": 9,
+      "line_end": 35,
+      "excerpt": "Return one scored record per input value."
+    }
+  ],
+  "status": "draft"
+}

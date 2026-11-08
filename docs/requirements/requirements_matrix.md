@@ -31,7 +31,7 @@
 | ID | 当前实现证据 | 状态 | 未完成项 |
 |---|---|---|---|
 | REQ-001 | LiteLLM、Mock、百炼 Qwen/DeepSeek 适配；真实抽取、生成和一次失败修复已运行 | PARTIAL | 多资料抽取覆盖和多类真实修复证据 |
-| REQ-002 | `examples/inventory_forecast/` 含算法说明、审核卡片、CSV 数据和指标入口 | DONE（主场景） | 第二公开数据场景 |
+| REQ-002 | `examples/inventory_forecast/` 含算法说明、审核卡片、CSV 数据和指标入口；`examples/anomaly_detection/` 含第二场景 fixture、算法、测试和能力卡片 | PARTIAL | 将第二场景替换或补充为带明确开放许可来源的数据集 |
 | REQ-003 | `AlgorithmCapability`、SQLite registry、证据/验证字段 | PARTIAL | GraphML/JSON-LD 导出和图谱可视化 |
 | REQ-004 | LangGraph + template/Mock/LLM generator + Docker/WSL workspace | PARTIAL | 真实 LLM 生成产物的完整隔离执行报告 |
 | REQ-005 | Pydantic/AST/runtime/MAE/RMSE 报告 | PARTIAL | 性能预算、接口契约、安全扫描报告 |
@@ -44,7 +44,7 @@
 | REQ-012 | BoundedRepairLoop 覆盖导入/依赖/超时受控测试，LLMRepairer 已接入 | PARTIAL | 三类真实 DeepSeek repair 日志 |
 | REQ-013 | SQLite 版本、verified gate、CLI/API reuse | PARTIAL | 语义相似复用、版本 diff、失败经验回写 |
 | REQ-014 | Git 分支、README、研究笔记、ADR、实现日志 | PARTIAL | 发布清单和最终 Windows/Docker 复现记录 |
-| REQ-015 | 示例、抽取结果、工作流、报告、依赖和测试文件 | PARTIAL | 完整打包验收和第二场景材料 |
+| REQ-015 | 示例、抽取结果、工作流、报告、依赖和测试文件；已有库存和传感器异常示例材料 | PARTIAL | 完整打包验收和开放许可第二场景材料 |
 | REQ-016 | 多轮修复基础、Streamlit、可配置指标入口 | PARTIAL | 候选比较、图谱可视化、插件注册 |
 | REQ-017 | AST、沙箱、失败反馈、WSL Docker | PARTIAL | 图搜索、多 Agent、仓库级抽取、性能分析 |
 | REQ-018 | 本地 125 passed、CI 检查、功能分支和报告 | PARTIAL | 所有 Must-have 的真实部署与端到端证据 |
