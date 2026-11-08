@@ -2,6 +2,7 @@
 
 import csv
 import json
+import sys
 from pathlib import Path
 from typing import Annotated
 
@@ -27,13 +28,21 @@ from algo_weaver.services.reranker import create_reranker_provider
 from algo_weaver.services.retrieval import LocalLexicalRetriever, SourceChunker
 from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
 from algo_weaver.services.template_repair import TemplateRepairer
-from algo_weaver.services.validation import ValidationService
+from algo_weaver.services.validation import ValidationService, infer_required_function
 
 app = typer.Typer(
     name="algo-weaver",
     help="Algorithm knowledge extraction and reproduction agent.",
     no_args_is_help=True,
 )
+
+
+def _safe_console_text(value: object) -> str:
+    """Keep provider and WSL diagnostics printable on legacy Windows consoles."""
+
+    text = str(value or "")
+    encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+    return text.encode(encoding, errors="replace").decode(encoding, errors="replace")
 
 
 @app.command()
@@ -65,7 +74,7 @@ def extract(
         source_type=source_type,
     )
     if ingested.status != "ingested":
-        rprint(f"[bold red]Ingestion failed:[/bold red] {ingested.error}")
+        rprint(f"[bold red]Ingestion failed:[/bold red] {_safe_console_text(ingested.error)}")
         raise typer.Exit(code=1)
 
     text = ingested.content
@@ -84,7 +93,7 @@ def extract(
     )
 
     if "error" in result:
-        rprint(f"[bold red]Extraction failed:[/bold red] {result['error']}")
+        rprint(f"[bold red]Extraction failed:[/bold red] {_safe_console_text(result['error'])}")
         raise typer.Exit(code=1)
 
     output_file.parent.mkdir(parents=True, exist_ok=True)
@@ -192,7 +201,7 @@ def reproduce(
         source_type="document",
     )
     if ingested.status != "ingested":
-        rprint(f"[bold red]Ingestion failed:[/bold red] {ingested.error}")
+        rprint(f"[bold red]Ingestion failed:[/bold red] {_safe_console_text(ingested.error)}")
         raise typer.Exit(code=1)
     additional_batch = (
         SourceIngestor().ingest_paths(additional_input, source_type="unknown")
@@ -238,7 +247,7 @@ def reproduce(
             }
         )
         if "error" in result:
-            rprint(f"[bold red]Extraction failed:[/bold red] {result['error']}")
+            rprint(f"[bold red]Extraction failed:[/bold red] {_safe_console_text(result['error'])}")
             raise typer.Exit(code=1)
         capability = AlgorithmCapability.model_validate(result["capability"])
     chunks = SourceChunker().chunk(ingested)
@@ -289,7 +298,7 @@ def reproduce(
                 validator.validate_python_source(
                     artifact.content,
                     source_id=artifact.path,
-                    required_function=("moving_average" if "moving_average" in artifact.content else None),
+                    required_function=infer_required_function(capability),
                 )
             )
     (output_dir / "reproduction_bundle.json").write_text(
@@ -370,7 +379,10 @@ def reproduce(
         )
         rprint(f"Sandbox execution: {execution_result.status}")
         if execution_result.status != "passed":
-            rprint(f"[yellow]Verification remains unverified:[/yellow] {execution_result.error}")
+            rprint(
+                "[yellow]Verification remains unverified:[/yellow] "
+                f"{_safe_console_text(execution_result.error)}"
+            )
         runtime_report = validator.build_runtime_report(
             capability,
             execution_result,

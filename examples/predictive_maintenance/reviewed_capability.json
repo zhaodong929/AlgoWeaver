@@ -2,6 +2,7 @@
   "capability_id": "cap_ai4i_predictive_maintenance_rule",
   "schema_version": "1.0",
   "name": "AI4I 预测性维护高风险筛查",
+  "implementation_entrypoint": "flag_high_risk",
   "problem_definition": "根据扭矩和工具磨损筛查可能发生机器故障的记录。",
   "algorithm_family": "predictive_maintenance",
   "inputs": ["Torque [Nm]", "Tool wear [min]"],

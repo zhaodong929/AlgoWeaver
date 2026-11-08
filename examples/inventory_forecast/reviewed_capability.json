@@ -2,6 +2,7 @@
   "capability_id": "cap_inventory_forecast_reviewed",
   "schema_version": "1.0",
   "name": "库存需求移动平均预测",
+  "implementation_entrypoint": "moving_average",
   "problem_definition": "根据历史日销量平滑短期波动，为库存补货提供下一周期的基准需求估计。",
   "algorithm_family": "time_series",
   "inputs": ["sales", "window"],

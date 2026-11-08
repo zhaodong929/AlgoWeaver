@@ -52,6 +52,10 @@ class AlgorithmDraft(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     name: str = Field(min_length=1)
+    implementation_entrypoint: str | None = Field(
+        default=None,
+        description="Required public Python function name when the source specifies one",
+    )
     problem_definition: str = Field(default="")
     algorithm_family: str = Field(default="unknown")
     inputs: list[str] = Field(default_factory=list)
@@ -74,6 +78,10 @@ class AlgorithmCapability(BaseModel):
     capability_id: str = Field(default_factory=lambda: f"cap_{uuid4().hex[:12]}")
     schema_version: str = "1.0"
     name: str = Field(min_length=1)
+    implementation_entrypoint: str | None = Field(
+        default=None,
+        description="Required public Python function name for generated artifacts",
+    )
     problem_definition: str = ""
     algorithm_family: str = "unknown"
     inputs: list[str] = Field(default_factory=list)

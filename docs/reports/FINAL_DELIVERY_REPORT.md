@@ -89,7 +89,7 @@ AlgoWeaver 已形成一个可运行的算法能力工厂原型，主场景为库
 本地 Windows：
 
 ```text
-uv run --no-sync pytest -q       131 passed
+uv run --no-sync pytest -q       134 passed
 uv run --no-sync ruff check src tests   passed
 uv run --no-sync mypy src             passed
 ```

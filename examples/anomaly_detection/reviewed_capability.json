@@ -2,6 +2,7 @@
   "capability_id": "cap_sensor_anomaly_zscore_demo",
   "schema_version": "1.0",
   "name": "设备传感器 Z-score 异常检测",
+  "implementation_entrypoint": "detect_anomalies",
   "problem_definition": "标记明显偏离传感器历史分布的温度或压力读数。",
   "algorithm_family": "anomaly_detection",
   "inputs": ["ordered sensor values", "threshold"],

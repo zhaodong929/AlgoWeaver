@@ -163,9 +163,7 @@ class WslDockerSandboxRunner:
             completed = self._run_fn(
                 full_command,
                 capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
+                text=False,
                 timeout=active_policy.timeout_seconds,
                 check=False,
             )
@@ -179,8 +177,12 @@ class WslDockerSandboxRunner:
             )
         except FileNotFoundError as exc:
             return _blocked_result(active_policy, command_list, f"WSL unavailable: {exc}")
-        stdout = str(getattr(completed, "stdout", "") or "")[: active_policy.max_output_chars]
-        stderr = str(getattr(completed, "stderr", "") or "")[: active_policy.max_output_chars]
+        stdout = _decode_process_output(getattr(completed, "stdout", b""))[
+            : active_policy.max_output_chars
+        ]
+        stderr = _decode_process_output(getattr(completed, "stderr", b""))[
+            : active_policy.max_output_chars
+        ]
         exit_code = int(getattr(completed, "returncode", 1))
         if exit_code == 0:
             status: ExecutionStatus = "passed"
@@ -238,6 +240,20 @@ def _decode(value: Any) -> str:
     if isinstance(value, bytes):
         return value.decode("utf-8", errors="replace")
     return str(value or "")
+
+
+def _decode_process_output(value: Any) -> str:
+    """Decode WSL output without turning UTF-16 diagnostics into mojibake."""
+
+    if not isinstance(value, bytes):
+        return str(value or "")
+    if value.startswith((b"\xff\xfe", b"\xfe\xff")) or value.count(b"\x00") > len(value) // 8:
+        for encoding in ("utf-16", "utf-16-le", "utf-16-be"):
+            try:
+                return value.decode(encoding).rstrip("\x00")
+            except UnicodeDecodeError:
+                continue
+    return value.decode("utf-8", errors="replace")
 
 
 def _stop_container(container: Any) -> None:

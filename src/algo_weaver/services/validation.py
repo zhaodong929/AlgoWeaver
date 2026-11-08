@@ -196,6 +196,32 @@ class ValidationService:
         )
 
 
+def infer_required_function(capability: AlgorithmCapability) -> str | None:
+    """Infer a reviewed demo entrypoint from the capability contract.
+
+    The capability schema does not require a Python function name, so unknown
+    algorithms remain explicitly partial until a caller supplies one. The
+    shipped scenarios have stable interfaces and can be checked automatically.
+    """
+
+    if capability.implementation_entrypoint:
+        return capability.implementation_entrypoint
+    text = " ".join(
+        [capability.name, capability.algorithm_family, *capability.outputs]
+    ).casefold()
+    if "moving_average" in text or "moving average" in text or "移动平均" in text:
+        return "moving_average"
+    if "anomaly" in text or "异常" in text:
+        return "detect_anomalies"
+    if (
+        "predictive_maintenance" in text
+        or "predictive maintenance" in text
+        or "预测性维护" in text
+    ):
+        return "flag_high_risk"
+    return None
+
+
 def _report(
     target_type: ValidationTarget,
     target_id: str,

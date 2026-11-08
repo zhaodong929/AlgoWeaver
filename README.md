@@ -229,10 +229,18 @@ data/              # Local input/output data (not committed)
 docs/              # Architecture and design documents
 ```
 
-## 8. Current acceptance status
+## 8. Visual demo
+
+The repository includes a static preview of the Streamlit workspace and the FastAPI OpenAPI surface. The live browser workflow is documented in [`OPERATION_GUIDE.md`](docs/implementation/OPERATION_GUIDE.md).
+
+![AlgoWeaver Streamlit workspace](docs/assets/streamlit-dashboard.png)
+
+![AlgoWeaver API surface](docs/assets/api-openapi.png)
+
+## 9. Current acceptance status
 
 - [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
-- [x] `uv run pytest -q` passes in the current environment: 131 passed, 0 skipped.
+- [x] `uv run pytest -q` passes in the current environment: 134 passed, 0 skipped.
 - [x] GitHub Actions CI passes on Python 3.12 and 3.13 (verified run #125 on the synchronized delivery commit).
 - [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
 - [x] The capability card records source provenance.

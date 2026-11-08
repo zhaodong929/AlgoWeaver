@@ -31,6 +31,7 @@ class ReproductionPlan(BaseModel):
     plan_id: str = Field(default_factory=lambda: f"plan_{uuid4().hex[:12]}")
     capability_id: str = Field(min_length=1)
     capability_name: str = Field(min_length=1)
+    required_entrypoint: str | None = Field(default=None)
     algorithm_family: str = Field(min_length=1)
     objective: str = Field(min_length=1)
     required_inputs: list[str] = Field(default_factory=list)

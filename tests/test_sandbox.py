@@ -95,5 +95,10 @@ def test_wsl_runner_translates_policy_without_host_execution(
     assert "none" in calls["command"]
     assert "--read-only" in calls["command"]
     assert "--cap-drop=ALL" in calls["command"]
-    assert calls["kwargs"]["encoding"] == "utf-8"
-    assert calls["kwargs"]["errors"] == "replace"
+    assert calls["kwargs"]["text"] is False
+
+
+def test_wsl_output_decoder_handles_utf16_diagnostics() -> None:
+    encoded = "WSL diagnostic".encode("utf-16-le")
+
+    assert sandbox_module._decode_process_output(encoded) == "WSL diagnostic"

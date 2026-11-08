@@ -1,6 +1,6 @@
 from algo_weaver.schemas.capability import AlgorithmCapability, EvidenceRef
 from algo_weaver.schemas.execution import ExecutionResult
-from algo_weaver.services.validation import ValidationService
+from algo_weaver.services.validation import ValidationService, infer_required_function
 
 
 def _capability(status: str = "draft") -> AlgorithmCapability:
@@ -109,3 +109,33 @@ def test_runtime_report_revalidates_an_existing_verified_capability() -> None:
     report = ValidationService().build_runtime_report(capability, execution)
 
     assert report.overall_status == "passed"
+
+
+def test_reviewed_scenarios_infer_required_entrypoints() -> None:
+    service = _capability()
+    assert infer_required_function(service) == "moving_average"
+    anomaly = service.model_copy(
+        update={
+            "name": "设备传感器异常检测",
+            "algorithm_family": "anomaly_detection",
+            "outputs": ["is_anomaly"],
+        }
+    )
+    maintenance = service.model_copy(
+        update={
+            "name": "AI4I 预测性维护高风险筛查",
+            "algorithm_family": "predictive_maintenance",
+            "outputs": ["is_high_risk"],
+        }
+    )
+    assert infer_required_function(anomaly) == "detect_anomalies"
+    assert infer_required_function(maintenance) == "flag_high_risk"
+    explicit = service.model_copy(update={"implementation_entrypoint": "predict"})
+    assert infer_required_function(explicit) == "predict"
+
+
+def test_unknown_capability_keeps_entrypoint_contract_explicitly_unset() -> None:
+    capability = _capability().model_copy(
+        update={"name": "Unknown ranking method", "algorithm_family": "ranking"}
+    )
+    assert infer_required_function(capability) is None

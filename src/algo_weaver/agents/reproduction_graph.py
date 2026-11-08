@@ -19,7 +19,7 @@ from algo_weaver.services.repair import BoundedRepairLoop
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
 from algo_weaver.services.reranker import RerankerProvider
 from algo_weaver.services.retrieval import LocalLexicalRetriever, SourceChunker
-from algo_weaver.services.validation import ValidationService
+from algo_weaver.services.validation import ValidationService, infer_required_function
 
 END: Any = None
 START: Any = None
@@ -176,9 +176,7 @@ def build_reproduction_graph(
                     validator.validate_python_source(
                         artifact["content"],
                         source_id=artifact["path"],
-                        required_function=(
-                            "moving_average" if "moving_average" in artifact["content"] else None
-                        ),
+                        required_function=infer_required_function(capability),
                     )
                 )
         if "execution" in state:

@@ -63,6 +63,7 @@ class ReproductionPlanner:
         return ReproductionPlan(
             capability_id=capability.capability_id,
             capability_name=capability.name,
+            required_entrypoint=capability.implementation_entrypoint,
             algorithm_family=capability.algorithm_family,
             objective=capability.problem_definition or "Reproduce the described algorithm.",
             required_inputs=capability.inputs,

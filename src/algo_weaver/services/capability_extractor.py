@@ -99,6 +99,7 @@ class CapabilityExtractor:
 
         return AlgorithmCapability(
             name=draft.name,
+            implementation_entrypoint=draft.implementation_entrypoint,
             problem_definition=draft.problem_definition,
             algorithm_family=draft.algorithm_family,
             inputs=draft.inputs,
