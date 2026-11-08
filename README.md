@@ -1,323 +1,86 @@
 # AlgoWeaver
 
-**Algorithm Intelligence & Reproduction Agent**  
-An agentic system for algorithm knowledge extraction, code reproduction, automated verification, and reusable capability accumulation.
+AlgoWeaver 是一个面向算法能力复用的 Python 原型系统。它把业务资料、历史代码和验证结果组织成可追溯的算法能力资产，并提供从能力描述到代码生成、验证和复用的工作流。
 
-> Current milestone: **MVP execution baseline — evidence-linked extraction, executable LangGraph workflow, WSL2 sandbox, API and SQLite capability persistence**.
+## 核心能力
 
-## 1. What is implemented
+- 资料接入：Markdown、文本、Python、CSV、JSON、YAML，以及可选的 Office/PDF 解析适配器。
+- 能力抽取：Pydantic 能力卡片，记录输入、输出、步骤、参数、约束、指标、证据和状态。
+- 证据检索：词法检索，可选 Qdrant 向量检索与重排，并保留来源定位。
+- 方案规划：LangGraph 工作流将检索、规划、生成、验证和修复连接起来。
+- 代码生成：模板、Mock 和可替换 LLM provider 三种模式。
+- 安全验证：AST 检查、接口契约、单元测试、MAE/RMSE 指标和 Docker/WSL 隔离执行。
+- 能力资产：SQLite 版本库、verified gate、JSON-LD 导出和结构化修复经验。
+- 候选比较：库存预测支持 moving-average、naive-last、weighted-moving-average，并输出 JSON/Markdown 报告。
+- 交互入口：Typer CLI、FastAPI 和 Streamlit 工作台。
 
-- Pydantic schemas for algorithm drafts, capability cards, parameters, and evidence references.
-- Provider-neutral chat model protocol.
-- Deterministic mock model for offline development and tests.
-- LiteLLM adapter for multiple model providers and OpenAI-compatible endpoints.
-- A minimal LangGraph extraction workflow.
-- An offline fallback runner for the extraction workflow when optional LangGraph is not installed.
-- Dependency-free ingestion for Markdown, text, Python, CSV, JSON and YAML with SHA-256 provenance.
-- Lazy Docling boundaries for PDF, DOCX, PPTX and XLSX; missing optional dependencies are reported explicitly.
-- Python AST indexing for imports, classes, methods, functions and source locations without executing code.
-- Provenance-preserving local lexical retrieval with source and metadata filters.
-- Optional Qdrant in-memory vector adapter with the same provenance contract.
-- Deterministic static validation reports for capability contracts and generated Python source.
-- SQLite capability versioning with passing-report promotion to `verified`.
-- Docker-only execution boundary with explicit `blocked` behavior when the daemon or SDK is unavailable.
-- LangGraph reproduction flow with optional artifact writing, sandbox execution, conditional bounded repair and runtime reports.
-- Provider-neutral code generation boundary with deterministic `template`, offline `mock` and structured `llm` modes; model output is Pydantic-validated before artifacts are written.
-- Bounded repair boundary with reviewed template repair and optional structured LLM patches that can target existing artifacts only.
-- CLI and FastAPI surfaces for extraction, reproduction, sandbox execution, repair, registry persistence and MAE/RMSE threshold evaluation.
-- WSL2 Docker runtime acceptance for the reviewed inventory forecasting capability.
-- Pytest coverage for schema validation, extraction, graph execution, API behavior and safety boundaries.
+## 目录
 
-The mock model is for engineering smoke tests only. Its output is explicitly marked as needing review; it must not be treated as a real algorithm extraction or a verified capability.
+- `src/algo_weaver/`：核心服务、schema、Agent 图和 API/UI 入口。
+- `examples/`：库存需求预测、异常检测和预测性维护示例。
+- `tests/`：schema、服务、API、CLI、UI 和安全边界测试。
+- `docs/architecture.md`：系统架构和模块说明。
+- `docs/requirements/requirements_matrix.md`：需求与实现对应关系。
+- `docs/reports/FINAL_DELIVERY_REPORT.md`：公开交付评估报告。
 
-## 2. Requirements
+## 环境配置
 
-- Python 3.12 or 3.13
-- `uv` package manager
-- Git
-- For real model calls: an API key and a LiteLLM-supported model/provider
-
-GPU is not required for this first milestone because model inference is API-based by default. Local GPU inference and embedding/reranking will be added after checking the actual GPU model and VRAM.
-
-## 3. Install on Windows PowerShell
+需要 Python 3.12+ 和 uv：
 
 ```powershell
-# 1. Clone or enter the repository
-cd algo-weaver
-
-# 2. Create the virtual environment and install core + development dependencies
-uv sync --group dev --extra api --extra retrieval --extra execution
-
-# 3. Create local environment config
-Copy-Item .env.example .env
-
-# 4. Run tests
-uv run pytest
-
-# 5. Print version
-uv run algo-weaver version
-
-# 6. Run the first extraction module in offline mock mode
-uv run algo-weaver extract `
-  --input examples/moving_average/algorithm.md `
-  --output data/processed/moving_average_capability.json `
-  --mode mock
-
-# Windows WSL2 runtime demo (after WSL Docker setup)
-uv run algo-weaver reproduce `
-  --input examples/inventory_forecast/algorithm.md `
-  --output-dir data/processed/reproduction `
-  --capability-file examples/inventory_forecast/reviewed_capability.json `
-  --registry data/processed/capabilities.sqlite3 `
-  --execute `
-  --backend wsl `
-  --mode mock
-```
-
-## 4. Install on Linux/macOS
-
-```bash
-cd algo-weaver
-uv sync --group dev --extra api --extra retrieval --extra execution
-cp .env.example .env
-uv run pytest
-uv run algo-weaver version
-uv run algo-weaver extract \
-  --input examples/moving_average/algorithm.md \
-  --output data/processed/moving_average_capability.json \
-  --mode mock
-
-# Build a reproduction bundle and static validation reports (still unverified)
-uv run algo-weaver reproduce \
-  --input examples/moving_average/algorithm.md \
-  --output-dir data/processed/reproduction \
-  --mode mock
-
-# Exercise the offline generation boundary while keeping artifacts unverified.
-uv run algo-weaver reproduce \
-  --input examples/moving_average/algorithm.md \
-  --output-dir data/processed/reproduction \
-  --generation-mode mock \
-  --mode mock
-
-# Add historical code or experiment material to the same retrieval context.
-uv run algo-weaver reproduce \
-  --input examples/inventory_forecast/algorithm.md \
-  --additional-input examples/inventory_forecast/sales_history.csv \
-  --output-dir data/processed/reproduction \
-  --mode mock
-
-# FastAPI surface
-uv run uvicorn algo_weaver.api:create_app --factory --host 127.0.0.1 --port 8000
-
-# Production: enable API-key auth and rate limiting, then terminate HTTPS at
-# Caddy/Nginx or a managed gateway. See docs/architecture/deployment.md.
-
-# Optional Streamlit dashboard
 uv sync --group dev --extra api --extra retrieval --extra execution --extra ui
-uv run algo-weaver-ui
-
-# API metric evaluation example
-curl -X POST http://127.0.0.1:8000/metrics \
-  -H "Content-Type: application/json" \
-  -d '{"task":"inventory_demand","actual":[10,12,14],"predicted":[11,11,15],"max_mae":1.0,"max_rmse":1.0}'
-
-# API reproduction is static by default. Add execute=true for explicit Docker/WSL execution,
-# repair=true for bounded template repair, and persist=true for configured SQLite write-back.
-# `additional_sources` accepts historical code, experiment notes or test reports
-# and their provenance is preserved in the returned retrieval hits.
 ```
 
-## 5. Enable a real model (LiteLLM)
+可选 provider 通过环境变量配置。不要把密钥写入仓库；`.env.example` 只包含变量名示例。
 
-Edit `.env`:
-
-```dotenv
-ALGOWEAVER_LLM_MODE=litellm
-ALGOWEAVER_LLM_MODEL=dashscope/qwen3.8-max-0902
-ALGOWEAVER_CODE_LLM_MODEL=dashscope/deepseek-v4.1-flash-1017
-ALGOWEAVER_LLM_API_KEY=<your-api-key>
-ALGOWEAVER_LLM_API_BASE=https://<workspace-id>.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
-ALGOWEAVER_LLM_TEMPERATURE=0.0
-```
-
-Examples of LiteLLM model naming patterns (verify the exact model identifier supported by your provider):
-
-```dotenv
-# OpenAI
-ALGOWEAVER_LLM_MODEL=openai/<model-name>
-
-# DeepSeek
-ALGOWEAVER_LLM_MODEL=deepseek/<model-name>
-
-# Qwen / DashScope
-ALGOWEAVER_LLM_MODEL=dashscope/<model-name>
-
-# Ollama local endpoint
-ALGOWEAVER_LLM_MODEL=ollama/<model-name>
-ALGOWEAVER_LLM_API_BASE=http://localhost:11434
-
-# OpenAI-compatible endpoint
-ALGOWEAVER_LLM_MODEL=openai/<model-name>
-ALGOWEAVER_LLM_API_BASE=https://<provider-compatible-endpoint>/v1
-```
-
-Then run:
-
-```bash
-uv run algo-weaver extract --input examples/moving_average/algorithm.md --mode litellm
-```
-
-`ALGOWEAVER_LLM_MODEL` is used for extraction and planning. When set,
-`ALGOWEAVER_CODE_LLM_MODEL` is used for LLM code generation and repair. The
-current live Bailian acceptance used `qwen3.8-max-0902` for the primary Agent
-and `deepseek-v4.1-flash-1017` for code generation and repair.
-
-Optional semantic retrieval providers are configured separately:
-
-```dotenv
-ALGOWEAVER_EMBEDDING_MODE=dashscope
-ALGOWEAVER_EMBEDDING_MODEL=qwen3.7-text-embedding-flash
-ALGOWEAVER_EMBEDDING_API_KEY=<your-api-key>
-ALGOWEAVER_EMBEDDING_API_BASE=https://<workspace-id>.cn-beijing.maas.aliyuncs.com/api/v1
-ALGOWEAVER_RERANKER_MODE=dashscope
-ALGOWEAVER_RERANKER_MODEL=qwen3-rerank
-ALGOWEAVER_RERANKER_API_KEY=<your-api-key>
-ALGOWEAVER_RERANKER_API_BASE=https://<workspace-id>.cn-beijing.maas.aliyuncs.com/api/v1
-```
-
-The provider boundaries are live-tested. Set the embedding and reranker modes
-to `dashscope` to enable the hybrid retrieval path; otherwise lexical retrieval
-is used as the offline fallback.
-
-Do not commit `.env` or API keys. Keep `.env.example` free of secrets.
-
-## 6. Optional dependency groups
-
-Install only when the corresponding milestone starts:
-
-```bash
-uv sync --group dev --extra documents
-uv sync --group dev --extra code
-uv sync --group dev --extra retrieval
-uv sync --group dev --extra api
-uv sync --group dev --extra observability
-uv sync --group dev --extra execution
-```
-
-- `documents`: Docling for PDF/DOCX/PPTX/XLSX ingestion.
-- `code`: Tree-sitter parsing for syntax-aware code indexing.
-- `retrieval`: Qdrant client for hybrid retrieval infrastructure.
-- `api`: FastAPI and Uvicorn.
-- `observability`: Langfuse and OpenTelemetry.
-- `execution`: Docker SDK and the WSL2 Docker runner used by the reviewed runtime demo.
-
-## 7. Project structure
-
-```text
-src/algo_weaver/
-├── agents/       # LangGraph workflows
-├── llm/          # Provider adapters and model factory
-├── schemas/      # Pydantic domain schemas
-├── services/     # Capability extraction business logic
-├── config.py     # Environment-based settings
-└── cli.py        # Command-line interface
-
-tests/            # Automated tests
-examples/         # Reproducible sample inputs
-data/              # Local input/output data (not committed)
-docs/              # Architecture and design documents
-```
-
-## 8. Visual demo
-
-The repository includes a static preview of the Streamlit workspace and the FastAPI OpenAPI surface. The live browser workflow is documented in [`OPERATION_GUIDE.md`](docs/implementation/OPERATION_GUIDE.md).
-
-![AlgoWeaver Streamlit workspace](docs/assets/streamlit-dashboard.png)
-
-![AlgoWeaver API surface](docs/assets/api-openapi.png)
-
-![AlgoWeaver end-to-end acceptance flow](docs/assets/acceptance-flow.png)
-
-## 9. Current acceptance status
-
-- [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
-- [x] `uv run pytest -q` passes in the current environment: 139 passed, 0 skipped.
-- [x] GitHub Actions CI passes on Python 3.12 and 3.13 (verified run #133 on the synchronized delivery commit `88565b0`).
-- [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
-- [x] The capability card records source provenance.
-- [x] Mock-generated output is never marked `verified`.
-- [x] Real Bailian provider calls have been verified for the primary model, code model, embedding model and reranker.
-- [x] Real provider configuration is loaded from environment variables, not source code.
-- [x] Hybrid lexical/dense retrieval and optional reranking are available through injectable providers.
-- [x] Streamlit dashboard starts with the optional `ui` extra and displays evidence, plans, artifacts and reports.
-- [x] Supported text-like sources are normalized and hashed by `SourceIngestor`.
-
-The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports deterministic moving-average template generation, an offline Mock generation label, Pydantic-validated LLM generation and repair boundaries, a real WSL2 Docker execution path for the reviewed inventory capability, and live Bailian provider boundaries. Use `--generation-mode llm --mode litellm` or `--repair --repair-mode llm --mode litellm` only with a configured provider; live provider checks are recorded separately from offline tests.
-
-The retrieval path combines lexical evidence with optional Qdrant dense retrieval and reranking. It returns line-addressable evidence chunks with source IDs, paths and metadata, and falls back to lexical retrieval when semantic providers are not configured. Memory Qdrant is the default for offline tests; use `ALGOWEAVER_QDRANT_MODE=local` for a Windows on-disk database or `ALGOWEAVER_QDRANT_MODE=server` with `deploy/qdrant/docker-compose.yml` for a persistent service. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
-
-Multiple local materials can be supplied with repeated `--additional-input` options. The API equivalent is `additional_sources`; both paths preserve each source's ingestion status and provenance in retrieval hits.
-
-The API can reuse a verified registry capability by adding `reuse_query` to `/reproduce`; it returns the selected version in `reused_record` and skips a new capability extraction. Set `auto_reuse=true` to try a verified name match after extraction.
-
-For a human-reviewed capability card, pass `--capability-file examples/inventory_forecast/reviewed_capability.json`; with `--backend wsl --execute --registry ...`, the runtime report can promote the card to `verified`. The same execution/repair boundary is available from FastAPI `/reproduce` with explicit request flags. These paths are explicitly human-reviewed and do not claim real LLM extraction.
-
-Add `--repair` to enable bounded repair after a failed or timed-out sandbox run. The default restores the reviewed template; `--repair-mode llm` uses a configured provider and still requires `--mode litellm`.
-
-Add `--metrics-file examples/inventory_forecast/sales_history.csv` to execute the generated prediction inside WSL Docker and write `metric_report.json` with MAE/RMSE.
-Use `--max-mae` and `--max-rmse` to turn those metrics into an explicit pass/fail report.
-
-Use `uv run algo-weaver reuse "库存需求" --registry data/processed/capabilities.sqlite3` to search only verified capability versions.
-
-Compare two immutable capability versions with:
+## 五分钟离线演示
 
 ```powershell
-uv run algo-weaver diff --capability-id <capability-id> --from-version 1 --to-version 2 `
-  --registry data/processed/capabilities.sqlite3
+uv run algo-weaver extract examples/inventory_forecast/source.md --source-id inventory-doc
+uv run algo-weaver reproduce examples/inventory_forecast/source.md --mode mock --generation-mode template
+uv run algo-weaver compare --metrics-file examples/inventory_forecast/sales_history.csv
 ```
 
-The API equivalent is `GET /capabilities/{capability_id}/diff?from_version=1&to_version=2`.
+候选比较也可以通过 API 调用：
 
-Export the capability registry as a JSON-LD knowledge graph with
-`uv run algo-weaver export-graph --registry data/processed/capabilities.sqlite3`.
+```powershell
+$body = '{"actual":[18,21,20,24,22],"window":3,"selection_metric":"mae"}'
+Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/compare `
+  -ContentType 'application/json' -Body $body
+```
 
-For the remaining Windows Docker runtime gate, see `docs/implementation/windows_runtime_setup.md`.
+启动 API：
 
-For a short advisor demonstration without buying a domain, see
-[`docs/architecture/deployment.md`](docs/architecture/deployment.md) for the
-Cloudflare Quick Tunnel/ngrok HTTPS options. A permanent public service should use
-the production Caddy deployment with DNS and ACME.
+```powershell
+uv run uvicorn algo_weaver.api:app --factory --host 127.0.0.1 --port 8000
+```
 
-For a step-by-step GitHub release, Streamlit Cloud option, temporary HTTPS demo,
-production Qdrant/Caddy deployment, Secrets, ports and the advisor acceptance
-script, see [`docs/deployment/github_mentor_guide.md`](docs/deployment/github_mentor_guide.md).
+启动工作台：
 
-The complete Windows/API/Streamlit/Qdrant runbook is in
-[`docs/implementation/OPERATION_GUIDE.md`](docs/implementation/OPERATION_GUIDE.md),
-and the evidence-based release assessment is in
-[`docs/reports/FINAL_DELIVERY_REPORT.md`](docs/reports/FINAL_DELIVERY_REPORT.md).
+```powershell
+uv run streamlit run src/algo_weaver/ui.py --server.headless true --server.port 8512
+```
 
-## 9. Delivery scope and remaining work
+工作台提供任务描述、资料上传、模型/生成模式、候选比较、验证结果和能力资产展示。
 
-The reproducible primary scenario is inventory demand forecasting with a moving-average
-baseline. Its business description, reviewed capability card and sample sales data are in
-[`examples/inventory_forecast/`](examples/inventory_forecast/). The complete requirement
-to implementation audit and ordered next-step list are maintained in
-[`docs/implementation/DELIVERY_GAP_LIST.md`](docs/implementation/DELIVERY_GAP_LIST.md)
-and [`docs/requirements/requirements_matrix.md`](docs/requirements/requirements_matrix.md).
-Items marked `PARTIAL` are deliberately not presented as completed MVP features.
-The second scenario is UCI's CC BY 4.0 AI4I predictive-maintenance dataset with a
-transparent rule baseline in [`examples/predictive_maintenance/`](examples/predictive_maintenance/).
+## 测试与质量检查
 
-The repository default branch `feat/initial-audit-and-ingestion` and the delivery
-branch `feat/api-capability-reuse` both point to the current published commit after
-the final fast-forward synchronization.
+```powershell
+uv run pytest -q
+uv run ruff check src tests
+uv run mypy src --no-incremental
+```
 
-## 10. Engineering principles
+当前可复现结果：146 passed，1 skipped（Windows WSL 集成测试在无 WSL 环境下跳过）；Ruff 和 Mypy 通过。
 
-1. Evidence before claims: extracted fields should be traceable to source material.
-2. Draft is not verified: only independent tests and review can promote a capability.
-3. Deterministic control where possible: use code for validation, routing, and execution limits; use LLMs for semantic interpretation and generation.
-4. Sandbox all generated code: never execute untrusted code directly on the host.
-5. Keep provider interfaces replaceable: application services depend on the `ChatModel` protocol, not a specific vendor SDK.
+## 技术选择
+
+- Pydantic：约束模型输出和验证状态。
+- LangGraph：表达可观察、可测试的算法复刻流程。
+- SQLite + JSON-LD：低运维保存版本、证据和失败经验，并支持图数据导出。
+- FastAPI、Typer、Streamlit：分别服务自动化调用、命令行复现和现场演示。
+- Docker/WSL：为生成代码提供隔离执行边界。
+
+## 当前边界
+
+复杂 PDF/Office 布局、图谱可视化、插件注册、多轮修复、性能预算和正式公网部署仍需要进一步扩展。真实 provider、Docker/WSL 和外部向量服务必须在目标环境中单独复核。

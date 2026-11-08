@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 CheckStatus = Literal["passed", "failed", "skipped"]
 ReportStatus = Literal["passed", "failed", "partial"]
-ValidationTarget = Literal["capability", "python_source"]
+ValidationTarget = Literal["capability", "python_source", "comparison"]
 
 
 class ValidationCheck(BaseModel):

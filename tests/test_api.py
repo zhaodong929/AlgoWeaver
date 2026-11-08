@@ -21,6 +21,19 @@ def test_health_endpoint() -> None:
     assert response.json()["status"] == "ok"
 
 
+def test_compare_endpoint_returns_candidates() -> None:
+    response = TestClient(create_app()).post(
+        "/compare",
+        json={"actual": [18, 21, 20, 24, 22], "window": 3},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["task"] == "inventory_demand"
+    assert payload["selected_candidate_id"]
+    assert len(payload["candidates"]) == 3
+
+
 def test_api_key_authentication_keeps_health_probe_public() -> None:
     client = TestClient(
         create_app(
