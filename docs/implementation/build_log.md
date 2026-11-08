@@ -485,3 +485,5 @@ Every later entry must record the changed module, test command, result, unresolv
 - The UCI AI4I rule baseline processed all 10,000 rows in 0.005131300 seconds with
   precision 1.0 and recall 0.0058997050147492625; the conservative-rule limitation
   is explicitly documented.
+- Git commits: `ad58fbc` (live LLM reproduction/repair evidence) and `084894f`
+  (scenario performance report).

@@ -18,6 +18,6 @@
 ## 当前 Git 证据
 
 - Branch: `feat/api-capability-reuse`
-- Remote tracking: clean and synchronized after `e8e2c6f`
+- Remote tracking: clean and synchronized after `084894f`
 - Baseline commit: `04d74ac`; latest code milestone: `23b5470` (GPU/Docker audit; CI #79 verified)
-- Latest feature commits include `e8e2c6f` (acceptance matrix), `7c4d319` (production HTTPS bundle), `9fa012a` (local persistent Qdrant), `8ac0ffd` (live repair evidence), `dcb64da` (open-license second scenario), `fa17dea` (delivery audit evidence), `16919d0` (provider-default test isolation), `b17206f` (production boundaries), `3705a66`/`47d3dfb` (hybrid retrieval and Streamlit), plus the earlier implementation milestones listed above.
+- Latest feature commits include `084894f` (scenario performance report), `ad58fbc` (live LLM reproduction/repair), `e8e2c6f` (acceptance matrix), `7c4d319` (production HTTPS bundle), `9fa012a` (local persistent Qdrant), `8ac0ffd` (live repair evidence), `dcb64da` (open-license second scenario), `fa17dea` (delivery audit evidence), `16919d0` (provider-default test isolation), `b17206f` (production boundaries), `3705a66`/`47d3dfb` (hybrid retrieval and Streamlit), plus the earlier implementation milestones listed above.
