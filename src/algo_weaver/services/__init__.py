@@ -2,6 +2,11 @@
 from algo_weaver.services.classification_metrics import ClassificationMetricEvaluator
 from algo_weaver.services.code_generation import LLMCodeGenerator, MockCodeGenerator
 from algo_weaver.services.code_parser import PythonCodeParser
+from algo_weaver.services.comparison import (
+    DEFAULT_INVENTORY_CANDIDATES,
+    ForecastCandidate,
+    InventoryForecastComparator,
+)
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.embedding import (
     DashScopeEmbeddingProvider,
@@ -39,10 +44,13 @@ from algo_weaver.services.validation import ValidationService
 __all__ = [
     "CapabilityRegistry",
     "ClassificationMetricEvaluator",
+    "DEFAULT_INVENTORY_CANDIDATES",
     "DashScopeEmbeddingProvider",
     "DashScopeRerankerProvider",
     "EmbeddingProvider",
+    "ForecastCandidate",
     "HybridRetriever",
+    "InventoryForecastComparator",
     "MockEmbeddingProvider",
     "MockRerankerProvider",
     "PythonDependencyAnalyzer",

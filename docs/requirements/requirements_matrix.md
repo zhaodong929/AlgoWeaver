@@ -3,7 +3,7 @@
 来源为 `source_requirements.md` 中用户提供的笔试原文。状态按当前代码证据填写；“规划”不等于已实现。
 
 > 状态校正（2026-11-08）：本文件末尾的“最新验收状态”覆盖上方历史记录中的同编号状态。
-> 详细可执行任务见 [`docs/implementation/DELIVERY_GAP_LIST.md`](../implementation/DELIVERY_GAP_LIST.md)。
+> 交付状态与运行证据见 [`docs/reports/FINAL_DELIVERY_REPORT.md`](../reports/FINAL_DELIVERY_REPORT.md)。
 
 | ID | 原始要求 | 功能分析 | 技术方案 | 实现模块 | 验收标准 | 测试 | 优先级 | 状态 |
 |---|---|---|---|---|---|---|---|---|

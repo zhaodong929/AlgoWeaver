@@ -14,6 +14,10 @@ from algo_weaver.llm.factory import create_chat_model
 from algo_weaver.schemas.execution import ExecutionPolicy
 from algo_weaver.services.capability_extractor import CapabilityExtractor
 from algo_weaver.services.code_generation import LLMCodeGenerator, MockCodeGenerator
+from algo_weaver.services.comparison import (
+    DEFAULT_INVENTORY_CANDIDATES,
+    InventoryForecastComparator,
+)
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.embedding import create_embedding_provider
 from algo_weaver.services.hybrid_retrieval import HybridRetriever
@@ -161,6 +165,88 @@ def diff_versions(
     except (KeyError, ValueError) as exc:
         raise typer.BadParameter(str(exc)) from exc
     rprint(json.dumps(result, ensure_ascii=False, indent=2))
+
+@app.command("compare")
+def compare_inventory(
+    metrics_file: Annotated[
+        Path, typer.Option("--metrics-file", exists=True, readable=True)
+    ],
+    output_file: Annotated[Path, typer.Option("--output", "-o")] = Path(
+        "data/processed/inventory_comparison.json"
+    ),
+    markdown_file: Annotated[Path | None, typer.Option("--markdown-output")] = None,
+    window: Annotated[int, typer.Option("--window", min=1)] = 3,
+    selection_metric: Annotated[str, typer.Option("--selection-metric")] = "mae",
+    candidate: Annotated[
+        list[str] | None,
+        typer.Option("--candidate", help="Candidate id; repeat to limit the comparison"),
+    ] = None,
+    capability_file: Annotated[
+        Path | None,
+        typer.Option("--capability-file", exists=True, readable=True),
+    ] = None,
+    registry_path: Annotated[Path | None, typer.Option("--registry")] = None,
+    max_mae: Annotated[float | None, typer.Option("--max-mae", min=0)] = None,
+    max_rmse: Annotated[float | None, typer.Option("--max-rmse", min=0)] = None,
+) -> None:
+    """Compare local forecasting candidates and write a JSON/Markdown report."""
+    rows = list(csv.DictReader(metrics_file.read_text(encoding="utf-8").splitlines()))
+    if not rows or "sales" not in rows[0]:
+        raise typer.BadParameter("metrics-file must contain a sales column")
+    try:
+        actual = [float(row["sales"]) for row in rows]
+    except (KeyError, TypeError, ValueError) as exc:
+        raise typer.BadParameter("sales values must be numeric") from exc
+
+    available = {item.candidate_id: item for item in DEFAULT_INVENTORY_CANDIDATES}
+    selected_ids = candidate or list(available)
+    unknown = sorted(set(selected_ids) - set(available))
+    if unknown:
+        raise typer.BadParameter(f"unknown candidate id(s): {', '.join(unknown)}")
+    selected = tuple(available[item] for item in selected_ids)
+
+    capability = None
+    if capability_file is not None:
+        from algo_weaver.schemas.capability import AlgorithmCapability
+
+        capability = AlgorithmCapability.model_validate_json(
+            capability_file.read_text(encoding="utf-8")
+        )
+    report = InventoryForecastComparator(selected).compare(
+        actual,
+        window=window,
+        selection_metric=selection_metric,
+        max_mae=max_mae,
+        max_rmse=max_rmse,
+        capability=capability,
+    )
+
+    registry_record = None
+    if registry_path is not None:
+        if capability is None:
+            raise typer.BadParameter("--registry requires --capability-file")
+        registry = CapabilityRegistry(registry_path)
+        registry_record = registry.latest(capability.capability_id)
+        if registry_record is None:
+            registry_record = registry.save(capability)
+        report = report.model_copy(update={"registry_version": registry_record.version})
+        registry_path.parent.mkdir(parents=True, exist_ok=True)
+
+    json_path, markdown_path = InventoryForecastComparator.write_report(
+        report,
+        output_file,
+        markdown_file=markdown_file,
+    )
+    if registry_record is not None:
+        record_path = json_path.parent / "registry_record.json"
+        record_path.write_text(
+            json.dumps(registry_record.model_dump(mode="json"), ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    rprint(f"[green]Comparison report saved:[/green] {json_path}")
+    rprint(f"Markdown report: {markdown_path}")
+    rprint(f"Selected candidate: {report.selected_candidate_id or 'none'}")
+    rprint(f"Validation: {report.overall_status}; registry status: {report.status}")
 
 
 @app.command()

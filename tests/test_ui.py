@@ -1,7 +1,7 @@
 from pathlib import Path
 from urllib import request
 
-from algo_weaver.ui import _post_json, build_reproduce_payload
+from algo_weaver.ui import _post_json, build_compare_payload, build_reproduce_payload
 
 
 def test_dashboard_payload_preserves_generation_and_additional_sources() -> None:
@@ -19,6 +19,14 @@ def test_dashboard_payload_preserves_generation_and_additional_sources() -> None
     assert payload["generation_mode"] == "llm"
     assert payload["repair_mode"] == "llm"
     assert payload["additional_sources"][0]["source_id"] == "history.py"
+
+
+def test_compare_payload_is_json_ready() -> None:
+    assert build_compare_payload(actual=[18, 21, 20], window=2) == {
+        "actual": [18, 21, 20],
+        "window": 2,
+        "selection_metric": "mae",
+    }
 
 
 def test_post_json_adds_api_key_header(monkeypatch) -> None:
@@ -79,9 +87,9 @@ def test_dashboard_entrypoint_renders_and_submits_request(monkeypatch) -> None:
 
     assert app_test.title[0].value.startswith("AlgoWeaver")
     assert app_test.text_area[0].value.startswith("# Inventory demand forecasting")
-    assert len(app_test.button) == 1
+    assert len(app_test.button) == 2
 
-    app_test.button[0].click().run()
+    app_test.button[1].click().run()
 
     assert not app_test.exception
     assert len(app_test.json) >= 4

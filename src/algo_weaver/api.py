@@ -19,6 +19,7 @@ from algo_weaver.agents.reproduction_graph import build_reproduction_graph
 from algo_weaver.config import Settings, get_settings
 from algo_weaver.llm.factory import create_chat_model
 from algo_weaver.schemas.capability import AlgorithmCapability, SourceType
+from algo_weaver.schemas.comparison import InventoryForecastComparisonReport
 from algo_weaver.schemas.execution import ExecutionPolicy, ExecutionResult
 from algo_weaver.schemas.ingestion import IngestedSource, SourceFormat
 from algo_weaver.schemas.reproduction import ReproductionBundle
@@ -29,6 +30,7 @@ from algo_weaver.services.code_generation import (
     LLMCodeGenerator,
     MockCodeGenerator,
 )
+from algo_weaver.services.comparison import InventoryForecastComparator
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.embedding import create_embedding_provider
 from algo_weaver.services.llm_repair import LLMRepairer
@@ -108,6 +110,17 @@ class SandboxMetricsRequest(BaseModel):
     window: int = Field(default=3, ge=1)
     max_mae: float | None = Field(default=None, ge=0)
     max_rmse: float | None = Field(default=None, ge=0)
+
+
+class CompareRequest(BaseModel):
+    """Request for a deterministic inventory candidate comparison."""
+
+    actual: list[float] = Field(min_length=2)
+    window: int = Field(default=3, ge=1)
+    selection_metric: Literal["mae", "rmse"] = "mae"
+    max_mae: float | None = Field(default=None, ge=0)
+    max_rmse: float | None = Field(default=None, ge=0)
+    capability: AlgorithmCapability | None = None
 
 
 def create_app(
@@ -221,6 +234,23 @@ def create_app(
                 min_precision=request.min_precision,
                 min_recall=request.min_recall,
                 min_f1=request.min_f1,
+            )
+            return report.model_dump(mode="json")
+        except (ValueError, TypeError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/compare", response_model=InventoryForecastComparisonReport)
+    def compare(request: CompareRequest) -> dict:
+        try:
+            if request.window >= len(request.actual):
+                raise ValueError("window must be smaller than the number of observations")
+            report = InventoryForecastComparator().compare(
+                request.actual,
+                window=request.window,
+                selection_metric=request.selection_metric,
+                max_mae=request.max_mae,
+                max_rmse=request.max_rmse,
+                capability=request.capability,
             )
             return report.model_dump(mode="json")
         except (ValueError, TypeError) as exc:

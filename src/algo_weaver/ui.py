@@ -47,6 +47,14 @@ def build_reproduce_payload(
     }
 
 
+def build_compare_payload(
+    *, actual: Sequence[float], window: int, selection_metric: str = "mae"
+) -> dict:
+    """Build the deterministic candidate-comparison request."""
+
+    return {"actual": list(actual), "window": window, "selection_metric": selection_metric}
+
+
 def _post_json(
     url: str,
     payload: dict,
@@ -312,6 +320,11 @@ def _render_results(st, result: dict, execute: bool) -> None:
             st.json(registry)
         else:
             st.info("本次请求未开启持久化；打开 API 的 persist 配置后可将验证通过的能力写入注册表。")
+    comparison = st.session_state.get("aw_comparison")
+    if comparison:
+        st.subheader("候选方案比较")
+        st.caption("基于同一组历史数据比较候选算法，并保留指标门禁与选择理由。")
+        st.json(comparison)
 
 
 def main() -> None:
@@ -383,6 +396,26 @@ def main() -> None:
             unsafe_allow_html=True,
         )
         st.caption("提示：首次演示可使用 mock + template；接入真实模型时切换为 litellm + llm。")
+        compare_values = st.text_input(
+            "库存历史序列（候选比较）",
+            value="18,21,20,24,22",
+            help="输入逗号分隔的历史销量，至少 2 个数。",
+        )
+        compare_window = st.number_input("比较窗口", min_value=1, value=3, step=1)
+        compare_clicked = st.button("比较候选算法", use_container_width=True)
+
+    if compare_clicked:
+        try:
+            values = [float(item.strip()) for item in compare_values.split(",") if item.strip()]
+            payload = build_compare_payload(actual=values, window=int(compare_window))
+            with st.spinner("正在比较候选算法…"):
+                status_code, response = _post_json(f"{api_base}/compare", payload, api_key=api_key)
+            if status_code >= 400:
+                st.error(response.get("detail", response))
+            else:
+                st.session_state["aw_comparison"] = response
+        except (TypeError, ValueError) as exc:
+            st.error(f"候选比较输入无效：{exc}")
 
     if st.button("运行 AlgoWeaver", type="primary", use_container_width=True):
         additional_sources: list[dict[str, str]] = []

@@ -8,6 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from algo_weaver.schemas.capability import AlgorithmCapability
+from algo_weaver.schemas.failure import RepairFailureRecord
 from algo_weaver.schemas.registry import CapabilityVersion
 from algo_weaver.schemas.validation import ValidationReport
 
@@ -161,6 +162,45 @@ class CapabilityRegistry:
         """Return only independently verified capabilities eligible for reuse."""
         return self.search(query, limit=limit, status="verified")
 
+    def record_failure(self, record: RepairFailureRecord) -> RepairFailureRecord:
+        """Persist one repair observation without changing capability status."""
+        with self._connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO failures
+                    (failure_id, run_id, capability_id, attempt, observation,
+                     patch_hash, outcome, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record.failure_id,
+                    record.run_id,
+                    record.capability_id,
+                    record.attempt,
+                    record.observation,
+                    record.patch_hash,
+                    record.outcome,
+                    record.created_at.isoformat(),
+                ),
+            )
+        return record
+
+    def list_failures(
+        self, capability_id: str | None = None, *, limit: int = 100
+    ) -> list[RepairFailureRecord]:
+        """Return durable repair observations, newest first."""
+        if limit < 1:
+            raise ValueError("limit must be positive")
+        query = "SELECT * FROM failures"
+        parameters: tuple[object, ...] = ()
+        if capability_id is not None:
+            query += " WHERE capability_id = ?"
+            parameters = (capability_id,)
+        query += " ORDER BY created_at DESC LIMIT ?"
+        with self._connect() as connection:
+            rows = connection.execute(query, (*parameters, limit)).fetchall()
+        return [RepairFailureRecord.model_validate(dict(row)) for row in rows]
+
     def export_jsonld(self) -> dict:
         """Export capability versions and evidence as a small JSON-LD graph."""
 
@@ -203,6 +243,21 @@ class CapabilityRegistry:
                     }
                 )
 
+            for failure in self.list_failures(row["capability_id"]):
+                graph.append(
+                    {
+                        "@id": f"{version_uri}/failure/{failure.failure_id}",
+                        "@type": "algo:RepairFailure",
+                        "algo:failureId": failure.failure_id,
+                        "algo:runId": failure.run_id,
+                        "algo:attempt": failure.attempt,
+                        "algo:observation": failure.observation,
+                        "algo:outcome": failure.outcome,
+                        "algo:createdAt": failure.created_at.isoformat(),
+                        "algo:forVersion": {"@id": version_uri},
+                    }
+                )
+
         return {
             "@context": {
                 "algo": "https://algoweaver.dev/schema#",
@@ -229,6 +284,20 @@ class CapabilityRegistry:
                     created_at TEXT NOT NULL,
                     payload_json TEXT NOT NULL,
                     PRIMARY KEY (capability_id, version)
+                )
+                """
+            )
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS failures (
+                    failure_id TEXT PRIMARY KEY,
+                    run_id TEXT NOT NULL,
+                    capability_id TEXT NOT NULL,
+                    attempt INTEGER NOT NULL,
+                    observation TEXT NOT NULL,
+                    patch_hash TEXT,
+                    outcome TEXT NOT NULL,
+                    created_at TEXT NOT NULL
                 )
                 """
             )
