@@ -260,6 +260,9 @@ Use `--max-mae` and `--max-rmse` to turn those metrics into an explicit pass/fai
 
 Use `uv run algo-weaver reuse "库存需求" --registry data/processed/capabilities.sqlite3` to search only verified capability versions.
 
+Export the capability registry as a JSON-LD knowledge graph with
+`uv run algo-weaver export-graph --registry data/processed/capabilities.sqlite3`.
+
 For the remaining Windows Docker runtime gate, see `docs/implementation/windows_runtime_setup.md`.
 
 ## 9. Delivery scope and remaining work

@@ -26,7 +26,7 @@
 |---|---|---|---|
 | G-01 | LLM 理解、抽取、生成或修复 | PARTIAL | 真实模型抽取/生成已验收；补充多份真实业务资料和真实多轮修复报告 |
 | G-02 | 具体行业场景及数据 | DONE（两个场景） | 将 AI4I 场景接入通用 Agent/API 指标接口 |
-| G-03 | 能力知识库/知识图谱 schema | PARTIAL | Pydantic+SQLite 已有；补充能力、证据、依赖、验证历史的图导出/可视化 |
+| G-03 | 能力知识库/知识图谱 schema | PARTIAL | Pydantic+SQLite 和 JSON-LD 导出已实现；补充图谱可视化和版本 diff |
 | G-04 | 自然语言到可运行代码 | PARTIAL | 真实 LLM bundle 已在隔离环境执行；首次 pytest 依赖失败后由 DeepSeek 修复并通过 8 个测试；继续完成 live bundle 的指标门禁和 verified promotion |
 | G-05 | 统一功能/指标/稳定性/接口验证 | PARTIAL | 现有静态、运行、MAE/RMSE；补充性能预算、接口契约和安全扫描报告 |
 | G-06 | CLI/API/UI | PARTIAL | 三入口、AppTest 和 HTTP smoke 已实现；补充浏览器人工验收记录和线上部署演示 |
@@ -54,8 +54,8 @@
    Uvicorn smoke；Caddy internal TLS 已完成本地 HTTPS smoke；仍需真实 DNS/ACME 证书和多副本网关验收。
 5. **P1-1 真实失败修复扩展**：导入错误、缺少依赖、超时各已完成一次真实修复；
    继续验证多轮修复并保存失败经验。
-6. **P1-2 能力资产增强**：导出 GraphML/JSON-LD 或等价图结构，加入版本 diff、失败
-   经验和语义相似复用。
+6. **P1-2 能力资产增强**：JSON-LD 导出已实现（`algo-weaver export-graph`）；继续加入
+   版本 diff、失败经验和语义相似复用。
 7. **P1-3 第二公开场景**：已加入 UCI AI4I 2020 Predictive Maintenance Dataset
    （CC BY 4.0，DOI `10.24432/C5HS5C`）和透明规则基线，复用了相同的能力卡片和
    测试结构；下一步把该场景接入通用 Agent/API 指标接口并保留授权来源。

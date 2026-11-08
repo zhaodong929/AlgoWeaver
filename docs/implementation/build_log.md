@@ -508,6 +508,13 @@ Every later entry must record the changed module, test command, result, unresolv
 - Git commits: `f453df9` (Qdrant service acceptance) and `948c4c0` (Qdrant/security
   runtime evidence).
 
+## 2026-11-08 — capability graph export
+
+- Added `CapabilityRegistry.export_jsonld()` and the `algo-weaver export-graph` CLI
+  command. The export contains capability-version nodes and evidence nodes with
+  stable IDs, source excerpts and version relationships.
+- Focused registry/CLI tests passed (`14 passed`); the full suite is now **130 passed**.
+
 ## 2026-11-08 — local HTTPS termination smoke
 
 - Caddy 2.10 Alpine started with `tls internal` on `localhost:8443` and returned

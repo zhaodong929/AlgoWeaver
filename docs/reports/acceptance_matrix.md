@@ -34,6 +34,8 @@ means a usable path exists but the full requested scope still needs evidence.
 - Live repair report: `docs/reports/test_reports/2026-11-08-live-repair-scenarios.md`.
 - Qdrant service report: `docs/reports/test_reports/2026-11-08-qdrant-persistence.md`;
   collection survived a container restart and real hybrid retrieval used the server.
+- `algo-weaver export-graph` and registry tests produce JSON-LD capability-version and
+  evidence nodes for the knowledge-graph deliverable.
 - Streamlit runtime: `/_stcore/health` HTTP 200 and root page HTTP 200; AppTest
   exercises the form and result panels.
 - Security runtime report: API-key mode returned `401` without a key, `200` with a
