@@ -1,4 +1,5 @@
 """Application services."""
+from algo_weaver.services.classification_metrics import ClassificationMetricEvaluator
 from algo_weaver.services.code_generation import LLMCodeGenerator, MockCodeGenerator
 from algo_weaver.services.code_parser import PythonCodeParser
 from algo_weaver.services.dependency import PythonDependencyAnalyzer
@@ -37,6 +38,7 @@ from algo_weaver.services.validation import ValidationService
 
 __all__ = [
     "CapabilityRegistry",
+    "ClassificationMetricEvaluator",
     "DashScopeEmbeddingProvider",
     "DashScopeRerankerProvider",
     "EmbeddingProvider",
