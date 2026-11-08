@@ -6,7 +6,7 @@
 
 ## 1. 获取正确版本
 
-当前可交付提交为 `c4675c6`。GitHub 默认分支 `feat/initial-audit-and-ingestion` 已从旧提交 `339a020` 普通快进到该提交；也可以直接使用功能分支 `feat/api-capability-reuse`。
+当前可交付提交为 `b0b22fe`。GitHub 默认分支 `feat/initial-audit-and-ingestion` 已从旧提交 `339a020` 普通快进到该提交；也可以直接使用功能分支 `feat/api-capability-reuse`。
 
 ```powershell
 git clone -b feat/initial-audit-and-ingestion https://github.com/zhaodong929/AlgoWeaver.git
@@ -14,7 +14,7 @@ cd AlgoWeaver
 git rev-parse --short HEAD
 ```
 
-预期提交为 `c4675c6` 或其后续提交。若需要查看完整开发历史：
+预期提交为 `b0b22fe` 或其后续提交。若需要查看完整开发历史：
 
 ```powershell
 git branch -a
