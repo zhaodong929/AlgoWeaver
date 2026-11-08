@@ -34,12 +34,21 @@ def build_reproduce_payload(
     }
 
 
-def _post_json(url: str, payload: dict, *, timeout: float = 300.0) -> tuple[int, dict]:
+def _post_json(
+    url: str,
+    payload: dict,
+    *,
+    api_key: str = "",
+    timeout: float = 300.0,
+) -> tuple[int, dict]:
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    headers = {"Content-Type": "application/json"}
+    if api_key.strip():
+        headers["X-API-Key"] = api_key.strip()
     req = request.Request(
         url,
         data=body,
-        headers={"Content-Type": "application/json"},
+        headers=headers,
         method="POST",
     )
     with request.urlopen(req, timeout=timeout) as response:
@@ -59,6 +68,11 @@ def main() -> None:
         "FastAPI 地址",
         value=os.getenv("ALGOWEAVER_UI_API_BASE", "http://127.0.0.1:8000"),
     ).rstrip("/")
+    api_key = st.sidebar.text_input(
+        "FastAPI API Key（可选）",
+        value=os.getenv("ALGOWEAVER_UI_API_KEY", ""),
+        type="password",
+    )
     mode = st.sidebar.selectbox("LLM 模式", ["mock", "litellm"], index=0)
     generation_mode = st.sidebar.selectbox("生成模式", ["template", "mock", "llm"], index=0)
     execute = st.sidebar.checkbox("在 Docker/WSL 沙箱执行", value=False)
@@ -101,7 +115,7 @@ def main() -> None:
         )
         with st.spinner("Agent 正在执行检索、规划、生成和验证…"):
             try:
-                status, result = _post_json(f"{api_base}/reproduce", payload)
+                status, result = _post_json(f"{api_base}/reproduce", payload, api_key=api_key)
             except Exception as exc:  # pragma: no cover - UI runtime boundary
                 st.error(f"API 调用失败：{exc}")
                 return

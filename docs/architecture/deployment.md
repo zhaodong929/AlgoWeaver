@@ -73,6 +73,9 @@ permanent production endpoint. If the API itself must be reachable externally,
 expose it through a separate authenticated tunnel and keep
 `ALGOWEAVER_API_AUTH_MODE=api_key` enabled.
 
+The Streamlit sidebar includes an optional FastAPI API-key field and sends it as
+`X-API-Key`, so a tunneled Streamlit page can still call an authenticated API.
+
 An equivalent ngrok demo is:
 
 ```powershell

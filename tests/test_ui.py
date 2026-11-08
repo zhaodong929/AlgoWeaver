@@ -1,6 +1,7 @@
 from pathlib import Path
+from urllib import request
 
-from algo_weaver.ui import build_reproduce_payload
+from algo_weaver.ui import _post_json, build_reproduce_payload
 
 
 def test_dashboard_payload_preserves_generation_and_additional_sources() -> None:
@@ -18,6 +19,31 @@ def test_dashboard_payload_preserves_generation_and_additional_sources() -> None
     assert payload["generation_mode"] == "llm"
     assert payload["repair_mode"] == "llm"
     assert payload["additional_sources"][0]["source_id"] == "history.py"
+
+
+def test_post_json_adds_api_key_header(monkeypatch) -> None:
+    captured: dict[str, str] = {}
+
+    class Response:
+        status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def read(self) -> bytes:
+            return b"{}"
+
+    def fake_urlopen(req, *, timeout):
+        captured["api_key"] = req.get_header("X-api-key")
+        return Response()
+
+    monkeypatch.setattr(request, "urlopen", fake_urlopen)
+    _post_json("http://api.test/reproduce", {}, api_key=" secret ")
+
+    assert captured["api_key"] == "secret"
 
 
 def test_dashboard_entrypoint_renders_and_submits_request(monkeypatch) -> None:
