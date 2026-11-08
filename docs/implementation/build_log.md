@@ -398,3 +398,5 @@ Every later entry must record the changed module, test command, result, unresolv
   passed; a real Qdrant Docker smoke test remains pending because Docker is not exposed
   in the current PowerShell session.
 - No API key, `.env`, Qdrant storage volume or model weights were added to Git.
+- Git commits: `b17206f` (`feat: harden delivery and production boundaries`) and
+  `16919d0` (`test: isolate provider defaults`).
