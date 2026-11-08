@@ -237,6 +237,8 @@ The repository includes a static preview of the Streamlit workspace and the Fast
 
 ![AlgoWeaver API surface](docs/assets/api-openapi.png)
 
+![AlgoWeaver end-to-end acceptance flow](docs/assets/acceptance-flow.png)
+
 ## 9. Current acceptance status
 
 - [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.

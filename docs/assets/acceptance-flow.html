@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>AlgoWeaver Acceptance Flow</title>
+<style>
+body{margin:0;background:#f6f3ee;color:#17212b;font-family:Segoe UI,Microsoft YaHei,sans-serif;padding:54px}.wrap{max-width:1320px;margin:auto}.eyebrow{color:#b33445;letter-spacing:3px;font-size:14px;font-weight:700}.title{font-size:42px;margin:10px 0}.sub{color:#68727b;font-size:18px;margin-bottom:32px}.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:#fff;border:1px solid #e2d9d0;border-radius:16px;padding:22px;min-height:150px;box-shadow:0 8px 24px #39251a0d}.num{color:#c83b4b;font-weight:700;font-size:14px}.card h3{margin:10px 0 8px;font-size:21px}.card p{color:#66717a;line-height:1.5;margin:0}.wide{grid-column:span 2}.ok{color:#16794a;font-weight:700}.metrics{display:flex;gap:14px;margin-top:28px}.metric{background:#19232d;color:#fff;border-radius:14px;padding:16px 20px;flex:1}.metric b{display:block;font-size:27px;margin-top:5px}.foot{margin-top:24px;color:#68727b;font-size:14px}
+</style></head><body><div class="wrap"><div class="eyebrow">ALGORITHMIC CAPABILITY FACTORY · LIVE ACCEPTANCE</div><div class="title">AlgoWeaver 端到端真实验收</div><div class="sub">库存预测、异常检测、预测性维护：从证据到可复用算法资产</div><div class="flow">
+<div class="card"><div class="num">01 · INGEST</div><h3>资料接入</h3><p>Markdown、CSV、历史代码和能力卡片保留 source_id、位置与内容哈希。</p></div>
+<div class="card"><div class="num">02 · UNDERSTAND</div><h3>Qwen 主 Agent</h3><p>qwen3.8-max-0902 真实返回结构化 JSON，用于能力理解与复刻计划。</p></div>
+<div class="card"><div class="num">03 · RETRIEVE</div><h3>语义检索</h3><p>qwen3.7-text-embedding-flash 返回 1024 维向量，qwen3-rerank 完成排序。</p></div>
+<div class="card"><div class="num">04 · GENERATE</div><h3>DeepSeek 代码</h3><p>deepseek-v4.1-flash-1017 真实生成 Python 与隔离测试，带有入口契约。</p></div>
+<div class="card wide"><div class="num">05 · VERIFY</div><h3>WSL2 Docker 隔离执行</h3><p>网络关闭、资源限制、只读工作区。异常检测与预测性维护测试通过；预测性维护第一轮失败被记录后交给真实 DeepSeek 修复，第二次执行通过。</p></div>
+<div class="card wide"><div class="num">06 · PROMOTE</div><h3>指标与能力沉淀</h3><p>库存预测 MAE 0.8889、RMSE 1.3608，均低于阈值；CapabilityRegistry 写入 verified 版本，支持后续复用。</p></div>
+</div><div class="metrics"><div class="metric">本地测试<b>134 passed</b></div><div class="metric">GitHub CI<b>Python 3.12 / 3.13 passed</b></div><div class="metric">交付提交<b>da8f64e</b></div></div><div class="foot">真实 provider 记录与可复现命令：docs/reports/test_reports/2026-11-08-real-bailian-multiscenario.md</div></div></body></html>
