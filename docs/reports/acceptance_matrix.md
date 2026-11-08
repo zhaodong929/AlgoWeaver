@@ -1,34 +1,47 @@
 # AlgoWeaver MVP acceptance matrix
 
-Audit date: 2026-11-07 (Asia/Shanghai)
+Audit date: 2026-11-08 (Asia/Shanghai)
 
-This is an evidence audit of the current worktree. `DONE` means the stated scope has direct code and test evidence. `PARTIAL` means a narrower baseline exists but the requirement's full acceptance scope is not met. `BLOCKED` means the implementation boundary is present but the current environment cannot execute the required integration.
+`DONE` means the stated scope has direct code, test and runtime evidence. `PARTIAL`
+means a usable path exists but the full requested scope still needs evidence.
+`BLOCKED` means an external environment condition prevents the required integration.
 
 | Must-have | Current evidence | Status | Remaining acceptance gap |
 |---|---|---|---|
-| Multi-source documents and historical code | `SourceIngestor` handles text/Markdown/Python/CSV/JSON/YAML; `ingest_paths()` preserves mixed-source statuses; lazy Docling paths cover PDF/DOCX/PPTX/XLSX; stdlib ZIP/XML and basic PDF literal-text fallbacks cover simple office/PDF text; `PythonCodeParser` indexes imports/classes/functions. | PARTIAL | Complex PDF/Office layout remains unverified without Docling; no repository-scale Tree-sitter path. |
-| Algorithm knowledge extraction | `CapabilityExtractor`, Mock model, LiteLLM adapter, Pydantic `AlgorithmDraft`/`AlgorithmCapability`, missing-information handling. | PARTIAL | No real provider call has been executed in this environment; extraction remains a draft/review workflow. |
-| Standard capability cards | `AlgorithmCapability`, `EvidenceRef`, explicit `draft`/`needs_review`/`verified` statuses, JSON output and registry payloads. | DONE for schema baseline | Real LLM extraction remains unverified; reviewed-card promotion is demonstrated. |
-| Evidence-linked RAG retrieval | `SourceChunker`, `EvidenceChunk`, `LocalLexicalRetriever`, `RetrievalEvaluator` and local in-memory `QdrantVectorRetriever` preserve line/path/source metadata; graph/API aggregate multi-source chunks; Recall@k, MRR and provenance coverage are tested. | PARTIAL | No embedding model, remote Qdrant service or reranker quality evaluation is configured. |
-| Multi-model reproduction Agent | `ChatModel`/LiteLLM abstraction, installed LangGraph graph, `ReproductionPlanner`, injectable `ArtifactGenerator`, and offline fallback. | PARTIAL | Real LLM planning/code generation is unverified; the structured generation contract is covered with a fake model. |
-| Code generation and dependency analysis | `TemplateArtifactWriter`, `MockCodeGenerator` and Pydantic-validated `LLMCodeGenerator` produce hashed Python/pytest artifacts; `PythonDependencyAnalyzer` emits static import reports. | PARTIAL | A real provider call, dependency installation and general-model runtime acceptance remain unverified. |
-| Isolated code execution | `ExecutionPolicy`, `ExecutionResult`, Docker SDK runner and WSL2 `WslDockerSandboxRunner`; inventory forecast unittest passed inside `python:3.12-slim` with network disabled and read-only workspace; the executable LangGraph path also returned passed execution/runtime reports in WSL2. | PARTIAL | Windows Docker pipe is optional; final capability promotion requires a complete draft from a real provider. |
-| Automated tests, error analysis and repair | `ValidationService` performs AST/contract/runtime report checks; generated unittest passed in WSL Docker; WSL integration test demonstrates fail → bounded template repair → pass; `LLMRepairer` validates existing-artifact patches, updates hashes and is selectable from CLI/API; LangGraph conditional routing returns execution, updated bundle and repair loop state; CLI `--metrics-file`, API `/metrics` and API `/reproduce.metrics` collect/evaluate predictions with thresholded MAE/RMSE. | PARTIAL | No real provider repair call or multi-metric domain policy is demonstrated. |
-| Capability versioning and persistence | SQLite `CapabilityRegistry`, immutable versions, search and passing-report-only promotion; WSL CLI run promoted the human-reviewed inventory card to `verified`; API `persist=true` writes to configured SQLite and requires both a passing runtime report and, when requested, a passing sandbox metric report. | PARTIAL | Real-provider extraction and automated reuse workflow remain open. |
-| Historical capability retrieval and reuse | Lexical retrieval and registry name search are independently tested; `search_reusable()` and CLI `reuse` filter to verified versions; `reproduce --reuse-query`, API `reuse_query` and API `auto_reuse=true` select verified cards and feed them into a new plan, with the selected version returned for provenance. | PARTIAL | Semantic similarity beyond deterministic name matching remains open. |
-| Complete end-to-end demo | `algo-weaver reproduce --capability-file ... --backend wsl --execute` promoted a card to `verified`; `--reuse-query` then selected and revalidated that verified card in WSL Docker; the CLI also produced MAE/RMSE threshold reports; FastAPI `/reproduce?execute=true` exposes the same sandbox boundary and bounded repair result; multi-source CLI/API inputs preserve provenance. | PARTIAL | The verified path is human-reviewed; real-provider extraction and LLM repair are not demonstrated. |
+| Multi-source documents and historical code | `SourceIngestor` handles text/Markdown/Python/CSV/JSON/YAML; Docling and stdlib fallbacks cover office/PDF boundaries; `PythonCodeParser` indexes imports/classes/functions. | PARTIAL | Complex PDF/Office layout and repository-scale parsing remain unverified. |
+| Algorithm knowledge extraction | `CapabilityExtractor`, Mock and LiteLLM adapters, Pydantic capability cards, missing-information handling and source evidence. Live Qwen extraction was run through the configured Bailian endpoint. | PARTIAL | More real business documents and conflict/uncertainty evaluation. |
+| Standard capability cards | `AlgorithmCapability`, `EvidenceRef`, draft/needs_review/verified states and SQLite registry payloads. | DONE for schema and reviewed-card promotion | Automated confidence scoring remains open. |
+| Evidence-linked RAG retrieval | Lexical retrieval plus real `qwen3.7-text-embedding-flash` vectors, Qdrant memory/local/server adapters and `qwen3-rerank`; provenance fields survive fusion. Local persistence was reopened across client instances. | PARTIAL | Docker Qdrant server smoke test and Recall@k/MRR report; Docker Hub image pull currently times out. |
+| Multi-model reproduction Agent | LangGraph retrieve→plan→generate→validate graph; Qwen primary model and DeepSeek code model live JSON/code-generation boundaries were exercised. | PARTIAL | A real-provider generated artifact still needs a complete independent promotion run. |
+| Code generation and dependency analysis | Template, Mock and Pydantic-validated LLM generators produce hashed Python/pytest artifacts; AST dependency reports are emitted. | PARTIAL | Dependency installation policy and generated-test coverage gate. |
+| Isolated code execution | WSL2 Docker `python:3.12-slim`, network disabled, read-only workspace, resource limits and runtime reports. Inventory tests and metrics passed. | DONE for reviewed inventory path | Production runner deployment remains separate from the public API container. |
+| Automated tests, error analysis and repair | Static/runtime/metric validation; bounded repair; live DeepSeek repair passed for import error, missing pandas dependency and timeout, plus controlled regression tests. | PARTIAL | Broader dependency classes, multi-attempt repair and failure-memory write-back. |
+| Capability versioning and persistence | SQLite immutable versions, verified-only promotion, metric-aware gates, CLI/API persistence and verified reuse. Inventory version 2 was promoted and reused. | DONE for reviewed inventory path | Semantic version comparison and similarity reuse. |
+| Historical capability retrieval and reuse | Registry search, CLI `reuse`, API `reuse_query`/`auto_reuse`, and retrieval evidence are implemented and tested. | PARTIAL | Semantic similarity reuse beyond deterministic name matching. |
+| CLI/API/UI | Typer CLI, FastAPI `/health`/`/extract`/`/metrics`/`/reproduce`, Streamlit AppTest, live FastAPI smoke and Streamlit health/root HTTP checks. | PARTIAL | Browser manual acceptance record and hosted deployment. |
+| Production security boundary | API-key middleware, 401/429 tests, rolling rate limit, Caddy HTTPS configuration and production Compose bundle. | PARTIAL | Actual DNS/certificate deployment and gateway-level multi-replica rate limiting. |
+| Complete end-to-end demo | Inventory document + CSV → reviewed capability → generated code/tests → WSL sandbox → MAE/RMSE → verified registry → `reuse-query` revalidation. Report: `docs/reports/test_reports/2026-11-08-inventory-delivery.md`. | DONE for reviewed inventory path | Live LLM generation and full browser path should be demonstrated together. |
+| Open-license second scenario | UCI AI4I 2020 Predictive Maintenance Dataset, DOI `10.24432/C5HS5C`, CC BY 4.0, with attribution, transparent rule baseline and tests. | DONE as standalone scenario | Connect the scenario to generic Agent/API metric adapters. |
 
 ## Verification evidence
 
-- `uv run pytest -q`: 106 passed, 0 skipped after installing the declared LangGraph, API, retrieval and execution dependencies.
-- `uv run ruff check src tests`: passed.
-- `uv run mypy src`: passed for 41 source files.
-- Mock CLI reproduction run created `algorithm.py`, `test_algorithm.py`, `reproduction_bundle.json`, `dependency_report.json` and `validation_reports.json`.
-- WSL CLI `--backend wsl --execute` recorded `status=passed` for the generated unittest. The reviewed-capability run promoted `cap_inventory_forecast_reviewed` to `verified`, and `--reuse-query` revalidated that verified card; the Mock extraction run remained `needs_review`.
-- FastAPI tests cover `/health`, `/extract`, `/metrics` and `/reproduce`; execution, bounded repair, sandbox metric collection and pending registry persistence are covered with injected fake runners. A real `/reproduce` WSL2 run returned `execution=passed`, `metric_execution=passed`, and thresholded MAE/RMSE `overall_status="passed"` for the inventory moving-average scenario.
-- Git branch `feat/api-capability-reuse` contains the current generation, repair, API metrics and verified reuse boundaries; `main` has not been merged.
-- GitHub Actions run #79 passed on both Python 3.12 and 3.13 after the WSL platform gate, CLI error-boundary, structured repair, API metrics and verified reuse changes.
+- `uv run --no-sync pytest -q`: **129 passed**.
+- `uv run --no-sync ruff check src tests examples`: passed.
+- `uv run --no-sync mypy src`: passed for 46 source files.
+- Inventory WSL2 report: execution passed, MAE `0.8888888888888881`, RMSE
+  `1.3608276348795427`, verified promotion and verified reuse.
+- Live repair report: `docs/reports/test_reports/2026-11-08-live-repair-scenarios.md`.
+- Local Qdrant persistence test: collection reopened in a second client and the
+  provenance chunk remained searchable.
+- Streamlit runtime: `/_stcore/health` HTTP 200 and root page HTTP 200; AppTest
+  exercises the form and result panels.
+- GitHub Actions runs #89 and #90 passed on Python 3.12 and 3.13. The latest
+  documentation/repair/Qdrant commits are pushed to `feat/api-capability-reuse`.
 
 ## Acceptance conclusion
 
-The current project is a well-tested partial MVP baseline. Real isolated execution and the inventory API metric path are directly verified through WSL2 Docker; the full MVP gate remains open because real-provider extraction, real LLM repair and automated verified capability reuse lack direct evidence.
+The reviewed inventory scenario is a runnable, reproducible MVP demonstration with
+isolated execution, metrics, verified persistence and reuse. The remaining MVP gate is
+the Docker Qdrant service smoke test and actual hosted HTTPS deployment; both have
+configuration and evidence procedures, but are not claimed as completed while the
+current registry network and deployment DNS are unavailable.
