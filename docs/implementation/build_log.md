@@ -649,3 +649,15 @@ Every later entry must record the changed module, test command, result, unresolv
   without mutating or exposing unverified versions as reusable assets.
 - Added registry and API tests covering changed fields and missing versions; the focused
   registry/API/CLI set passed 38 tests with Ruff and Mypy clean.
+
+## 2026-11-08 — current runtime recheck
+
+- WSL Ubuntu-24.04 Docker Engine `29.1.3` was started and Qdrant `qdrant/qdrant:v1.20.0`
+  was found healthy. WSL-internal `/readyz` returned `all shards are ready`; the named
+  volume and previously indexed collections remained visible after restart.
+- The security smoke remains reproducible: `/health=200`, missing API key `/metrics=401`,
+  valid key `/metrics=200`, and the next request under a one-request window `/metrics=429`.
+- Windows-to-WSL localhost forwarding is intermittent under the current proxy/NAT setup;
+  the operation guide now records the `NO_PROXY` and WSL-internal verification route.
+- Full local validation after the classification and version-diff work: `pytest` **139
+  passed**, Ruff passed, Mypy passed.

@@ -242,7 +242,7 @@ The repository includes a static preview of the Streamlit workspace and the Fast
 ## 9. Current acceptance status
 
 - [x] `uv sync --group dev --extra api --extra retrieval --extra execution` completes.
-- [x] `uv run pytest -q` passes in the current environment: 134 passed, 0 skipped.
+- [x] `uv run pytest -q` passes in the current environment: 139 passed, 0 skipped.
 - [x] GitHub Actions CI passes on Python 3.12 and 3.13 (verified run #133 on the synchronized delivery commit `88565b0`).
 - [x] The CLI extracts a JSON capability card from the sample Markdown file in mock mode.
 - [x] The capability card records source provenance.
@@ -269,6 +269,15 @@ Add `--metrics-file examples/inventory_forecast/sales_history.csv` to execute th
 Use `--max-mae` and `--max-rmse` to turn those metrics into an explicit pass/fail report.
 
 Use `uv run algo-weaver reuse "库存需求" --registry data/processed/capabilities.sqlite3` to search only verified capability versions.
+
+Compare two immutable capability versions with:
+
+```powershell
+uv run algo-weaver diff --capability-id <capability-id> --from-version 1 --to-version 2 `
+  --registry data/processed/capabilities.sqlite3
+```
+
+The API equivalent is `GET /capabilities/{capability_id}/diff?from_version=1&to_version=2`.
 
 Export the capability registry as a JSON-LD knowledge graph with
 `uv run algo-weaver export-graph --registry data/processed/capabilities.sqlite3`.

@@ -32,7 +32,7 @@ uv run ruff check src tests
 uv run mypy src
 ```
 
-当前基线结果：pytest 131 passed，Ruff 通过，Mypy 通过。
+当前基线结果：pytest 139 passed，Ruff 通过，Mypy 通过。
 
 ## 3. 五分钟离线演示
 
@@ -159,6 +159,11 @@ $env:ALGOWEAVER_QDRANT_URL = "http://<wsl-ip>:6333"
 ```
 
 Qdrant 使用命名卷 `qdrant_storage`。已有验收证明：写入资料、重启 Qdrant 容器后仍能检索，真实 embedding 与 reranker 的四条 smoke query Recall@2/MRR 均为 1.0。
+如果 Windows 通过本机代理访问 WSL IP，请把该 IP 加入 `NO_PROXY`/`no_proxy`；当前环境中 WSL 内部 `curl http://127.0.0.1:6333/readyz` 稳定返回 200，而 Windows 到 WSL 的 NAT 转发可能受代理影响。可靠的持久化验收命令是：
+
+```powershell
+wsl.exe -d Ubuntu-24.04 -- bash -lc "curl -fsS http://127.0.0.1:6333/readyz; curl -fsS http://127.0.0.1:6333/collections"
+```
 
 ## 8. API Key、限流和 HTTPS
 
@@ -178,6 +183,23 @@ cloudflared tunnel --url http://127.0.0.1:8501
 ```
 
 长期公网服务需要域名、服务器、80/443 入站和 Caddy ACME。生产 Compose 位于 `deploy/production/`，完整步骤见 `docs/deployment/github_mentor_guide.md`。
+
+第二场景的通用指标接口：
+
+```powershell
+$body = '{"task":"predictive_maintenance","actual":[1,0,1,0],"predicted":[1,0,0,0],"min_precision":0.9,"min_recall":0.5}'
+Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/metrics/classification `
+  -ContentType 'application/json' -Body $body
+```
+
+完整 10,000 行 AI4I 结果和透明规则的低召回限制见 `docs/reports/test_reports/2026-11-08-ai4i-api-metrics.md`。
+
+能力版本比较：
+
+```powershell
+uv run algo-weaver diff --capability-id <capability-id> --from-version 1 --to-version 2 `
+  --registry data/processed/capabilities.sqlite3
+```
 
 ## 9. 导师五分钟验收清单
 

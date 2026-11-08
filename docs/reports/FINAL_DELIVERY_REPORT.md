@@ -30,7 +30,7 @@ AlgoWeaver 已形成一个可运行的算法能力工厂原型，主场景为库
 |---|---|---|
 | 使用 LLM 完成理解、抽取、生成或修复 | LiteLLM provider；Qwen 主 Agent；DeepSeek 代码生成/修复；真实调用和三类修复报告 | PARTIAL：代表性真实路径已通过，仍需更多资料和多轮样本 |
 | 具体行业场景与数据 | 库存需求预测说明、销量 CSV、审核能力卡片；UCI AI4I 2020 预测性维护第二场景 | DONE：主场景；第二场景为独立示例 |
-| 能力知识库/知识图谱 | Pydantic 能力卡片、SQLite 版本库、JSON-LD 导出、证据节点 | PARTIAL：图形可视化和版本 diff 待完成 |
+| 能力知识库/知识图谱 | Pydantic 能力卡片、SQLite 版本库、JSON-LD 导出、字段级版本 diff、证据节点 | PARTIAL：图形可视化待完成 |
 | 自然语言到可运行算法代码 | LangGraph retrieve→plan→generate→validate；模板、Mock、LLM 生成器 | PARTIAL：主场景完整，通用任务覆盖仍有限 |
 | 统一验证机制 | AST 静态检查、pytest/unittest、运行报告、MAE/RMSE、超时和边界状态 | PARTIAL：资源消耗和更多任务指标待扩展 |
 | CLI/API/UI | Typer、FastAPI、Streamlit、AppTest、HTTP smoke、人工页面操作 | DONE：本地交互切片；公网托管仍需部署环境 |
@@ -91,7 +91,7 @@ AlgoWeaver 已形成一个可运行的算法能力工厂原型，主场景为库
 本地 Windows：
 
 ```text
-uv run --no-sync pytest -q       137 passed
+uv run --no-sync pytest -q       139 passed
 uv run --no-sync ruff check src tests   passed
 uv run --no-sync mypy src             passed
 ```
@@ -154,8 +154,7 @@ cloudflared tunnel --url http://127.0.0.1:8501
 以下内容没有被错误标记为已完成：
 
 - 复杂 PDF/Office 布局解析和仓库规模代码抽取。
-- AI4I 第二场景接入统一 Agent/API 分类指标适配器。
-- 候选算法方案自动比较、图谱可视化、版本 diff、插件注册。
+- 候选算法方案自动比较、图谱可视化、插件注册。
 - 多轮修复、失败经验写回和更广泛的依赖类别。
 - 更大规模 Recall@k/MRR、资源消耗和性能预算评估。
 - 多副本共享限流、正式服务器部署和公网 DNS/ACME。
