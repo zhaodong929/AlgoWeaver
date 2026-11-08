@@ -477,3 +477,11 @@ Every later entry must record the changed module, test command, result, unresolv
   `docs/reports/test_reports/2026-11-08-live-llm-reproduction.md`.
 - CLI now writes `repair_result.json` beside the bundle whenever a repair loop runs,
   preserving the bounded attempt record for review.
+
+## 2026-11-08 — scenario performance evidence
+
+- Saved `docs/reports/benchmark_reports/2026-11-08-scenario-performance.md`.
+- The inventory WSL run recorded 0.775 seconds sandbox duration and passing MAE/RMSE.
+- The UCI AI4I rule baseline processed all 10,000 rows in 0.005131300 seconds with
+  precision 1.0 and recall 0.0058997050147492625; the conservative-rule limitation
+  is explicitly documented.
