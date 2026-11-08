@@ -20,6 +20,8 @@
 - Redesigned the Streamlit workspace with Claude-inspired navigation, workflow progress,
   evidence/result tabs, capability history and runtime configuration panels. Added a
   GitHub/mentor deployment guide covering CI, temporary HTTPS and production Caddy/Qdrant.
+- Added the Windows/API/Streamlit/Qdrant operation guide and the evidence-based final
+  delivery report; fast-forwarded the GitHub default branch to the current delivery commit.
 
 ## 2026-11-08 — advisor-facing UI and deployment guide
 

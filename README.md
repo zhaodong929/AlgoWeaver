@@ -274,6 +274,11 @@ For a step-by-step GitHub release, Streamlit Cloud option, temporary HTTPS demo,
 production Qdrant/Caddy deployment, Secrets, ports and the advisor acceptance
 script, see [`docs/deployment/github_mentor_guide.md`](docs/deployment/github_mentor_guide.md).
 
+The complete Windows/API/Streamlit/Qdrant runbook is in
+[`docs/implementation/OPERATION_GUIDE.md`](docs/implementation/OPERATION_GUIDE.md),
+and the evidence-based release assessment is in
+[`docs/reports/FINAL_DELIVERY_REPORT.md`](docs/reports/FINAL_DELIVERY_REPORT.md).
+
 ## 9. Delivery scope and remaining work
 
 The reproducible primary scenario is inventory demand forecasting with a moving-average
@@ -285,6 +290,10 @@ and [`docs/requirements/requirements_matrix.md`](docs/requirements/requirements_
 Items marked `PARTIAL` are deliberately not presented as completed MVP features.
 The second scenario is UCI's CC BY 4.0 AI4I predictive-maintenance dataset with a
 transparent rule baseline in [`examples/predictive_maintenance/`](examples/predictive_maintenance/).
+
+The repository default branch `feat/initial-audit-and-ingestion` and the delivery
+branch `feat/api-capability-reuse` both point to the current published commit after
+the final fast-forward synchronization.
 
 ## 10. Engineering principles
 

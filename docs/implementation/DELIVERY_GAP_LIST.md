@@ -29,7 +29,7 @@
 | G-03 | 能力知识库/知识图谱 schema | PARTIAL | Pydantic+SQLite 和 JSON-LD 导出已实现；补充图谱可视化和版本 diff |
 | G-04 | 自然语言到可运行代码 | PARTIAL | 真实 LLM bundle 已在隔离环境执行；首次 pytest 依赖失败后由 DeepSeek 修复并通过 8 个测试；继续完成 live bundle 的指标门禁和 verified promotion |
 | G-05 | 统一功能/指标/稳定性/接口验证 | PARTIAL | 现有静态、运行、MAE/RMSE；补充性能预算、接口契约和安全扫描报告 |
-| G-06 | CLI/API/UI | PARTIAL | 三入口、AppTest 和 HTTP smoke 已实现；补充浏览器人工验收记录和线上部署演示 |
+| G-06 | CLI/API/UI | PARTIAL | 三入口、AppTest、HTTP smoke 和当前浏览器交互均已实现；仍缺正式公网部署演示 |
 | G-07a | 理解用户输入 | DONE（边界） | 增加缺失字段、冲突证据和低置信度抽取样本 |
 | G-07b | 检索文档/代码/图谱 | PARTIAL | Docker server persistence, real hybrid retrieval and four-case Recall@2/MRR smoke 已通过；继续扩充规模 |
 | G-07c | 规划方案 | PARTIAL | 规则规划稳定；补充真实 LLM 规划质量评估和候选方案比较 |
@@ -37,7 +37,7 @@
 | G-07e | 自动执行和指标 | PARTIAL | 主场景已通过；补充超时、资源限制、网络策略和第二指标任务 |
 | G-07f | 错误分析和有限修复 | PARTIAL | 三类真实 DeepSeek repair 各完成一次；继续补充多轮修复和失败经验回写 |
 | G-07g | 验证结果回写和复用 | PARTIAL | SQLite verified gate 已有；补充语义相似复用、版本 diff 和失败经验回写 |
-| G-08 | Git、文档、依赖、测试和示例 | PARTIAL | feature 分支和 README 已有；补齐发布清单、Windows/Docker 复现记录 |
+| G-08 | Git、文档、依赖、测试和示例 | PARTIAL | feature 分支、默认分支快进、README、操作指南和最终报告已具备；仍需最终打包归档 |
 | G-09 | 进阶：多轮修复/比较/可视化/插件 | PARTIAL | 多轮修复和 UI 有基础；候选比较、图谱可视化、插件注册尚未完成 |
 | G-10 | 加分：图搜索、多 Agent、仓库抽取、安全和性能 | PARTIAL | AST、沙箱、失败反馈已有；图搜索、多 Agent、仓库级抽取、性能分析待做 |
 

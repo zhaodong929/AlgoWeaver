@@ -18,7 +18,7 @@ means a usable path exists but the full requested scope still needs evidence.
 | Automated tests, error analysis and repair | Static/runtime/metric validation; bounded repair; live DeepSeek repair passed for import error, missing pandas dependency and timeout, plus controlled regression tests. | PARTIAL | Broader dependency classes, multi-attempt repair and failure-memory write-back. |
 | Capability versioning and persistence | SQLite immutable versions, verified-only promotion, metric-aware gates, CLI/API persistence and verified reuse. Inventory version 2 was promoted and reused. | DONE for reviewed inventory path | Semantic version comparison and similarity reuse. |
 | Historical capability retrieval and reuse | Registry search, CLI `reuse`, API `reuse_query`/`auto_reuse`, and retrieval evidence are implemented and tested. | PARTIAL | Semantic similarity reuse beyond deterministic name matching. |
-| CLI/API/UI | Typer CLI, FastAPI `/health`/`/extract`/`/metrics`/`/reproduce`, Streamlit AppTest, live FastAPI smoke and Streamlit health/root HTTP checks. | PARTIAL | Browser manual acceptance record and hosted deployment. |
+| CLI/API/UI | Typer CLI, FastAPI `/health`/`/extract`/`/metrics`/`/reproduce`, Streamlit AppTest, live FastAPI smoke, Streamlit health/root HTTP checks and current browser interaction. | PARTIAL | Hosted HTTPS deployment remains environment-specific. |
 | Production security boundary | API-key middleware, 401/429 tests, rolling rate limit, Caddy HTTPS configuration and production Compose bundle. | PARTIAL | Actual DNS/certificate deployment and gateway-level multi-replica rate limiting. |
 | Complete end-to-end demo | Inventory document + CSV → reviewed capability → generated code/tests → WSL sandbox → MAE/RMSE → verified registry → `reuse-query` revalidation. Report: `docs/reports/test_reports/2026-11-08-inventory-delivery.md`. | DONE for reviewed inventory path | Live LLM generation and full browser path should be demonstrated together. |
 | Open-license second scenario | UCI AI4I 2020 Predictive Maintenance Dataset, DOI `10.24432/C5HS5C`, CC BY 4.0, with attribution, transparent rule baseline and tests. | DONE as standalone scenario | Connect the scenario to generic Agent/API metric adapters. |
@@ -44,8 +44,9 @@ means a usable path exists but the full requested scope still needs evidence.
   valid key, and `429` after the configured limit.
 - HTTPS runtime report: Caddy internal TLS returned `ok` over HTTPS on the local
   WSL Docker listener.
-- GitHub Actions runs #89 and #90 passed on Python 3.12 and 3.13. The latest
-  documentation/repair/Qdrant commits are pushed to `feat/api-capability-reuse`.
+- GitHub Actions run #119 passed on Python 3.12 and 3.13. The current delivery commit
+  is `c4675c6`; it is pushed to `feat/api-capability-reuse` and the default
+  `feat/initial-audit-and-ingestion` branch.
 
 ## Acceptance conclusion
 

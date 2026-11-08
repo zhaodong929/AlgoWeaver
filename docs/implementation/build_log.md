@@ -576,3 +576,25 @@ Every later entry must record the changed module, test command, result, unresolv
   Python 3.12 and 3.13; dependency installation, Ruff, pytest and Mypy all completed.
 - The follow-up documentation commit `c000cf1` also passed as run **#118**
   (`42471712485`) on both matrix versions.
+
+## 2026-11-08 — final acceptance, default-branch synchronization and delivery package
+
+- Rechecked the repository, requirements matrix, phase status, gap list and current
+  Git state. The GitHub default branch `feat/initial-audit-and-ingestion` was still at
+  `339a020`; because it is an ancestor of `c4675c6`, it was safely fast-forwarded to
+  the current delivery commit without force push or history rewriting.
+- Ran the current Streamlit page in a browser at `127.0.0.1:8512`: the mock/template
+  inventory task returned one evidence hit, one plan, two validation reports and two
+  generated artifacts. Evidence, execution history, capability assets and system
+  settings navigation were all inspected.
+- Re-ran API smoke: `/health` 200, `/openapi.json` 200, `/metrics` passed, and
+  `/reproduce` returned the expected capability, evidence, plan, reports and artifacts.
+- Re-ran the reviewed inventory capability in WSL Docker with explicit mock providers:
+  sandbox passed, two tests passed, MAE `0.8888888888888881`, RMSE
+  `1.3608276348795427`, and SQLite promotion reached `verified` version 2.
+- A separate CLI run with the local `.env` real reranker stopped before sandbox at a
+  Windows TLS `UNEXPECTED_EOF_WHILE_READING` error. This is recorded as an external
+  provider/network condition; the explicit mock path remains reproducible.
+- Added `docs/implementation/OPERATION_GUIDE.md` and
+  `docs/reports/FINAL_DELIVERY_REPORT.md`, and synchronized README, phase status,
+  acceptance matrix, known issues and delivery gap records.
