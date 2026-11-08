@@ -22,6 +22,7 @@ AlgoWeaver 是一个面向算法能力复用的 Python 原型系统。它把业�
 - `docs/architecture.md`：系统架构和模块说明。
 - `docs/requirements/requirements_matrix.md`：需求与实现对应关系。
 - `docs/reports/FINAL_DELIVERY_REPORT.md`：公开交付评估报告。
+- [`docs/reports/algoweaver_delivery_report.pdf`](docs/reports/algoweaver_delivery_report.pdf)：可直接提交的 PDF 版本。
 
 ## 环境配置
 
