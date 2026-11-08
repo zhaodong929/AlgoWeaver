@@ -626,3 +626,5 @@ Every later entry must record the changed module, test command, result, unresolv
   `pytest` **134 passed**, Ruff passed, Mypy passed.
 - Commit `afa4ccd` was pushed to both delivery branches. GitHub Actions runs #128 and
   #129 passed on Python 3.12 and 3.13 with the full install, Ruff, pytest and Mypy gates.
+- Documentation alignment commit `0658dec` was pushed to both delivery branches. GitHub
+  Actions runs #130 and #131 also passed on Python 3.12 and 3.13.

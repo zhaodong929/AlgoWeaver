@@ -114,7 +114,7 @@ GitHub Actions：
 - Python 3.12：通过
 - Python 3.13：通过
 - Install、Ruff、pytest、Mypy：通过
-- 当前同步交付提交的绿色运行：[Run #129](https://github.com/zhaodong929/AlgoWeaver/actions/runs/42485224469)
+- 当前同步交付提交的绿色运行：[Run #131](https://github.com/zhaodong929/AlgoWeaver/actions/runs/42485495652)
 
 ## 6. 交付文件
 
