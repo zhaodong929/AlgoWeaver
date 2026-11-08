@@ -466,3 +466,14 @@ Every later entry must record the changed module, test command, result, unresolv
   Mypy passed. Docker service startup and DNS-backed HTTPS remain environment gates.
 - Git commits for this milestone: `9fa012a` (local Qdrant), `7c4d319` (production
   bundle), `e8e2c6f` (acceptance matrix).
+
+## 2026-11-08 — live LLM generation failure and repair
+
+- Ran Qwen extraction/planning and DeepSeek code generation on the inventory scenario.
+  The generated tests failed in the isolated `python:3.12-slim` image because they
+  imported unavailable `pytest`, providing a genuine external failure signal.
+- Reran with `--repair --repair-mode llm`; DeepSeek patched the existing artifacts and
+  the same sandbox command passed all 8 generated tests. Evidence is recorded in
+  `docs/reports/test_reports/2026-11-08-live-llm-reproduction.md`.
+- CLI now writes `repair_result.json` beside the bundle whenever a repair loop runs,
+  preserving the bounded attempt record for review.

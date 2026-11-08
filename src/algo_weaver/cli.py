@@ -333,6 +333,10 @@ def reproduce(
                 ),
             )
             rprint(f"Repair loop: {repair_result.final_status}")
+            (output_dir / "repair_result.json").write_text(
+                json.dumps(repair_result.model_dump(mode="json"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
             if repair_result.attempts:
                 execution_result = runner.run(
                     output_dir,

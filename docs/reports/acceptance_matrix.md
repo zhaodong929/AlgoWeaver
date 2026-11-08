@@ -12,7 +12,7 @@ means a usable path exists but the full requested scope still needs evidence.
 | Algorithm knowledge extraction | `CapabilityExtractor`, Mock and LiteLLM adapters, Pydantic capability cards, missing-information handling and source evidence. Live Qwen extraction was run through the configured Bailian endpoint. | PARTIAL | More real business documents and conflict/uncertainty evaluation. |
 | Standard capability cards | `AlgorithmCapability`, `EvidenceRef`, draft/needs_review/verified states and SQLite registry payloads. | DONE for schema and reviewed-card promotion | Automated confidence scoring remains open. |
 | Evidence-linked RAG retrieval | Lexical retrieval plus real `qwen3.7-text-embedding-flash` vectors, Qdrant memory/local/server adapters and `qwen3-rerank`; provenance fields survive fusion. Local persistence was reopened across client instances. | PARTIAL | Docker Qdrant server smoke test and Recall@k/MRR report; Docker Hub image pull currently times out. |
-| Multi-model reproduction Agent | LangGraph retrieve→plan→generate→validate graph; Qwen primary model and DeepSeek code model live JSON/code-generation boundaries were exercised. | PARTIAL | A real-provider generated artifact still needs a complete independent promotion run. |
+| Multi-model reproduction Agent | LangGraph retrieve→plan→generate→validate graph; Qwen primary model and DeepSeek code model generated a live bundle, exposed a real `pytest` dependency failure, repaired it and reran 8 tests successfully. | PARTIAL | Independent promotion with live-generated metrics and registry policy. |
 | Code generation and dependency analysis | Template, Mock and Pydantic-validated LLM generators produce hashed Python/pytest artifacts; AST dependency reports are emitted. | PARTIAL | Dependency installation policy and generated-test coverage gate. |
 | Isolated code execution | WSL2 Docker `python:3.12-slim`, network disabled, read-only workspace, resource limits and runtime reports. Inventory tests and metrics passed. | DONE for reviewed inventory path | Production runner deployment remains separate from the public API container. |
 | Automated tests, error analysis and repair | Static/runtime/metric validation; bounded repair; live DeepSeek repair passed for import error, missing pandas dependency and timeout, plus controlled regression tests. | PARTIAL | Broader dependency classes, multi-attempt repair and failure-memory write-back. |
@@ -30,6 +30,7 @@ means a usable path exists but the full requested scope still needs evidence.
 - `uv run --no-sync mypy src`: passed for 46 source files.
 - Inventory WSL2 report: execution passed, MAE `0.8888888888888881`, RMSE
   `1.3608276348795427`, verified promotion and verified reuse.
+- Live LLM generation/repair report: `docs/reports/test_reports/2026-11-08-live-llm-reproduction.md`.
 - Live repair report: `docs/reports/test_reports/2026-11-08-live-repair-scenarios.md`.
 - Local Qdrant persistence test: collection reopened in a second client and the
   provenance chunk remained searchable.

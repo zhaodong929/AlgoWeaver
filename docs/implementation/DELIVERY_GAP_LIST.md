@@ -27,7 +27,7 @@
 | G-01 | LLM 理解、抽取、生成或修复 | PARTIAL | 真实模型抽取/生成已验收；补充多份真实业务资料和真实多轮修复报告 |
 | G-02 | 具体行业场景及数据 | DONE（两个场景） | 将 AI4I 场景接入通用 Agent/API 指标接口 |
 | G-03 | 能力知识库/知识图谱 schema | PARTIAL | Pydantic+SQLite 已有；补充能力、证据、依赖、验证历史的图导出/可视化 |
-| G-04 | 自然语言到可运行代码 | PARTIAL | 模板、Mock、真实 LLM bundle 均可生成；补充真实 LLM 产物的隔离执行验收 |
+| G-04 | 自然语言到可运行代码 | PARTIAL | 真实 LLM bundle 已在隔离环境执行；首次 pytest 依赖失败后由 DeepSeek 修复并通过 8 个测试；继续完成 live bundle 的指标门禁和 verified promotion |
 | G-05 | 统一功能/指标/稳定性/接口验证 | PARTIAL | 现有静态、运行、MAE/RMSE；补充性能预算、接口契约和安全扫描报告 |
 | G-06 | CLI/API/UI | PARTIAL | 三入口、AppTest 和 HTTP smoke 已实现；补充浏览器人工验收记录和线上部署演示 |
 | G-07a | 理解用户输入 | DONE（边界） | 增加缺失字段、冲突证据和低置信度抽取样本 |
