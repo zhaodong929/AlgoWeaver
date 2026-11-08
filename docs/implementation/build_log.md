@@ -505,3 +505,5 @@ Every later entry must record the changed module, test command, result, unresolv
 - Observed `/health=200`, unauthenticated `/metrics=401`, authenticated `/metrics=200`,
   and the next authenticated request=`429`.
 - Saved the evidence in `docs/reports/test_reports/2026-11-08-security-runtime.md`.
+- Git commits: `f453df9` (Qdrant service acceptance) and `948c4c0` (Qdrant/security
+  runtime evidence).
