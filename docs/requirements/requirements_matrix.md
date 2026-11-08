@@ -31,20 +31,20 @@
 | ID | 当前实现证据 | 状态 | 未完成项 |
 |---|---|---|---|
 | REQ-001 | LiteLLM、Mock、百炼 Qwen/DeepSeek 适配；真实抽取、生成和一次失败修复已运行 | PARTIAL | 多资料抽取覆盖和多类真实修复证据 |
-| REQ-002 | `examples/inventory_forecast/` 含算法说明、审核卡片、CSV 数据和指标入口；`examples/predictive_maintenance/` 含 UCI AI4I CC BY 4.0 数据、归属、算法、测试和能力卡片 | DONE（场景材料） | 将第二场景接入通用 Agent/API 指标接口 |
+| REQ-002 | `examples/inventory_forecast/` 含算法说明、审核卡片、CSV 数据和指标入口；`examples/predictive_maintenance/` 含 UCI AI4I CC BY 4.0 数据、归属、算法、测试、能力卡片和 API 指标报告 | DONE（场景材料） | 继续提升第二场景算法基线 |
 | REQ-003 | `AlgorithmCapability`、SQLite registry、证据/验证字段 | PARTIAL | GraphML/JSON-LD 导出和图谱可视化 |
 | REQ-004 | LangGraph + template/Mock/LLM generator + Docker/WSL workspace；真实 LLM 生成失败后经 DeepSeek 修复并通过 8 个隔离测试 | PARTIAL | live bundle 的指标门禁和 verified promotion |
-| REQ-005 | Pydantic/AST/runtime/MAE/RMSE 报告 | PARTIAL | 性能预算、接口契约、安全扫描报告 |
+| REQ-005 | Pydantic/AST/runtime/MAE/RMSE 与分类 accuracy/precision/recall/F1 报告 | PARTIAL | 性能预算、接口契约、安全扫描报告 |
 | REQ-006 | Typer、FastAPI、Streamlit、AppTest 和用户确认的本地浏览器交互 | PARTIAL | 公网 HTTPS 部署演示 |
 | REQ-007 | Mock/LLM 能力抽取，应用侧证据定位 | DONE（边界） | 冲突证据和置信度评估 |
 | REQ-008 | lexical + qwen embedding + Qdrant memory/local/server + rerank；Qdrant 1.20.0 命名卷重启后仍可检索，真实 hybrid server smoke 已通过 | PARTIAL | 扩充 Recall@k/MRR 评估集 |
 | REQ-009 | `ReproductionPlanner` 和 LangGraph 条件路由 | PARTIAL | 真实 LLM 规划质量与候选比较 |
 | REQ-010 | 结构化代码/测试生成、依赖 AST 分析、hash | PARTIAL | 依赖安装策略和覆盖率门禁 |
-| REQ-011 | Docker/WSL 执行、日志、MAE/RMSE、超时状态；库存和 AI4I 性能报告已保存 | PARTIAL | 更多任务类型指标和资源消耗报告 |
+| REQ-011 | Docker/WSL 执行、日志、MAE/RMSE、分类指标和超时状态；库存和 AI4I API 指标报告已保存 | PARTIAL | 更多任务类型指标和资源消耗报告 |
 | REQ-012 | BoundedRepairLoop 覆盖导入/依赖/超时；三类真实 DeepSeek repair 各有一次通过记录 | PARTIAL | 多轮修复、失败经验回写和更多依赖类别 |
 | REQ-013 | SQLite 版本、verified gate、CLI/API reuse | PARTIAL | 语义相似复用、版本 diff、失败经验回写 |
 | REQ-014 | Git 分支、README、研究笔记、ADR、实现日志 | PARTIAL | 发布清单和最终 Windows/Docker 复现记录 |
-| REQ-015 | 示例、抽取结果、工作流、报告、依赖和测试文件；已有库存和 UCI AI4I 预测性维护材料 | PARTIAL | 完整打包验收和通用 Agent/API 第二场景运行记录 |
+| REQ-015 | 示例、抽取结果、工作流、报告、依赖和测试文件；已有库存和 UCI AI4I 预测性维护材料及 API 指标报告 | PARTIAL | 完整打包验收 |
 | REQ-016 | 多轮修复基础、Streamlit、可配置指标入口 | PARTIAL | 候选比较、图谱可视化、插件注册 |
 | REQ-017 | AST、沙箱、失败反馈、WSL Docker | PARTIAL | 图搜索、多 Agent、仓库级抽取、性能分析 |
-| REQ-018 | 本地 131 passed、Ruff/Mypy、CI、功能分支、库存/修复/Qdrant/性能报告 | PARTIAL | 公网 HTTPS、浏览器人工记录和更广泛评估 |
+| REQ-018 | 本地 134 passed、Ruff/Mypy、CI、功能分支、库存/修复/Qdrant/性能/AI4I API 报告 | PARTIAL | 公网 HTTPS、浏览器人工记录和更广泛评估 |

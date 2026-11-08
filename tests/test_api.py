@@ -92,6 +92,31 @@ def test_metrics_endpoint_reports_threshold_failure() -> None:
     assert response.json()["overall_status"] == "failed"
 
 
+def test_classification_metrics_endpoint_supports_predictive_maintenance() -> None:
+    response = TestClient(create_app()).post(
+        "/metrics/classification",
+        json={
+            "task": "predictive_maintenance",
+            "actual": [1, 0, 1, 0],
+            "predicted": [1, 0, 0, 0],
+            "min_accuracy": 0.75,
+            "min_precision": 0.9,
+            "min_recall": 0.9,
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["sample_count"] == 4
+    assert payload["overall_status"] == "failed"
+    assert {metric["name"] for metric in payload["metrics"]} == {
+        "accuracy",
+        "precision",
+        "recall",
+        "f1",
+    }
+
+
 def test_metrics_endpoint_rejects_mismatched_lengths() -> None:
     response = TestClient(create_app()).post(
         "/metrics",

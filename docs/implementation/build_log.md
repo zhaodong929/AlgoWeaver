@@ -630,3 +630,14 @@ Every later entry must record the changed module, test command, result, unresolv
   Actions runs #130 and #131 also passed on Python 3.12 and 3.13.
 - Final evidence alignment is now at `88565b0`; GitHub Actions runs #132 and #133 passed
   on Python 3.12 and 3.13.
+
+## 2026-11-08 — second-scenario classification metric adapter
+
+- Added `ClassificationMetricEvaluator` with accuracy, precision, recall and F1 gates,
+  plus `POST /metrics/classification` for task-specific binary metrics.
+- Ran the endpoint against all 10,000 rows of the UCI AI4I fixture. The transparent rule
+  baseline returned accuracy `0.9663`, precision `1.0`, recall `0.0059` and F1 `0.01173`;
+  with a recall threshold of `0.5`, the report correctly returned `overall_status=failed`.
+  This preserves the real limitation instead of marking the rule baseline as production-ready.
+- Focused validation: 26 tests passed, Ruff passed and Mypy passed. Evidence is in
+  `docs/reports/test_reports/2026-11-08-ai4i-api-metrics.md`.

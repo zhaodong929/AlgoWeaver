@@ -23,6 +23,7 @@ from algo_weaver.schemas.execution import ExecutionPolicy, ExecutionResult
 from algo_weaver.schemas.ingestion import IngestedSource, SourceFormat
 from algo_weaver.schemas.reproduction import ReproductionBundle
 from algo_weaver.services.capability_extractor import CapabilityExtractor
+from algo_weaver.services.classification_metrics import ClassificationMetricEvaluator
 from algo_weaver.services.code_generation import (
     ArtifactGenerator,
     LLMCodeGenerator,
@@ -87,6 +88,16 @@ class MetricsRequest(BaseModel):
     predicted: list[float] = Field(min_length=1)
     max_mae: float | None = Field(default=None, ge=0)
     max_rmse: float | None = Field(default=None, ge=0)
+
+
+class ClassificationMetricsRequest(BaseModel):
+    task: str = Field(default="binary_classification", min_length=1)
+    actual: list[int | bool] = Field(min_length=1)
+    predicted: list[int | bool] = Field(min_length=1)
+    min_accuracy: float | None = Field(default=None, ge=0, le=1)
+    min_precision: float | None = Field(default=None, ge=0, le=1)
+    min_recall: float | None = Field(default=None, ge=0, le=1)
+    min_f1: float | None = Field(default=None, ge=0, le=1)
 
 
 class SandboxMetricsRequest(BaseModel):
@@ -194,6 +205,22 @@ def create_app(
                 task=request.task,
                 max_mae=request.max_mae,
                 max_rmse=request.max_rmse,
+            )
+            return report.model_dump(mode="json")
+        except (ValueError, TypeError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/metrics/classification")
+    def classification_metrics(request: ClassificationMetricsRequest) -> dict:
+        try:
+            report = ClassificationMetricEvaluator().evaluate(
+                request.actual,
+                request.predicted,
+                task=request.task,
+                min_accuracy=request.min_accuracy,
+                min_precision=request.min_precision,
+                min_recall=request.min_recall,
+                min_f1=request.min_f1,
             )
             return report.model_dump(mode="json")
         except (ValueError, TypeError) as exc:
