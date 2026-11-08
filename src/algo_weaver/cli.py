@@ -19,6 +19,7 @@ from algo_weaver.services.hybrid_retrieval import HybridRetriever
 from algo_weaver.services.ingestion import SourceIngestor
 from algo_weaver.services.llm_repair import LLMRepairer
 from algo_weaver.services.metrics import RegressionMetricEvaluator
+from algo_weaver.services.qdrant_retrieval import create_qdrant_retriever
 from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.repair import BoundedRepairLoop
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
@@ -234,6 +235,11 @@ def reproduce(
             reranker_provider=(
                 create_reranker_provider(settings)
                 if settings.reranker_mode != "mock"
+                else None
+            ),
+            qdrant_factory=(
+                (lambda dimension: create_qdrant_retriever(settings, dimension))
+                if settings.qdrant_mode == "server"
                 else None
             ),
         ).search(capability.name, top_k=5)

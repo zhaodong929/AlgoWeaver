@@ -1,4 +1,4 @@
-# 阶段状态（2026-11-07）
+# 阶段状态（2026-11-08）
 
 状态枚举：`DONE`、`IN_PROGRESS`、`BLOCKED`、`NOT_STARTED`。
 
@@ -8,12 +8,12 @@
 | Phase 1 多格式文档解析与来源追踪 | IN_PROGRESS | `SourceIngestor` 支持 text/Markdown/Python/CSV/JSON/YAML；DOCX/PPTX/XLSX 有 Docling 优先和 stdlib fallback；`ingest_paths()` 保留混合来源的独立状态；PDF 仍需 Docling | 验证 PDF/复杂 Office 样例并保留来源布局 |
 | Phase 2 历史代码结构化解析 | DONE | `PythonCodeParser`、`PythonSourceFile`、19 passed/2 skipped，提交 `f0c794e` | 接入检索和证据定位 |
 | Phase 3 真实 LLM 抽取与证据校验 | DONE for live provider boundary | `qwen3.8-max-0902` 通过百炼 workspace OpenAI-compatible API 完成 JSON smoke test、CLI 抽取和 FastAPI `/reproduce`；`deepseek-v4.1-flash-1017` 通过同一 API 完成 JSON smoke test 和代码生成；证据仍由应用侧控制 | 继续评估真实业务资料的抽取覆盖率 |
-| Phase 4 RAG、混合检索、检索评估 | IN_PROGRESS | `HybridRetriever` 已接入 LangGraph、CLI 和 FastAPI；真实 `qwen3.7-text-embedding-flash` 向量召回、词法融合和 `qwen3-rerank` 精排已通过；lexical fallback 保持默认 | 建立更大真实业务评估集并接入持久化 Qdrant |
+| Phase 4 RAG、混合检索、检索评估 | IN_PROGRESS | `HybridRetriever` 已接入 LangGraph、CLI 和 FastAPI；真实 `qwen3.7-text-embedding-flash` 向量召回、词法融合和 `qwen3-rerank` 精排已通过；Qdrant 已支持 memory/server 两种模式 | 启动 Docker Qdrant，完成持久化 smoke test 和 Recall@k/MRR 评估 |
 | Phase 5 LangGraph 算法复刻 Agent | DONE for live generation boundary | `build_reproduction_graph()` 已实现 retrieve→plan→generate→validate，并修复 blocked plan 条件路由；主 Agent 使用 `qwen3.8-max-0902`，代码生成/修复使用 `deepseek-v4.1-flash-1017`；CLI 和 FastAPI 真实 LLM 生成均返回可验证 bundle | 补充真实 provider 下的隔离执行与修复闭环 |
-| Phase 6 Docker 沙箱、自动测试、错误修复 | DONE for live repair boundary | 图工作流可将 failed/timeout execution 条件路由到有界 `BoundedRepairLoop`；真实 `deepseek-v4.1-flash-1017` 已根据 WSL2 Docker 的失败测试反馈应用 patch，并在一次重试后通过；`LLMRepairer` 仍限制已有 artifact 和 workspace | 补充更多失败类型和指标策略 |
+| Phase 6 Docker 沙箱、自动测试、错误修复 | DONE for controlled failure coverage; PARTIAL for live coverage | 图工作流可将 failed/timeout execution 条件路由到有界 `BoundedRepairLoop`；已有一次真实 DeepSeek moving-average 修复；新增导入、依赖、超时受控测试 | 为三类错误各补充真实 DeepSeek repair 日志和失败经验回写 |
 | Phase 7 持久化、版本管理、复用 | IN_PROGRESS | `CapabilityRegistry` + CLI `reuse` + `reproduce --reuse-query` + API `reuse_query`/`auto_reuse` 只选择 verified capability 并返回版本信息；API `persist=true` 使用 configured SQLite 并复用 runtime/metric promotion gate；reviewed capability 已由 WSL runtime 晋升 verified | 连接语义检索结果、版本比较和相似度复用 workflow |
-| Phase 8 API、展示界面、端到端集成 | IN_PROGRESS | FastAPI `/metrics` 和 `/reproduce` 已覆盖阈值评估、显式 sandbox、repair/repair_mode、persist、additional_sources、generation_mode、受限 sandbox metrics、verified reuse；Streamlit 页面已可启动并通过 `/_stcore/health`；真实百炼 `/extract`、`/reproduce` 已通过 | 完成在线部署鉴权和完整界面验收 |
-| Phase 9 最终验收、性能、文档、Demo | IN_PROGRESS | WSL sandbox runtime 和 reviewed capability verified promotion 已有真实证据；结构化生成/修复/API 指标、metric-aware promotion 和 verified reuse 边界已有 106 项本地测试；CI #79 的两个 Python 矩阵任务通过；`docs/reports/acceptance_matrix.md` 已逐项审计当前 Must-have | 补齐真实 provider 和语义相似度复用 |
+| Phase 8 API、展示界面、端到端集成 | IN_PROGRESS | FastAPI `/metrics` 和 `/reproduce` 已覆盖阈值评估、显式 sandbox、repair/repair_mode、persist、additional_sources、generation_mode、受限 sandbox metrics、verified reuse；Streamlit 已有启动、AppTest 和 `/_stcore/health` 验收；API 已增加 API-key、进程级限流和 HTTPS 反向代理部署说明 | 完成浏览器人工验收、HTTPS 实例和多副本网关限流配置 |
+| Phase 9 最终验收、性能、文档、Demo | IN_PROGRESS | WSL sandbox runtime 和 reviewed capability verified promotion 已有真实证据；本轮全量本地测试 125 passed，CI workflow 已包含 UI extra；需求矩阵和 `DELIVERY_GAP_LIST.md` 已逐项更新 | 生成主场景最终报告，完成第二公开场景和真实部署证据 |
 
 ## 当前 Git 证据
 

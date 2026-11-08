@@ -148,13 +148,20 @@ def test_dashscope_provider_requires_a_key_without_network(monkeypatch) -> None:
         raise AssertionError("network should not be called")
 
     monkeypatch.setattr("urllib.request.urlopen", fail_urlopen)
-    provider = DashScopeEmbeddingProvider(Settings(_env_file=None, embedding_mode="dashscope"))
+    provider = DashScopeEmbeddingProvider(
+        Settings(_env_file=None, embedding_mode="dashscope", embedding_api_key=None)
+    )
 
     with pytest.raises(ValueError, match="EMBEDDING_API_KEY"):
         provider.embed(["text"])
 
 
 def test_provider_factories_keep_mock_as_the_default() -> None:
-    settings = Settings(_env_file=None)
+    settings = Settings(
+        _env_file=None,
+        llm_mode="mock",
+        embedding_mode="mock",
+        reranker_mode="mock",
+    )
     assert isinstance(create_embedding_provider(settings), MockEmbeddingProvider)
     assert isinstance(create_reranker_provider(settings), MockRerankerProvider)

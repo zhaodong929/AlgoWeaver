@@ -2,6 +2,9 @@
 
 来源为 `source_requirements.md` 中用户提供的笔试原文。状态按当前代码证据填写；“规划”不等于已实现。
 
+> 状态校正（2026-11-08）：本文件末尾的“最新验收状态”覆盖上方历史记录中的同编号状态。
+> 详细可执行任务见 [`docs/implementation/DELIVERY_GAP_LIST.md`](../implementation/DELIVERY_GAP_LIST.md)。
+
 | ID | 原始要求 | 功能分析 | 技术方案 | 实现模块 | 验收标准 | 测试 | 优先级 | 状态 |
 |---|---|---|---|---|---|---|---|---|
 | REQ-001 | 使用 LLM 完成理解、抽取、生成或修复 | 需要可替换模型接口 | ChatModel + LiteLLM + Mock + structured repair patch | `llm/`, `services/` | 能调用真实/Mock 模型并校验输出 | 模型适配器、抽取测试、`tests/test_code_generation.py`, `tests/test_llm_repair.py` | P0 | 部分：抽取、结构化生成和修复边界已实现；真实 provider 生成与修复未执行 |
@@ -22,3 +25,26 @@
 | REQ-016 | 进阶：多轮修复、候选比较、可视化、配置和插件 | 提升展示完整性 | 后续按时间选择 | 后续模块 | 有独立验收证据 | 专项测试 | P1 | 未实现 |
 | REQ-017 | 加分：图搜索、多 Agent、代码仓库抽取、沙箱等 | 形成创新与安全边界 | 采用研究笔记中的边界设计 | 后续模块 | 不影响主闭环 | 专项评测 | P2 | 未实现 |
 | REQ-018 | 技术能力 40% / 代码质量 30% / 创新 15% / 完整 15% | 以端到端证据评估 | 报告与演示脚本 | `docs/reports/` | 每项有结果或明确缺口 | 验收清单 | P0 | 持续跟踪 |
+
+## 最新验收状态（2026-11-08）
+
+| ID | 当前实现证据 | 状态 | 未完成项 |
+|---|---|---|---|
+| REQ-001 | LiteLLM、Mock、百炼 Qwen/DeepSeek 适配；真实抽取、生成和一次失败修复已运行 | PARTIAL | 多资料抽取覆盖和多类真实修复证据 |
+| REQ-002 | `examples/inventory_forecast/` 含算法说明、审核卡片、CSV 数据和指标入口 | DONE（主场景） | 第二公开数据场景 |
+| REQ-003 | `AlgorithmCapability`、SQLite registry、证据/验证字段 | PARTIAL | GraphML/JSON-LD 导出和图谱可视化 |
+| REQ-004 | LangGraph + template/Mock/LLM generator + Docker/WSL workspace | PARTIAL | 真实 LLM 生成产物的完整隔离执行报告 |
+| REQ-005 | Pydantic/AST/runtime/MAE/RMSE 报告 | PARTIAL | 性能预算、接口契约、安全扫描报告 |
+| REQ-006 | Typer、FastAPI、Streamlit 及 AppTest | PARTIAL | 浏览器人工验收和部署演示 |
+| REQ-007 | Mock/LLM 能力抽取，应用侧证据定位 | DONE（边界） | 冲突证据和置信度评估 |
+| REQ-008 | lexical + qwen embedding + Qdrant memory/server + rerank | PARTIAL | Docker 持久化 smoke test、Recall@k/MRR |
+| REQ-009 | `ReproductionPlanner` 和 LangGraph 条件路由 | PARTIAL | 真实 LLM 规划质量与候选比较 |
+| REQ-010 | 结构化代码/测试生成、依赖 AST 分析、hash | PARTIAL | 依赖安装策略和覆盖率门禁 |
+| REQ-011 | Docker/WSL 执行、日志、MAE/RMSE、超时状态 | PARTIAL | 多任务指标和资源消耗报告 |
+| REQ-012 | BoundedRepairLoop 覆盖导入/依赖/超时受控测试，LLMRepairer 已接入 | PARTIAL | 三类真实 DeepSeek repair 日志 |
+| REQ-013 | SQLite 版本、verified gate、CLI/API reuse | PARTIAL | 语义相似复用、版本 diff、失败经验回写 |
+| REQ-014 | Git 分支、README、研究笔记、ADR、实现日志 | PARTIAL | 发布清单和最终 Windows/Docker 复现记录 |
+| REQ-015 | 示例、抽取结果、工作流、报告、依赖和测试文件 | PARTIAL | 完整打包验收和第二场景材料 |
+| REQ-016 | 多轮修复基础、Streamlit、可配置指标入口 | PARTIAL | 候选比较、图谱可视化、插件注册 |
+| REQ-017 | AST、沙箱、失败反馈、WSL Docker | PARTIAL | 图搜索、多 Agent、仓库级抽取、性能分析 |
+| REQ-018 | 本地 125 passed、CI 检查、功能分支和报告 | PARTIAL | 所有 Must-have 的真实部署与端到端证据 |

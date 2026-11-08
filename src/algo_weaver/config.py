@@ -37,6 +37,15 @@ class Settings(BaseSettings):
     reranker_api_key: SecretStr | None = None
     reranker_api_base: str = "https://dashscope.aliyuncs.com/api/v1"
     reranker_timeout_seconds: float = Field(default=60.0, gt=0.0, le=600.0)
+    api_auth_mode: Literal["none", "api_key"] = "none"
+    api_key: SecretStr | None = None
+    rate_limit_requests: int = Field(default=120, ge=0, le=100_000)
+    rate_limit_window_seconds: int = Field(default=60, ge=1, le=86_400)
+    qdrant_mode: Literal["memory", "server"] = "memory"
+    qdrant_url: str = "http://127.0.0.1:6333"
+    qdrant_api_key: SecretStr | None = None
+    qdrant_collection_name: str = "algo_weaver_chunks"
+    qdrant_timeout_seconds: float = Field(default=10.0, gt=0.0, le=600.0)
     max_input_chars: int = Field(default=40_000, ge=1_000, le=500_000)
     registry_path: Path = Path("data/processed/capabilities.sqlite3")
 

@@ -18,7 +18,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - uses: astral-sh/setup-uv@v5
       - name: Install dependencies
-        run: uv sync --group dev --extra api --extra retrieval --extra execution
+        run: uv sync --group dev --extra api --extra retrieval --extra execution --extra ui
       - name: Lint
         run: uv run ruff check .
       - name: Test

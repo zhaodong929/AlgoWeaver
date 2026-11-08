@@ -110,6 +110,9 @@ uv run algo-weaver reproduce \
 # FastAPI surface
 uv run uvicorn algo_weaver.api:create_app --factory --host 127.0.0.1 --port 8000
 
+# Production: enable API-key auth and rate limiting, then terminate HTTPS at
+# Caddy/Nginx or a managed gateway. See docs/architecture/deployment.md.
+
 # Optional Streamlit dashboard
 uv sync --group dev --extra api --extra retrieval --extra execution --extra ui
 uv run algo-weaver-ui
@@ -242,7 +245,7 @@ docs/              # Architecture and design documents
 
 The full requirements traceability matrix is in `docs/requirements/requirements_matrix.md`. The current implementation supports deterministic moving-average template generation, an offline Mock generation label, Pydantic-validated LLM generation and repair boundaries, a real WSL2 Docker execution path for the reviewed inventory capability, and live Bailian provider boundaries. Use `--generation-mode llm --mode litellm` or `--repair --repair-mode llm --mode litellm` only with a configured provider; live provider checks are recorded separately from offline tests.
 
-The retrieval path combines lexical evidence with optional Qdrant in-memory dense retrieval and reranking. It returns line-addressable evidence chunks with source IDs, paths and metadata, and falls back to lexical retrieval when semantic providers are not configured. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
+The retrieval path combines lexical evidence with optional Qdrant dense retrieval and reranking. It returns line-addressable evidence chunks with source IDs, paths and metadata, and falls back to lexical retrieval when semantic providers are not configured. Memory Qdrant is the default for offline tests; set `ALGOWEAVER_QDRANT_MODE=server` and start `deploy/qdrant/docker-compose.yml` to persist vectors across runs. The primary domain example is inventory demand forecasting with a moving-average baseline in `examples/inventory_forecast/`. The `reproduce` command demonstrates the current CLI-first path and leaves generated artifacts explicitly unverified until sandbox execution passes.
 
 Multiple local materials can be supplied with repeated `--additional-input` options. The API equivalent is `additional_sources`; both paths preserve each source's ingestion status and provenance in retrieval hits.
 
@@ -259,7 +262,17 @@ Use `uv run algo-weaver reuse "库存需求" --registry data/processed/capabilit
 
 For the remaining Windows Docker runtime gate, see `docs/implementation/windows_runtime_setup.md`.
 
-## 9. Engineering principles
+## 9. Delivery scope and remaining work
+
+The reproducible primary scenario is inventory demand forecasting with a moving-average
+baseline. Its business description, reviewed capability card and sample sales data are in
+[`examples/inventory_forecast/`](examples/inventory_forecast/). The complete requirement
+to implementation audit and ordered next-step list are maintained in
+[`docs/implementation/DELIVERY_GAP_LIST.md`](docs/implementation/DELIVERY_GAP_LIST.md)
+and [`docs/requirements/requirements_matrix.md`](docs/requirements/requirements_matrix.md).
+Items marked `PARTIAL` are deliberately not presented as completed MVP features.
+
+## 10. Engineering principles
 
 1. Evidence before claims: extracted fields should be traceable to source material.
 2. Draft is not verified: only independent tests and review can promote a capability.

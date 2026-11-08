@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 
 from algo_weaver.schemas.retrieval import EvidenceChunk, RetrievalHit
 from algo_weaver.services.embedding import EmbeddingProvider
@@ -21,6 +21,7 @@ class HybridRetriever:
         *,
         reranker_provider: RerankerProvider | None = None,
         lexical_weight: float = 0.7,
+        qdrant_factory: Callable[[int], QdrantVectorRetriever] | None = None,
     ) -> None:
         if not 0 <= lexical_weight <= 1:
             raise ValueError("lexical_weight must be between 0 and 1")
@@ -28,6 +29,7 @@ class HybridRetriever:
         self.embedding_provider = embedding_provider
         self.reranker_provider = reranker_provider
         self.lexical_weight = lexical_weight
+        self.qdrant_factory = qdrant_factory
 
     def search(self, query: str, *, top_k: int = 5) -> list[RetrievalHit]:
         if not query.strip():
@@ -46,7 +48,11 @@ class HybridRetriever:
         if len(document_vectors) != len(self.chunks):
             raise ValueError("embedding provider returned an unexpected document count")
 
-        vector_retriever = QdrantVectorRetriever(len(query_vector[0]))
+        vector_retriever = (
+            self.qdrant_factory(len(query_vector[0]))
+            if self.qdrant_factory is not None
+            else QdrantVectorRetriever(len(query_vector[0]))
+        )
         vector_retriever.upsert(self.chunks, document_vectors)
         dense_hits = vector_retriever.search(query_vector[0], top_k=candidate_k)
 

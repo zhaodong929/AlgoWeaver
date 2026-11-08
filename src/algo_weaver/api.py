@@ -4,9 +4,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import secrets
+import time
+from collections import defaultdict, deque
 from collections.abc import Callable
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from threading import Lock
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -28,6 +32,7 @@ from algo_weaver.services.dependency import PythonDependencyAnalyzer
 from algo_weaver.services.embedding import create_embedding_provider
 from algo_weaver.services.llm_repair import LLMRepairer
 from algo_weaver.services.metrics import RegressionMetricEvaluator
+from algo_weaver.services.qdrant_retrieval import create_qdrant_retriever
 from algo_weaver.services.registry import CapabilityRegistry
 from algo_weaver.services.reranker import create_reranker_provider
 from algo_weaver.services.sandbox import DockerSandboxRunner, WslDockerSandboxRunner
@@ -107,6 +112,56 @@ def create_app(
 
     active_settings = settings or get_settings()
     app = FastAPI(title=active_settings.app_name, version="0.1.0")
+    if active_settings.api_auth_mode == "api_key" and active_settings.api_key is None:
+        raise RuntimeError("ALGOWEAVER_API_KEY is required when ALGOWEAVER_API_AUTH_MODE=api_key")
+
+    # Dependency-free limiter for one process. Multi-replica deployments should
+    # put a shared limiter at the reverse proxy (for example Redis-backed).
+    request_timestamps: dict[str, deque[float]] = defaultdict(deque)
+    limiter_lock = Lock()
+
+    @app.middleware("http")
+    async def access_boundary(request, call_next):
+        if request.url.path == "/health" or request.method == "OPTIONS":
+            return await call_next(request)
+
+        if active_settings.api_auth_mode == "api_key":
+            supplied = request.headers.get("x-api-key", "")
+            authorization = request.headers.get("authorization", "")
+            if not supplied and authorization.lower().startswith("bearer "):
+                supplied = authorization[7:].strip()
+            configured = active_settings.api_key.get_secret_value() if active_settings.api_key else ""
+            if not supplied or not secrets.compare_digest(supplied, configured):
+                from fastapi.responses import JSONResponse
+
+                return JSONResponse(
+                    {"detail": "valid API key required"},
+                    status_code=401,
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+
+        if active_settings.rate_limit_requests > 0:
+            client = request.client.host if request.client else "unknown"
+            now = time.monotonic()
+            cutoff = now - active_settings.rate_limit_window_seconds
+            with limiter_lock:
+                timestamps = request_timestamps[client]
+                while timestamps and timestamps[0] <= cutoff:
+                    timestamps.popleft()
+                if len(timestamps) >= active_settings.rate_limit_requests:
+                    retry_after = max(
+                        1,
+                        int(timestamps[0] + active_settings.rate_limit_window_seconds - now),
+                    )
+                    from fastapi.responses import JSONResponse
+
+                    return JSONResponse(
+                        {"detail": "rate limit exceeded"},
+                        status_code=429,
+                        headers={"Retry-After": str(retry_after)},
+                    )
+                timestamps.append(now)
+        return await call_next(request)
 
     @app.get("/health")
     def health() -> dict[str, str]:
@@ -306,6 +361,11 @@ def create_app(
                         generator=generator,
                         embedding_provider=embedding_provider,
                         reranker_provider=reranker_provider,
+                        qdrant_factory=(
+                            (lambda dimension: create_qdrant_retriever(active_settings, dimension))
+                            if active_settings.qdrant_mode == "server"
+                            else None
+                        ),
                     ).invoke(state)
                     if request.metrics is not None and result.get("execution", {}).get("status") == "passed":
                         workspace_path = Path(workspace)
@@ -349,6 +409,11 @@ def create_app(
                     generator=generator,
                     embedding_provider=embedding_provider,
                     reranker_provider=reranker_provider,
+                    qdrant_factory=(
+                        (lambda dimension: create_qdrant_retriever(active_settings, dimension))
+                        if active_settings.qdrant_mode == "server"
+                        else None
+                    ),
                 ).invoke(state)
 
             if "error" in result:

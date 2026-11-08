@@ -5,6 +5,7 @@ import pytest
 pytest.importorskip("fastapi")
 
 from fastapi.testclient import TestClient
+from pydantic import SecretStr
 
 from algo_weaver.api import create_app
 from algo_weaver.config import Settings
@@ -18,6 +19,44 @@ def test_health_endpoint() -> None:
 
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
+
+
+def test_api_key_authentication_keeps_health_probe_public() -> None:
+    client = TestClient(
+        create_app(
+            settings=Settings(
+                api_auth_mode="api_key",
+                api_key=SecretStr("test-secret"),
+                rate_limit_requests=0,
+            )
+        )
+    )
+
+    assert client.get("/health").status_code == 200
+    assert client.post("/metrics", json={"actual": [1], "predicted": [1]}).status_code == 401
+    response = client.post(
+        "/metrics",
+        headers={"Authorization": "Bearer test-secret"},
+        json={"actual": [1], "predicted": [1]},
+    )
+    assert response.status_code == 200
+
+
+def test_api_rate_limit_returns_retry_after() -> None:
+    client = TestClient(
+        create_app(
+            settings=Settings(
+                rate_limit_requests=1,
+                rate_limit_window_seconds=60,
+            )
+        )
+    )
+
+    assert client.get("/health").status_code == 200
+    assert client.post("/metrics", json={"actual": [1], "predicted": [1]}).status_code == 200
+    response = client.post("/metrics", json={"actual": [1], "predicted": [1]})
+    assert response.status_code == 429
+    assert response.headers["retry-after"]
 
 
 def test_metrics_endpoint_returns_thresholded_report() -> None:

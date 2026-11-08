@@ -377,3 +377,24 @@ Every later entry must record the changed module, test command, result, unresolv
 - Added a Streamlit dashboard with file upload, mode selection, API execution, evidence, plan, artifact, runtime and report panels. `streamlit run src/algo_weaver/ui.py --server.headless true --server.port 8505` started successfully and `/_stcore/health` returned HTTP 200.
 - Added the optional `ui` dependency group and `algo-weaver-ui` entry point. Full validation: 117 passed, Ruff passed, Mypy passed for 46 source files.
 - Git commit: `47d3dfb` (`feat: add hybrid retrieval and Streamlit dashboard`).
+
+## 2026-11-08 — delivery gap audit and production boundaries
+
+- Added `DELIVERY_GAP_LIST.md` as the executable backlog derived directly from the
+ 笔试 requirements. It names the inventory-demand forecasting scenario, records the
+  existing CSV/doc/card evidence, and separates `DONE`, `PARTIAL`, `TODO` and `BLOCKED`.
+- Updated `requirements_matrix.md`, `EXECUTION_PLAN.md` and `phase_status.md` with the
+  latest implementation evidence and the next P0/P1/P2 milestones.
+- Added persistent Qdrant configuration (`ALGOWEAVER_QDRANT_MODE=server`), a Docker
+  Compose service with a storage volume and healthcheck, and wiring through CLI,
+  FastAPI and LangGraph. Memory mode remains the offline default.
+- Added production API boundary controls: API-key authentication, per-process rolling
+  rate limiting with `Retry-After`, public `/health` for probes, and HTTPS reverse-proxy
+  deployment instructions in `docs/architecture/deployment.md`.
+- Added Streamlit AppTest coverage for page rendering and request submission, and
+  controlled repair coverage for import errors, missing dependencies and timeouts.
+- Validation after the fixes: `uv run --no-sync pytest -q` -> **125 passed**;
+  focused provider/UI tests -> **9 passed**. Qdrant persistence configuration tests
+  passed; a real Qdrant Docker smoke test remains pending because Docker is not exposed
+  in the current PowerShell session.
+- No API key, `.env`, Qdrant storage volume or model weights were added to Git.

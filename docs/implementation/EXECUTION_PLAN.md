@@ -1,10 +1,15 @@
 # AlgoWeaver Execution Plan
 
-Updated: 2026-11-07 (Asia/Shanghai)
+Updated: 2026-11-08 (Asia/Shanghai)
 
 ## Current milestone
 
-**Phase 7/8: verified capability reuse.** The reproduction graph, CLI and API support bounded repair, sandbox metrics and explicit verified-only capability reuse. `/reproduce` returns the selected registry version and feeds that persisted card into the same plan/generation/validation path. The next executable work is a real provider acceptance run when credentials are available, while semantic automatic reuse and broader task metric policies remain independent gaps.
+**Phase 8/9: delivery hardening.** The current deliverable is the inventory-demand
+forecasting scenario with CLI, FastAPI, Streamlit, optional live Bailian providers,
+Qdrant memory/server modes, isolated execution, bounded repair and verified-only
+reuse. The authoritative gaps and their execution order are in
+`DELIVERY_GAP_LIST.md`; the next work starts with persistent-Qdrant smoke testing,
+the main scenario report, browser acceptance and production boundary checks.
 
 ## Milestones
 
@@ -20,6 +25,9 @@ Updated: 2026-11-07 (Asia/Shanghai)
 | M7 | Capability registry and reuse | SQLite versions, verified-only promotion and name search | IN_PROGRESS |
 | M8 | API/demo integration | CLI `reproduce` writes plan, artifacts and static validation reports | IN_PROGRESS |
 | M9 | Final acceptance | Requirement matrix audit, security/performance checks, final demo | NOT_STARTED |
+| M10 | Delivery gap audit | Updated matrix, primary scenario evidence and actionable backlog | IN_PROGRESS |
+| M11 | Production retrieval and UI acceptance | Persistent Qdrant smoke test, browser interaction record, HTTPS/auth/rate-limit check | NOT_STARTED |
+| M12 | Extended failure repair and cross-scenario validation | Live import/dependency/timeout repair evidence and second public dataset | NOT_STARTED |
 
 ## Working rules
 

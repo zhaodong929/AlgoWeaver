@@ -14,6 +14,7 @@ from algo_weaver.schemas.retrieval import RetrievalHit
 from algo_weaver.services.code_generation import ArtifactGenerator
 from algo_weaver.services.embedding import EmbeddingProvider
 from algo_weaver.services.hybrid_retrieval import HybridRetriever
+from algo_weaver.services.qdrant_retrieval import QdrantVectorRetriever
 from algo_weaver.services.repair import BoundedRepairLoop
 from algo_weaver.services.reproduction import ReproductionPlanner, TemplateArtifactWriter
 from algo_weaver.services.reranker import RerankerProvider
@@ -63,6 +64,7 @@ def build_reproduction_graph(
     generator: ArtifactGenerator | None = None,
     embedding_provider: EmbeddingProvider | None = None,
     reranker_provider: RerankerProvider | None = None,
+    qdrant_factory: Callable[[int], QdrantVectorRetriever] | None = None,
 ):
     """Build a reproduction workflow with optional isolated execution and repair.
 
@@ -91,6 +93,7 @@ def build_reproduction_graph(
                 chunks,
                 embedding_provider,
                 reranker_provider=reranker_provider,
+                qdrant_factory=qdrant_factory,
             ).search(capability.name, top_k=5)
         else:
             hits = LocalLexicalRetriever(chunks).search(capability.name, top_k=5)
