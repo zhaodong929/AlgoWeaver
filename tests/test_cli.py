@@ -6,6 +6,7 @@ from typer.testing import CliRunner
 
 from algo_weaver.cli import app, reproduce
 from algo_weaver.schemas.capability import AlgorithmCapability, EvidenceRef
+from algo_weaver.schemas.execution import ExecutionResult
 from algo_weaver.schemas.validation import ValidationCheck, ValidationReport
 from algo_weaver.services.registry import CapabilityRegistry
 
@@ -166,6 +167,64 @@ def test_reproduce_accepts_an_explicit_reviewed_capability_file(tmp_path) -> Non
 
     assert result.exit_code == 0, result.stdout
     assert "reviewed capability card" in result.stdout
+
+
+def test_reproduce_does_not_promote_when_metric_gate_fails(tmp_path, monkeypatch) -> None:
+    source = tmp_path / "algorithm.md"
+    source.write_text("# Moving Average\nSmooth a time series.", encoding="utf-8")
+    capability = tmp_path / "capability.json"
+    capability.write_text(
+        '{"capability_id":"metric_gate_cli","name":"Moving Average",'
+        '"problem_definition":"Smooth a time series.","inputs":["data"],'
+        '"outputs":["averages"],"algorithm_steps":["Slide a window."],'
+        '"evidence":[{"source_id":"doc-001","source_type":"document",'
+        '"excerpt":"source"}],"status":"draft"}',
+        encoding="utf-8",
+    )
+    output_dir = tmp_path / "bundle"
+    registry_path = tmp_path / "registry.sqlite3"
+
+    class FakeRunner:
+        def run(self, workspace, command, policy):
+            stdout = "[12.0, 12.0, 12.0, 12.0]" if command[:2] == ["python", "-c"] else ""
+            return ExecutionResult(
+                status="passed",
+                command=command,
+                image="python:3.12-slim",
+                exit_code=0,
+                stdout=stdout,
+                duration_seconds=0.1,
+            )
+
+    monkeypatch.setattr("algo_weaver.cli.DockerSandboxRunner", FakeRunner)
+    result = CliRunner().invoke(
+        app,
+        [
+            "reproduce",
+            "--input",
+            str(source),
+            "--output-dir",
+            str(output_dir),
+            "--capability-file",
+            str(capability),
+            "--registry",
+            str(registry_path),
+            "--execute",
+            "--metrics-file",
+            "examples/inventory_forecast/sales_history.csv",
+            "--metrics-window",
+            "2",
+            "--max-mae",
+            "0.1",
+        ],
+    )
+
+    assert result.exit_code == 0, result.stdout
+    assert "Verification status: unverified" in result.stdout
+    record = json.loads((output_dir / "registry_record.json").read_text(encoding="utf-8"))
+    assert record["status"] != "verified"
+    metric_report = json.loads((output_dir / "metric_report.json").read_text(encoding="utf-8"))
+    assert metric_report["overall_status"] == "failed"
 
 
 def test_reuse_command_returns_verified_capabilities_only(tmp_path) -> None:

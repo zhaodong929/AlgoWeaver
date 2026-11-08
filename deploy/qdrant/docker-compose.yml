@@ -5,9 +5,12 @@ services:
     ports:
       - "127.0.0.1:6333:6333"
     volumes:
-      - ./storage:/qdrant/storage
+      - qdrant_storage:/qdrant/storage
     healthcheck:
       test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1:6333/readyz > /dev/null || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
+
+volumes:
+  qdrant_storage:

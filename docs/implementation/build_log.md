@@ -400,3 +400,40 @@ Every later entry must record the changed module, test command, result, unresolv
 - No API key, `.env`, Qdrant storage volume or model weights were added to Git.
 - Git commits: `b17206f` (`feat: harden delivery and production boundaries`) and
   `16919d0` (`test: isolate provider defaults`).
+
+## 2026-11-08 — P0-2 inventory scenario delivery evidence
+
+- Ran the reviewed inventory capability through ingestion of `algorithm.md` and
+  `sales_history.csv`, deterministic artifact generation, WSL2 Docker execution and
+  sandbox metric evaluation.
+- Observed `execution=passed`, two generated unit tests passing in `python:3.12-slim`,
+  MAE `0.8888888888888881`, RMSE `1.3608276348795427`, both under threshold `3.0`,
+  and registry promotion to `verified`.
+- Re-ran the same workflow with `--reuse-query "库存需求移动平均预测"`; verified
+  capability version 2 was selected and revalidated in the isolated runner.
+- Saved the evidence and exact commands in
+  `docs/reports/test_reports/2026-11-08-inventory-delivery.md`.
+- P0-1 Qdrant attempt: WSL Docker Engine 29.1.3 is available, but the Qdrant image
+  pull timed out at Docker Hub. No service-success claim was recorded.
+
+## 2026-11-08 — open-license second scenario
+
+- Added `examples/predictive_maintenance/` using the UCI AI4I 2020 Predictive
+  Maintenance Dataset (DOI `10.24432/C5HS5C`, CC BY 4.0) with attribution metadata,
+  a transparent torque/tool-wear rule baseline, a reviewed capability card and
+  deterministic precision/recall checks.
+- The checked-in CSV has 10,000 rows. The baseline produced 2 high-risk rows with
+  precision `1.0` and a deliberately low recall; this is documented as a baseline,
+  not a production model.
+- Validation: scenario tests -> `3 passed`; full suite and static checks remain the
+  authoritative project gate.
+
+## 2026-11-08 — API and Streamlit runtime smoke
+
+- Started FastAPI on `127.0.0.1:8010`; `GET /health` returned HTTP 200 and
+  `POST /metrics` returned HTTP 200 with deterministic MAE/RMSE output.
+- Started Streamlit on `127.0.0.1:8510`; `/_stcore/health` returned HTTP 200 and
+  the root page returned HTTP 200 with 7,863 bytes of HTML. Automated AppTest also
+  exercises the default form and request-result panels.
+- The full project suite after the AI4I scenario and CLI metric gate is **128 passed**;
+  Ruff and Mypy remain clean.

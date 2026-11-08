@@ -1,0 +1,56 @@
+{
+  "capability_id": "cap_ai4i_predictive_maintenance_rule",
+  "schema_version": "1.0",
+  "name": "AI4I 预测性维护高风险筛查",
+  "problem_definition": "根据扭矩和工具磨损筛查可能发生机器故障的记录。",
+  "algorithm_family": "predictive_maintenance",
+  "inputs": ["Torque [Nm]", "Tool wear [min]"],
+  "outputs": ["risk_score", "is_high_risk"],
+  "preprocessing": ["读取 UCI AI4I CSV 并校验数值字段"],
+  "algorithm_steps": [
+    "读取扭矩和工具磨损",
+    "应用透明的双阈值规则",
+    "使用 Machine failure 标签评估 precision 和 recall"
+  ],
+  "parameters": [
+    {
+      "name": "torque_threshold",
+      "description": "扭矩高风险阈值",
+      "data_type": "positive float",
+      "default": 70.0,
+      "constraints": ["必须大于 0"]
+    },
+    {
+      "name": "wear_threshold",
+      "description": "工具磨损高风险阈值",
+      "data_type": "positive float",
+      "default": 180.0,
+      "constraints": ["必须大于 0"]
+    }
+  ],
+  "constraints": ["输入记录必须包含数值 Torque [Nm] 和 Tool wear [min]"],
+  "metrics": ["precision", "recall", "high_risk_count", "运行时间"],
+  "failure_cases": ["空数据", "缺失字段", "非法阈值"],
+  "implementation_notes": [
+    "该卡片是基于 UCI AI4I 数据的人工审核规则基线，不代表生产级模型。",
+    "数据来源和 CC BY 4.0 归属信息见 examples/predictive_maintenance/README.md。"
+  ],
+  "missing_information": [],
+  "evidence": [
+    {
+      "source_id": "ai4i-predictive-maintenance-doc",
+      "source_type": "document",
+      "location": "examples/predictive_maintenance/algorithm.md",
+      "line_start": 1,
+      "line_end": 24,
+      "excerpt": "根据设备运行传感器记录筛查可能需要维护的设备。"
+    },
+    {
+      "source_id": "ai4i-dataset",
+      "source_type": "document",
+      "location": "examples/predictive_maintenance/ai4i2020.csv",
+      "excerpt": "UCI AI4I 2020 Predictive Maintenance Dataset, DOI 10.24432/C5HS5C"
+    }
+  ],
+  "status": "draft"
+}

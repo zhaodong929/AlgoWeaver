@@ -360,17 +360,7 @@ def reproduce(
             json.dumps([report.model_dump(mode="json") for report in reports], ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
-        if registry_path is not None and saved is not None and runtime_report.overall_status == "passed":
-            promoted = CapabilityRegistry(registry_path).promote_verified(
-                capability.capability_id,
-                runtime_report,
-            )
-            (output_dir / "registry_record.json").write_text(
-                json.dumps(promoted.model_dump(mode="json"), ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
-            verification_status = "verified"
-            rprint("Registry promotion: verified")
+        metric_report = None
         if metrics_file is not None and execution_result.status == "passed":
             rows = list(csv.DictReader(metrics_file.read_text(encoding="utf-8").splitlines()))
             actual = [float(row["sales"]) for row in rows]
@@ -409,6 +399,25 @@ def reproduce(
                     encoding="utf-8",
                 )
                 rprint(f"Metrics: MAE/RMSE computed for {metric_report.sample_count} samples")
+        metric_gate_passed = metrics_file is None or (
+            metric_report is not None and metric_report.overall_status == "passed"
+        )
+        if (
+            registry_path is not None
+            and saved is not None
+            and runtime_report.overall_status == "passed"
+            and metric_gate_passed
+        ):
+            promoted = CapabilityRegistry(registry_path).promote_verified(
+                capability.capability_id,
+                runtime_report,
+            )
+            (output_dir / "registry_record.json").write_text(
+                json.dumps(promoted.model_dump(mode="json"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            verification_status = "verified"
+            rprint("Registry promotion: verified")
     rprint(f"[green]Reproduction bundle saved:[/green] {output_dir}")
     rprint(f"Artifacts: {', '.join(path.name for path in artifact_paths)}")
     rprint(f"Verification status: {verification_status}")

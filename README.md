@@ -271,6 +271,8 @@ to implementation audit and ordered next-step list are maintained in
 [`docs/implementation/DELIVERY_GAP_LIST.md`](docs/implementation/DELIVERY_GAP_LIST.md)
 and [`docs/requirements/requirements_matrix.md`](docs/requirements/requirements_matrix.md).
 Items marked `PARTIAL` are deliberately not presented as completed MVP features.
+The second scenario is UCI's CC BY 4.0 AI4I predictive-maintenance dataset with a
+transparent rule baseline in [`examples/predictive_maintenance/`](examples/predictive_maintenance/).
 
 ## 10. Engineering principles
 
