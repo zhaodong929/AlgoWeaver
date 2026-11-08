@@ -415,6 +415,11 @@ Every later entry must record the changed module, test command, result, unresolv
   `docs/reports/test_reports/2026-11-08-inventory-delivery.md`.
 - P0-1 Qdrant attempt: WSL Docker Engine 29.1.3 is available, but the Qdrant image
   pull timed out at Docker Hub. No service-success claim was recorded.
+- Added `ALGOWEAVER_QDRANT_MODE=local` with an on-disk Qdrant client path for Windows
+  development. The persistence test reopened the same collection in a second client
+  and retrieved the previously stored provenance chunk (`3 passed` in the focused
+  Qdrant test file). This is local persistence evidence; Docker service validation
+  remains a separate open item.
 
 ## 2026-11-08 — open-license second scenario
 

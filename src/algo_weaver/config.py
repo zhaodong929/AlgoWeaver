@@ -41,8 +41,9 @@ class Settings(BaseSettings):
     api_key: SecretStr | None = None
     rate_limit_requests: int = Field(default=120, ge=0, le=100_000)
     rate_limit_window_seconds: int = Field(default=60, ge=1, le=86_400)
-    qdrant_mode: Literal["memory", "server"] = "memory"
+    qdrant_mode: Literal["memory", "local", "server"] = "memory"
     qdrant_url: str = "http://127.0.0.1:6333"
+    qdrant_path: Path = Path("data/processed/qdrant")
     qdrant_api_key: SecretStr | None = None
     qdrant_collection_name: str = "algo_weaver_chunks"
     qdrant_timeout_seconds: float = Field(default=10.0, gt=0.0, le=600.0)

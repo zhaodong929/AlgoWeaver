@@ -239,7 +239,7 @@ def reproduce(
             ),
             qdrant_factory=(
                 (lambda dimension: create_qdrant_retriever(settings, dimension))
-                if settings.qdrant_mode == "server"
+                if settings.qdrant_mode in {"local", "server"}
                 else None
             ),
         ).search(capability.name, top_k=5)

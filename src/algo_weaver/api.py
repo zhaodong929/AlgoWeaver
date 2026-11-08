@@ -363,7 +363,7 @@ def create_app(
                         reranker_provider=reranker_provider,
                         qdrant_factory=(
                             (lambda dimension: create_qdrant_retriever(active_settings, dimension))
-                            if active_settings.qdrant_mode == "server"
+                            if active_settings.qdrant_mode in {"local", "server"}
                             else None
                         ),
                     ).invoke(state)
@@ -411,7 +411,7 @@ def create_app(
                     reranker_provider=reranker_provider,
                     qdrant_factory=(
                         (lambda dimension: create_qdrant_retriever(active_settings, dimension))
-                        if active_settings.qdrant_mode == "server"
+                        if active_settings.qdrant_mode in {"local", "server"}
                         else None
                     ),
                 ).invoke(state)

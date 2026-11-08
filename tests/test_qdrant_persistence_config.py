@@ -1,6 +1,7 @@
 from pydantic import SecretStr
 
 from algo_weaver.config import Settings
+from algo_weaver.schemas.retrieval import EvidenceChunk
 from algo_weaver.services.qdrant_retrieval import create_qdrant_retriever
 
 
@@ -37,3 +38,30 @@ def test_server_factory_uses_configured_collection_and_credentials(monkeypatch) 
 
     assert retriever.collection_name == "test_chunks"
     assert captured == {"url": "http://qdrant:6333", "api_key": "test-key", "timeout": 13.0}
+
+
+def test_local_mode_persists_points_across_client_instances(tmp_path) -> None:
+    settings = Settings(
+        _env_file=None,
+        qdrant_mode="local",
+        qdrant_path=tmp_path / "qdrant",
+        qdrant_collection_name="persistent_chunks",
+    )
+    chunk = EvidenceChunk(
+        chunk_id="persistent-1",
+        source_id="doc-1",
+        source_type="document",
+        source_format="markdown",
+        path="doc.md",
+        text="inventory demand",
+        line_start=1,
+        line_end=1,
+    )
+    first = create_qdrant_retriever(settings, dimension=2)
+    first.upsert([chunk], [[1.0, 0.0]])
+    assert first.search([1.0, 0.0], top_k=1)[0].chunk.chunk_id == "persistent-1"
+    first.client.close()
+
+    second = create_qdrant_retriever(settings, dimension=2)
+    assert second.search([1.0, 0.0], top_k=1)[0].chunk.chunk_id == "persistent-1"
+    second.client.close()

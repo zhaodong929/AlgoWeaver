@@ -37,7 +37,7 @@
 | REQ-005 | Pydantic/AST/runtime/MAE/RMSE 报告 | PARTIAL | 性能预算、接口契约、安全扫描报告 |
 | REQ-006 | Typer、FastAPI、Streamlit 及 AppTest | PARTIAL | 浏览器人工验收和部署演示 |
 | REQ-007 | Mock/LLM 能力抽取，应用侧证据定位 | DONE（边界） | 冲突证据和置信度评估 |
-| REQ-008 | lexical + qwen embedding + Qdrant memory/server + rerank | PARTIAL | Docker 持久化 smoke test、Recall@k/MRR |
+| REQ-008 | lexical + qwen embedding + Qdrant memory/local/server + rerank；local mode 已通过跨客户端持久化测试 | PARTIAL | Docker service smoke test、Recall@k/MRR |
 | REQ-009 | `ReproductionPlanner` 和 LangGraph 条件路由 | PARTIAL | 真实 LLM 规划质量与候选比较 |
 | REQ-010 | 结构化代码/测试生成、依赖 AST 分析、hash | PARTIAL | 依赖安装策略和覆盖率门禁 |
 | REQ-011 | Docker/WSL 执行、日志、MAE/RMSE、超时状态 | PARTIAL | 多任务指标和资源消耗报告 |

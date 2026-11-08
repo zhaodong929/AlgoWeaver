@@ -43,8 +43,9 @@
 
 ## 下一步执行顺序
 
-1. **P0-1 持久化检索验收**：启动 `deploy/qdrant/docker-compose.yml`，运行 `/readyz`、
-   API/CLI server-mode smoke test，并记录真实 collection 数据持久化。
+1. **P0-1 持久化检索验收**：Windows local mode 已通过跨客户端持久化测试；仍需在
+   Docker Hub 可访问时启动 `deploy/qdrant/docker-compose.yml`，运行 `/readyz`、API/CLI
+   server-mode smoke test，并记录真实 service collection 重启后仍可检索。
 2. **P0-2 主场景交付报告**：用 `sales_history.csv` 完成一次从材料接入到 verified
    复用的报告，包含代码、测试、MAE/RMSE、耗时和来源证据。
 3. **P0-3 Streamlit 浏览器验收**：启动 FastAPI+Streamlit，执行上传、运行、查看证据、
