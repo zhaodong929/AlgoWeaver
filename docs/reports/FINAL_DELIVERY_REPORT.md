@@ -1,7 +1,7 @@
 # AlgoWeaver 最终交付报告
 
 报告日期：2026-11-08（Asia/Shanghai）
-交付版本：`c4675c6`
+交付基线：`c4675c6`；最终文档包：`6640e88`
 仓库：[zhaodong929/AlgoWeaver](https://github.com/zhaodong929/AlgoWeaver)
 交付分支：`feat/api-capability-reuse`
 默认分支：`feat/initial-audit-and-ingestion`，已从 `339a020` 普通快进到 `c4675c6`
@@ -114,7 +114,7 @@ GitHub Actions：
 - Python 3.12：通过
 - Python 3.13：通过
 - Install、Ruff、pytest、Mypy：通过
-- 最新绿色运行：[Run #119](https://github.com/zhaodong929/AlgoWeaver/actions/runs/42471900605)
+- 当前同步交付提交的绿色运行：[Run #123](https://github.com/zhaodong929/AlgoWeaver/actions/runs/42479046084)
 
 ## 6. 交付文件
 

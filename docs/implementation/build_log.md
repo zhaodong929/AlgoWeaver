@@ -598,3 +598,5 @@ Every later entry must record the changed module, test command, result, unresolv
 - Added `docs/implementation/OPERATION_GUIDE.md` and
   `docs/reports/FINAL_DELIVERY_REPORT.md`, and synchronized README, phase status,
   acceptance matrix, known issues and delivery gap records.
+- The synchronized final package at `6640e88` passed GitHub Actions run #123 on
+  Python 3.12 and 3.13, including dependency installation, Ruff, pytest and Mypy.
