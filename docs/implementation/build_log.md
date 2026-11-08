@@ -624,3 +624,5 @@ Every later entry must record the changed module, test command, result, unresolv
 - Added `docs/reports/test_reports/2026-11-08-real-bailian-multiscenario.md` and static
   UI/OpenAPI screenshots under `docs/assets/`. Full local validation after these changes:
   `pytest` **134 passed**, Ruff passed, Mypy passed.
+- Commit `afa4ccd` was pushed to both delivery branches. GitHub Actions runs #128 and
+  #129 passed on Python 3.12 and 3.13 with the full install, Ruff, pytest and Mypy gates.

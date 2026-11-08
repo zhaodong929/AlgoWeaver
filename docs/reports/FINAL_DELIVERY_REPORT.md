@@ -1,10 +1,10 @@
 # AlgoWeaver 最终交付报告
 
 报告日期：2026-11-08（Asia/Shanghai）
-交付基线：`b0b22fe`；核心功能基线：`c4675c6`
+交付基线：`afa4ccd`；核心功能基线：`c4675c6`
 仓库：[zhaodong929/AlgoWeaver](https://github.com/zhaodong929/AlgoWeaver)
 交付分支：`feat/api-capability-reuse`
-默认分支：`feat/initial-audit-and-ingestion`，已从 `339a020` 普通快进到 `b0b22fe`
+默认分支：`feat/initial-audit-and-ingestion`，已从 `339a020` 普通快进到 `afa4ccd`
 
 ## 1. 交付结论
 
@@ -114,7 +114,7 @@ GitHub Actions：
 - Python 3.12：通过
 - Python 3.13：通过
 - Install、Ruff、pytest、Mypy：通过
-- 当前同步交付提交的绿色运行：[Run #125](https://github.com/zhaodong929/AlgoWeaver/actions/runs/42479338774)
+- 当前同步交付提交的绿色运行：[Run #129](https://github.com/zhaodong929/AlgoWeaver/actions/runs/42485224469)
 
 ## 6. 交付文件
 
@@ -124,6 +124,7 @@ GitHub Actions：
 - [2026-11-08-inventory-delivery.md](test_reports/2026-11-08-inventory-delivery.md)：主场景交付报告。
 - [2026-11-08-live-llm-reproduction.md](test_reports/2026-11-08-live-llm-reproduction.md)：真实 LLM 生成报告。
 - [2026-11-08-live-repair-scenarios.md](test_reports/2026-11-08-live-repair-scenarios.md)：失败修复报告。
+- [2026-11-08-real-bailian-multiscenario.md](test_reports/2026-11-08-real-bailian-multiscenario.md)：真实百炼多场景、失败和修复记录。
 - [2026-11-08-qdrant-persistence.md](test_reports/2026-11-08-qdrant-persistence.md)：持久化 Qdrant 报告。
 - [2026-11-08-hybrid-retrieval.md](../benchmark_reports/2026-11-08-hybrid-retrieval.md)：检索评估报告。
 - `examples/inventory_forecast/`：主场景材料和能力卡片。
