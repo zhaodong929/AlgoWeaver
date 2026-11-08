@@ -507,3 +507,11 @@ Every later entry must record the changed module, test command, result, unresolv
 - Saved the evidence in `docs/reports/test_reports/2026-11-08-security-runtime.md`.
 - Git commits: `f453df9` (Qdrant service acceptance) and `948c4c0` (Qdrant/security
   runtime evidence).
+
+## 2026-11-08 — local HTTPS termination smoke
+
+- Caddy 2.10 Alpine started with `tls internal` on `localhost:8443` and returned
+  `ok` over HTTPS; the temporary container was removed after the check.
+- This validates the TLS termination path used by the production bundle. Public DNS,
+  ACME issuance and external ingress remain deployment-specific.
+- Evidence: `docs/reports/test_reports/2026-11-08-https-runtime.md`.
