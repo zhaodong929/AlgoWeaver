@@ -455,3 +455,14 @@ Every later entry must record the changed module, test command, result, unresolv
   generated unittest suite.
 - Full evidence, hashes and the execution boundary are recorded in
   `docs/reports/test_reports/2026-11-08-live-repair-scenarios.md`.
+
+## 2026-11-08 — persistent Qdrant fallback and production deployment bundle
+
+- Added Qdrant `local` mode with on-disk persistence while keeping the Docker
+  `server` mode as the deployment target. The focused test and full suite passed.
+- Added `deploy/production/` with an API image, Qdrant service, Caddy HTTPS reverse
+  proxy, secret-only environment example and no host Docker socket mount.
+- YAML/static checks passed. Full local validation is now **129 passed**, Ruff and
+  Mypy passed. Docker service startup and DNS-backed HTTPS remain environment gates.
+- Git commits for this milestone: `9fa012a` (local Qdrant), `7c4d319` (production
+  bundle), `e8e2c6f` (acceptance matrix).
