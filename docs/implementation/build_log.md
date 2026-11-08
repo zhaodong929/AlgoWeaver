@@ -523,6 +523,12 @@ Every later entry must record the changed module, test command, result, unresolv
   stable IDs, source excerpts and version relationships.
 - Focused registry/CLI tests passed (`14 passed`); the full suite is now **130 passed**.
 
+## 2026-11-08 — hybrid retrieval evaluation set
+
+- Ran four real queries through qwen embedding, persistent Qdrant server and qwen
+  rerank. Mean Recall@2 and MRR were both `1.0` on the four-case smoke set.
+- Saved the query-level evidence in `docs/reports/benchmark_reports/2026-11-08-hybrid-retrieval.md`.
+
 ## 2026-11-08 — local HTTPS termination smoke
 
 - Caddy 2.10 Alpine started with `tls internal` on `localhost:8443` and returned

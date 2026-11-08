@@ -31,7 +31,7 @@
 | G-05 | 统一功能/指标/稳定性/接口验证 | PARTIAL | 现有静态、运行、MAE/RMSE；补充性能预算、接口契约和安全扫描报告 |
 | G-06 | CLI/API/UI | PARTIAL | 三入口、AppTest 和 HTTP smoke 已实现；补充浏览器人工验收记录和线上部署演示 |
 | G-07a | 理解用户输入 | DONE（边界） | 增加缺失字段、冲突证据和低置信度抽取样本 |
-| G-07b | 检索文档/代码/图谱 | PARTIAL | Docker server persistence and real hybrid retrieval smoke 已通过；继续补充 Recall@k/MRR 评估集 |
+| G-07b | 检索文档/代码/图谱 | PARTIAL | Docker server persistence, real hybrid retrieval and four-case Recall@2/MRR smoke 已通过；继续扩充规模 |
 | G-07c | 规划方案 | PARTIAL | 规则规划稳定；补充真实 LLM 规划质量评估和候选方案比较 |
 | G-07d | 生成代码和测试 | PARTIAL | 补充依赖安装策略、生成测试覆盖率和失败产物归档 |
 | G-07e | 自动执行和指标 | PARTIAL | 主场景已通过；补充超时、资源限制、网络策略和第二指标任务 |
