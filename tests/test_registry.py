@@ -72,3 +72,16 @@ def test_registry_rejects_invalid_queries(tmp_path: Path) -> None:
     registry = CapabilityRegistry(tmp_path / "capabilities.sqlite3")
     with pytest.raises(ValueError, match="query cannot be empty"):
         registry.search(" ")
+
+
+def test_registry_exports_jsonld_capability_and_evidence(tmp_path: Path) -> None:
+    registry = CapabilityRegistry(tmp_path / "graph.sqlite3")
+    registry.save(_capability())
+
+    graph = registry.export_jsonld()
+
+    assert graph["@context"]["algo"] == "https://algoweaver.dev/schema#"
+    assert {node["@type"] for node in graph["@graph"]} == {
+        "algo:CapabilityVersion",
+        "algo:Evidence",
+    }

@@ -117,6 +117,23 @@ def reuse(
     rprint(json.dumps([record.model_dump(mode="json") for record in records], ensure_ascii=False, indent=2))
 
 
+@app.command("export-graph")
+def export_graph(
+    registry_path: Annotated[Path, typer.Option("--registry")] = Path(
+        "data/processed/capabilities.sqlite3"
+    ),
+    output_file: Annotated[Path, typer.Option("--output", "-o")] = Path(
+        "data/processed/capability_graph.jsonld"
+    ),
+) -> None:
+    """Export the capability registry as JSON-LD."""
+
+    graph = CapabilityRegistry(registry_path).export_jsonld()
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    output_file.write_text(json.dumps(graph, ensure_ascii=False, indent=2), encoding="utf-8")
+    rprint(f"[green]Capability graph saved:[/green] {output_file}")
+
+
 @app.command()
 def reproduce(
     input_file: Annotated[Path, typer.Option("--input", "-i", exists=True, readable=True)],

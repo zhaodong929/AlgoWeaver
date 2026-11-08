@@ -120,6 +120,57 @@ class CapabilityRegistry:
         """Return only independently verified capabilities eligible for reuse."""
         return self.search(query, limit=limit, status="verified")
 
+    def export_jsonld(self) -> dict:
+        """Export capability versions and evidence as a small JSON-LD graph."""
+
+        with self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT capability_id, version, status, name, created_at, payload_json
+                FROM capabilities
+                ORDER BY capability_id, version
+                """
+            ).fetchall()
+
+        graph: list[dict] = []
+        for row in rows:
+            capability = json.loads(row["payload_json"])
+            capability_uri = f"algo-weaver:capability/{row['capability_id']}"
+            version_uri = f"{capability_uri}/version/{row['version']}"
+            graph.append(
+                {
+                    "@id": version_uri,
+                    "@type": "algo:CapabilityVersion",
+                    "algo:capability": {"@id": capability_uri},
+                    "algo:version": row["version"],
+                    "algo:status": row["status"],
+                    "algo:name": row["name"],
+                    "algo:createdAt": row["created_at"],
+                    "algo:payload": capability,
+                }
+            )
+            for evidence in capability.get("evidence", []):
+                source_id = evidence.get("source_id", "unknown")
+                graph.append(
+                    {
+                        "@id": f"{version_uri}/evidence/{len(graph)}",
+                        "@type": "algo:Evidence",
+                        "algo:sourceId": source_id,
+                        "algo:excerpt": evidence.get("excerpt", ""),
+                        "algo:location": evidence.get("location"),
+                        "algo:forVersion": {"@id": version_uri},
+                    }
+                )
+
+        return {
+            "@context": {
+                "algo": "https://algoweaver.dev/schema#",
+                "algo:capability": {"@type": "@id"},
+                "algo:forVersion": {"@type": "@id"},
+            },
+            "@graph": graph,
+        }
+
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self.database_path)
         connection.row_factory = sqlite3.Row
