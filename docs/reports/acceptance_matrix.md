@@ -25,7 +25,7 @@ means a usable path exists but the full requested scope still needs evidence.
 
 ## Verification evidence
 
-- `uv run --no-sync pytest -q`: **129 passed**.
+- `uv run --no-sync pytest -q`: **130 passed**.
 - `uv run --no-sync ruff check src tests examples`: passed.
 - `uv run --no-sync mypy src`: passed for 46 source files.
 - Inventory WSL2 report: execution passed, MAE `0.8888888888888881`, RMSE
@@ -38,6 +38,8 @@ means a usable path exists but the full requested scope still needs evidence.
   evidence nodes for the knowledge-graph deliverable.
 - Streamlit runtime: `/_stcore/health` HTTP 200 and root page HTTP 200; AppTest
   exercises the form and result panels.
+- Streamlit acceptance report: `docs/reports/test_reports/2026-11-08-streamlit-acceptance.md`;
+  AppTest covers the actual page entrypoint, button interaction and result panels.
 - Security runtime report: API-key mode returned `401` without a key, `200` with a
   valid key, and `429` after the configured limit.
 - HTTPS runtime report: Caddy internal TLS returned `ok` over HTTPS on the local

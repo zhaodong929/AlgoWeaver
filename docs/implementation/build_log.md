@@ -508,6 +508,14 @@ Every later entry must record the changed module, test command, result, unresolv
 - Git commits: `f453df9` (Qdrant service acceptance) and `948c4c0` (Qdrant/security
   runtime evidence).
 
+## 2026-11-08 — Streamlit interaction acceptance
+
+- Added a formal report for the Streamlit `AppTest` interaction path and live page
+  health/root HTTP smoke.
+- The automated page test verifies title, default form, run-button submission and
+  capability/evidence/plan/report panels. It intentionally labels the API response
+  as mocked and keeps manual browser acceptance open.
+
 ## 2026-11-08 — capability graph export
 
 - Added `CapabilityRegistry.export_jsonld()` and the `algo-weaver export-graph` CLI
