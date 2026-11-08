@@ -1,10 +1,10 @@
 # AlgoWeaver 最终交付报告
 
 报告日期：2026-11-08（Asia/Shanghai）
-交付基线：`afa4ccd`；核心功能基线：`c4675c6`
+交付基线：`88565b0`；核心功能基线：`afa4ccd`
 仓库：[zhaodong929/AlgoWeaver](https://github.com/zhaodong929/AlgoWeaver)
 交付分支：`feat/api-capability-reuse`
-默认分支：`feat/initial-audit-and-ingestion`，已从 `339a020` 普通快进到 `afa4ccd`
+默认分支：`feat/initial-audit-and-ingestion`，已从 `339a020` 普通快进到 `88565b0`
 
 ## 1. 交付结论
 
@@ -114,7 +114,7 @@ GitHub Actions：
 - Python 3.12：通过
 - Python 3.13：通过
 - Install、Ruff、pytest、Mypy：通过
-- 当前同步交付提交的绿色运行：[Run #131](https://github.com/zhaodong929/AlgoWeaver/actions/runs/42485495652)
+- 当前同步交付提交的绿色运行：[Run #133](https://github.com/zhaodong929/AlgoWeaver/actions/runs/42485766361)
 
 ## 6. 交付文件
 

@@ -628,3 +628,5 @@ Every later entry must record the changed module, test command, result, unresolv
   #129 passed on Python 3.12 and 3.13 with the full install, Ruff, pytest and Mypy gates.
 - Documentation alignment commit `0658dec` was pushed to both delivery branches. GitHub
   Actions runs #130 and #131 also passed on Python 3.12 and 3.13.
+- Final evidence alignment is now at `88565b0`; GitHub Actions runs #132 and #133 passed
+  on Python 3.12 and 3.13.
